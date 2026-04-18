@@ -1,44 +1,39 @@
-import { Image, SpriteSheet, Audio } from './util';
-import { image, sound, music, loadFont, spritesheet } from './util';
+import { SIZE } from "@/components/tiles/Tile";
+import { Image, SpriteSheet, Audio } from "./util";
+import { image, sound, music, loadFont, spritesheet } from "./util";
 
 /* Images */
 const images: Image[] = [
-	// Backgrounds
-	image('backgrounds/background', 'background'),
-
-	// Characters
-	image('characters/player', 'player'),
-
-	// Items
-	image('items/coin', 'coin'),
-
-	// UI
-	image('ui/hud', 'hud'),
+	// Tiles
+	image("blank", "blank.png"),
+	image("square", "square.png"),
 
 	// Titlescreen
-	image('titlescreen/sky', 'title_sky'),
-	image('titlescreen/background', 'title_background'),
-	image('titlescreen/foreground', 'title_foreground'),
-	image('titlescreen/character', 'title_character'),
+	image("title_sky", "titlescreen/sky.png"),
+	image("title_background", "titlescreen/background.png"),
+	image("title_foreground", "titlescreen/foreground.png"),
+	image("title_character", "titlescreen/character.png"),
 ];
 
 /* Spritesheets */
 const spritesheets: SpriteSheet[] = [
-
+	spritesheet("player", "characters/player.png", SIZE, SIZE),
+	spritesheet("wall", "tiles/wall.png", SIZE, SIZE),
+	spritesheet("platform", "tiles/platform.png", SIZE, SIZE),
+	spritesheet("rope", "tiles/rope.png", SIZE, SIZE),
+	spritesheet("gold", "tiles/gold.png", SIZE, SIZE),
+	
+	spritesheet("tileset", "tiles/tilekit_castle_dual.png", 16, 16),
 ];
 
 /* Audios */
 const audios: Audio[] = [
-	music('title', 'm_main_menu'),
-	music('first', 'm_first'),
-	sound('tree/rustle', 't_rustle', 0.5),
+	music("m_main_menu", "title.mp3"),
+	music("m_first", "first.mp3"),
+	sound("t_rustle", "tree/rustle.mp3", 0.5),
 ];
 
 /* Fonts */
-await loadFont('Sketch', 'Game Font');
+await loadFont("Game Font", "Sketch.ttf");
 
-export {
-	images,
-	spritesheets,
-	audios
-};
+export { images, spritesheets, audios };
