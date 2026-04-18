@@ -8,5 +8,5 @@ export class Wall extends BaseTile {
 		this.sprite.setTexture("wall", 0);
 	}
 
-	updateSprite(neighbors: NeighborTypes): void {}
+	updateSprite({}: NeighborTypes): void {}
 }

@@ -16,6 +16,8 @@ import { Level, levels } from "@/levels";
 import { BaseScene } from "@/scenes/BaseScene";
 
 export class GameScene extends BaseScene {
+	private width: number;
+	private height: number;
 	private tiles: (BaseTile | undefined)[][];
 	private entities: (Rope | undefined)[][];
 	private players: Player[] = [];
@@ -29,7 +31,7 @@ export class GameScene extends BaseScene {
 
 	create(): void {
 		this.fade(false, 200, 0x000000);
-		this.cameras.main.setBackgroundColor(0xffffff);
+		this.cameras.main.setBackgroundColor(0x63ad9d);
 
 		this.loadLevel(levels[0]);
 
@@ -106,26 +108,50 @@ export class GameScene extends BaseScene {
 	}
 
 	loadLevel(level: Level) {
-		const width = level.tiles[0].length;
-		const height = level.tiles.length;
+		this.width = level.tiles[0].length;
+		this.height = level.tiles.length;
 
 		this.tiles = [];
 		this.entities = [];
-		for (let tileY = 0; tileY < height; tileY++) {
+		for (let tileY = 0; tileY < this.height; tileY++) {
 			this.tiles[tileY] = [];
 			this.entities[tileY] = [];
-			for (let tileX = 0; tileX < width; tileX++) {
+			for (let tileX = 0; tileX < this.width; tileX++) {
 				const tile = level.tiles[tileY][tileX];
 				this.tiles[tileY][tileX] = this.createTile({ tileX, tileY }, tile);
 				this.entities[tileY][tileX] = undefined;
 			}
 		}
 
-		for (let tileY = 0; tileY < height; tileY++) {
-			for (let tileX = 0; tileX < width; tileX++) {
+		for (let tileY = 0; tileY < this.height; tileY++) {
+			for (let tileX = 0; tileX < this.width; tileX++) {
 				this.tiles[tileY][tileX]?.updateSprite(
 					this.getNeighborTypes({ tileX, tileY }),
 				);
+			}
+		}
+
+		/* Tilemap */
+		const f = (x: number, y: number) =>
+			this.getTileTypeAt({ tileX: x - 1, tileY: y - 1 }) == Type.Wall;
+
+		for (let ty = 0; ty <= this.height; ty++) {
+			for (let tx = 0; tx <= this.width; tx++) {
+				const tl = f(tx - 0, ty - 0) ? 1 : 0;
+				const tr = f(tx + 1, ty - 0) ? 1 : 0;
+				const bl = f(tx - 0, ty + 1) ? 1 : 0;
+				const br = f(tx + 1, ty + 1) ? 1 : 0;
+
+				const mask = (tl << 0) | (tr << 1) | (bl << 2) | (br << 3);
+
+				const { x, y } = tileToCoord({ tileX: tx, tileY: ty });
+				const tile = this.add.image(x - SIZE / 2, y - SIZE / 2, "walls", 6);
+				tile.setScale(SIZE / tile.width);
+
+				let frame = [12, 15, 8, 9, 0, 11, 14, 7, 13, 4, 1, 10, 3, 2, 5, 6][
+					mask
+				];
+				tile.setFrame(frame);
 			}
 		}
 	}
@@ -221,6 +247,8 @@ export class GameScene extends BaseScene {
 	}
 
 	private getTileTypeAt({ tileX, tileY }: TileCoord): Type {
+		if (!this.isInside({ tileX, tileY })) return Type.Wall;
+
 		// Check if entity exists at this location first
 		const entity = this.entities[tileY]?.[tileX];
 		if (entity) {
@@ -228,6 +256,12 @@ export class GameScene extends BaseScene {
 		}
 		// Otherwise return the static tile type
 		return this.tiles[tileY]?.[tileX]?.tile ?? Type.None;
+	}
+
+	private isInside({ tileX, tileY }: TileCoord): boolean {
+		return (
+			tileX >= 0 && tileY >= 0 && tileX < this.width && tileY < this.height
+		);
 	}
 
 	canPlaceRope({ tileX, tileY }: TileCoord): boolean {

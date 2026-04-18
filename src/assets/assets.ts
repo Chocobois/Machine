@@ -1,4 +1,3 @@
-import { SIZE } from "@/components/tiles/Tile";
 import { Image, SpriteSheet, Audio } from "./util";
 import { image, sound, music, loadFont, spritesheet } from "./util";
 
@@ -17,13 +16,14 @@ const images: Image[] = [
 
 /* Spritesheets */
 const spritesheets: SpriteSheet[] = [
-	spritesheet("player", "characters/player.png", SIZE, SIZE),
-	spritesheet("wall", "tiles/wall.png", SIZE, SIZE),
-	spritesheet("platform", "tiles/platform.png", SIZE, SIZE),
-	spritesheet("rope", "tiles/rope.png", SIZE, SIZE),
-	spritesheet("gold", "tiles/gold.png", SIZE, SIZE),
-	
-	spritesheet("tileset", "tiles/tilekit_castle_dual.png", 16, 16),
+	spritesheet("player", "characters/player.png", 256, 256),
+	spritesheet("wall", "tiles/wall.png", 256, 256),
+	spritesheet("platform", "tiles/platform.png", 256, 256),
+	spritesheet("rope", "tiles/rope.png", 256, 256),
+	spritesheet("gold", "tiles/gold.png", 256, 256),
+
+	spritesheet("walls", "castle/walls_128.png", 128, 128),
+	spritesheet("decor", "castle/decor_128.png", 128, 128),
 ];
 
 /* Audios */
@@ -34,6 +34,6 @@ const audios: Audio[] = [
 ];
 
 /* Fonts */
-await loadFont("Game Font", "Sketch.ttf");
+await loadFont("Game Font", "DynaPuff-Medium.ttf");
 
 export { images, spritesheets, audios };
