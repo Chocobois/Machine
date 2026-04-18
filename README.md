@@ -1,4 +1,4 @@
-# Chocobois Game Jam Template
+# Gamedev.js 2026 - Machine
 
 We make game, but faster
 

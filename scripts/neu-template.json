@@ -15,7 +15,7 @@
 	"nativeAllowList": ["app.exit", "window.center"],
 	"modes": {
 		"window": {
-			"title": "Chocobois Game Jam Template",
+			"title": "Machine",
 			"width": 1440,
 			"height": 845,
 			"minWidth": 960,
