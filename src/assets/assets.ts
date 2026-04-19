@@ -7,9 +7,17 @@ export const images: Image[] = [
 	image("square", "square.png"),
 
 	// Tileset
-	image("walls", "castle/walls_16.png"),
-	image("decor", "castle/decor_16.png"),
-	image("colliders", "castle/colliders.png"),
+	image("texture_walls", "castle/walls_16.png"),
+	image("texture_decoration", "castle/decor_16.png"),
+	image("texture_colliders", "castle/colliders.png"),
+
+	// UI
+	image("item_box", "ui/item_box.png"),
+	image("item_cannon", "ui/item_cannon.png"),
+	image("item_ladder", "ui/item_ladder.png"),
+	image("item_rope", "ui/item_rope.png"),
+	image("ui_gold", "ui/ui_gold.png"),
+	image("ui_lives", "ui/ui_lives.png"),
 
 	// Titlescreen
 	image("title_sky", "titlescreen/sky.png"),
@@ -38,4 +46,4 @@ export const audios: Audio[] = [
 export const tilemaps: TileMap[] = [tilemap("level1", "maps/level1.json")];
 
 /* Fonts */
-await loadFont("Game Font", "DynaPuff-Medium.ttf");
+await loadFont("Game Font", "Pixelade.ttf");
