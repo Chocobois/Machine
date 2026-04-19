@@ -77,33 +77,40 @@ export class UIScene extends BaseScene {
 
 		/* Listeners */
 
-		console.log("UIScene.listeners");
-		this.scene
-			.get("GameScene")
-			.events.on("setInventory", (inventory: Inventory) => {
-				this.setInventory(inventory);
-			});
+		const sceneEvents = this.scene.get("GameScene").events;
+		sceneEvents.on("setInventory", this.onSetInventory, this);
+		sceneEvents.on("updateInventory", this.onUpdateInventory, this);
 	}
 
 	update(time: number, delta: number) {
 		this.itemButtons.forEach((itemButton) => itemButton.update(time, delta));
 	}
 
-	setInventory(inventory: Inventory) {
-		console.log("UIScene.setInventory");
+	onSetInventory(inventory: Inventory) {
+		console.log("UIScene.onSetInventory");
 
-		const gap = 0;
-		let itemX = (-(inventory.length - 1) / 2) * UI_SIZE;
+		this.itemButtons.forEach((itemButton) => itemButton.destroy());
+		this.itemButtons = [];
 
-		inventory.forEach((item: InventoryItem) => {
+		inventory.forEach((item: InventoryItem, index: number) => {
+			let itemX = (-(inventory.length - 1) / 2) * UI_SIZE + index * UI_SIZE;
+
 			const itemButton = new ItemButton(this, itemX, 0, UI_SIZE, item);
 			itemButton.on("click", () => {
-				this.events.emit("itemSelect", item);
+				this.events.emit("toggleItem", item, item);
 			});
 
 			this.itemButtons.push(itemButton);
 			this.panel.add(itemButton);
-			itemX += UI_SIZE;
+		});
+	}
+
+	onUpdateInventory(inventory: Inventory) {
+		console.log("UIScene.onUpdateInventory");
+
+		inventory.forEach((item: InventoryItem, index: number) => {
+			const itemButton = this.itemButtons[index];
+			itemButton.selected = !!item.selected;
 		});
 	}
 }

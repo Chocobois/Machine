@@ -4,6 +4,8 @@ import { InventoryItem } from "@/logic/Inventory";
 
 export class ItemButton extends Button {
 	public scene: BaseScene;
+	public item: InventoryItem;
+	public selected = false;
 
 	private background: Phaser.GameObjects.Image;
 	private itemIcon: Phaser.GameObjects.Image;
@@ -19,6 +21,7 @@ export class ItemButton extends Button {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
+		this.item = item;
 
 		this.background = this.scene.add.image(0, 0, "item_box");
 		this.background.setScale(size / this.background.width);
@@ -46,8 +49,8 @@ export class ItemButton extends Button {
 	}
 
 	update(time: number, delta: number) {
-        this.setScale(1.0 - 0.1 * this.holdSmooth);
-		this.background.setTint(this.hold ? 0xffcc00 : 0xffffff);
+		this.setScale(1.0 - 0.1 * this.holdSmooth);
+		this.background.setTint(this.hold || this.selected ? 0xffcc00 : 0xffffff);
 	}
 
 	setHighlight() {
