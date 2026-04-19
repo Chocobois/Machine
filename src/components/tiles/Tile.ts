@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
+import { BaseTile } from "./BaseTile";
 
-export enum Type {
+export enum Tile {
 	None,
 	Wall,
 	Platform,
@@ -22,11 +23,11 @@ export type NeighborTiles = {
 };
 
 export type NeighborTypes = {
-	center: Type;
-	up: Type;
-	down: Type;
-	left: Type;
-	right: Type;
+	center: Tile;
+	up: Tile;
+	down: Tile;
+	left: Tile;
+	right: Tile;
 };
 
 export const SIZE = 256;
@@ -43,33 +44,4 @@ export function tileToCoord({ tileX, tileY }: TileCoord): Phaser.Math.Vector2 {
 		tileX * SIZE + SIZE / 2,
 		tileY * SIZE + SIZE / 2,
 	);
-}
-
-export abstract class BaseTile extends Phaser.GameObjects.Container {
-	public scene: GameScene;
-	public tile: Type = Type.None;
-	public tileX: number = 0;
-	public tileY: number = 0;
-
-	protected sprite: Phaser.GameObjects.Sprite;
-
-	constructor(scene: GameScene, tileX: number, tileY: number) {
-		const { x, y } = tileToCoord({ tileX, tileY });
-		super(scene, x, y);
-		scene.add.existing(this);
-		this.scene = scene;
-		this.tileX = tileX;
-		this.tileY = tileY;
-
-		this.sprite = this.scene.add.sprite(0, 0, "blank", 0);
-		this.add(this.sprite);
-	}
-
-	update(time: number, delta: number) {}
-
-	abstract updateSprite(neighbors: NeighborTypes): void;
-
-	get tileCoord(): TileCoord {
-		return { tileX: this.tileX, tileY: this.tileY };
-	}
 }

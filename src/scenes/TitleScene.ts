@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Music } from "@/components/Music";
+import { Music } from "@/logic/Music";
 
 import { title, version } from "@/version.json";
 

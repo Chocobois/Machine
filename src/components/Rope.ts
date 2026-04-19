@@ -1,11 +1,11 @@
 import { GameScene } from "@/scenes/GameScene";
-import { NeighborTypes, SIZE, TileCoord, Type } from "@/components/tiles/Tile";
+import { NeighborTypes, SIZE, TileCoord, Tile } from "@/components/tiles/Tile";
 
 export class Rope {
 	public sprite: Phaser.GameObjects.Sprite;
 	public tileX: number;
 	public tileY: number;
-	public tile: Type = Type.Rope;
+	public tile: Tile = Tile.Rope;
 	private scene: GameScene;
 
 	constructor(scene: GameScene, tileX: number, tileY: number) {
@@ -26,12 +26,12 @@ export class Rope {
 	updateSprite({ center, up, down }: NeighborTypes): void {
 		const index =
 			3 *
-				(up == Type.Wall || center == Type.Platform
+				(up == Tile.Wall || center == Tile.Platform
 					? 0
-					: up == Type.Rope
+					: up == Tile.Rope
 						? 1
 						: 2) +
-			(down == Type.Wall || down == Type.Platform ? 0 : down == Type.Rope ? 1 : 2);
+			(down == Tile.Wall || down == Tile.Platform ? 0 : down == Tile.Rope ? 1 : 2);
 		this.sprite.setFrame(index);
 	}
 
