@@ -2,6 +2,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { Music } from "@/logic/Music";
 
 import { title, version } from "@/version.json";
+import { MainMenuKobot } from "@/components/MainMenuKobot";
 
 const creditsLeft = `${title} 
 
@@ -19,11 +20,10 @@ export class TitleScene extends BaseScene {
 	public sky: Phaser.GameObjects.Image;
 	public background: Phaser.GameObjects.Image;
 	public foreground: Phaser.GameObjects.Image;
-	public character: Phaser.GameObjects.Image;
+	public logo: Phaser.GameObjects.Image;
+	public taptoplay: Phaser.GameObjects.Image;
 
 	public credits: Phaser.GameObjects.Container;
-	public title: Phaser.GameObjects.Text;
-	public subtitle: Phaser.GameObjects.Text;
 	public tap: Phaser.GameObjects.Text;
 	public version: Phaser.GameObjects.Text;
 
@@ -33,6 +33,8 @@ export class TitleScene extends BaseScene {
 
 	public isStarting: boolean;
 
+	public bots: MainMenuKobot[];
+
 	constructor() {
 		super({ key: "TitleScene" });
 	}
@@ -41,49 +43,50 @@ export class TitleScene extends BaseScene {
 		this.fade(false, 200, 0x000000);
 
 		this.sky = this.add.image(this.CX, this.CY, "title_sky");
+		this.background = this.add.image(0, 0, "title_background").setOrigin(0);
+		this.foreground = this.add.image(0, 0, "title_foreground").setOrigin(0).setDepth(10);
+		this.logo = this.add.image(70, 100, "title_logo").setOrigin(0, 0.5);
+		this.taptoplay = this.add.image(110, 350, "title_taptoplay").setOrigin(0);
+
 		this.containToScreen(this.sky);
-		this.background = this.add.image(
-			this.CX,
-			0.9 * this.CY,
-			"title_background"
-		);
 		this.containToScreen(this.background);
-		this.foreground = this.add.image(this.CX, this.CY, "title_foreground");
 		this.containToScreen(this.foreground);
-		this.character = this.add.image(this.CX, this.CY, "title_character");
-		this.containToScreen(this.character);
+		this.logo.y += 9000
+		this.taptoplay.y += 9000
 
 		this.background.setVisible(false);
 		this.background.setAlpha(0);
-		this.background.y += 4000;
-		this.foreground.y += 1000;
-		this.character.y += 1000;
 
-		this.title = this.addText({
-			x: 0.25 * this.W,
-			y: 0.7 * this.H,
-			size: 160,
-			color: "#000",
-			text: "Game Title",
-		});
-		this.title.setOrigin(0.5);
-		this.title.setStroke("#FFF", 8);
-		this.title.setPadding(2);
-		this.title.setVisible(false);
-		this.title.setAlpha(0);
+		this.bots = [];
+		for(let i = 0; i < 10; i++)
+		{
+			this.addEvent(2000 + 1000 * i, () => {
+				let bot = new MainMenuKobot(this)
+				bot.move();
+				this.bots.push(bot);
+			})
+		}
 
-		this.subtitle = this.addText({
-			x: 0.25 * this.W,
-			y: 0.87 * this.H,
-			size: 120,
-			color: "#000",
-			text: "Tap to start",
-		});
-		this.subtitle.setOrigin(0.5);
-		this.subtitle.setStroke("#FFF", 3);
-		this.subtitle.setPadding(2);
-		this.subtitle.setVisible(false);
-		this.subtitle.setAlpha(0);
+		this.tweens.add({
+			targets: [this.background, this.foreground],
+			y: {from: 1000, to: 0},
+			duration: 2000,
+			ease: Phaser.Math.Easing.Cubic.Out
+		})
+		this.tweens.add({
+			targets: [this.logo],
+			y: {from: 1170, to: 170},
+			duration: 2000,
+			delay: 400,
+			ease: Phaser.Math.Easing.Cubic.Out
+		})
+		this.tweens.add({
+			targets: [this.taptoplay],
+			y: {from: 1350, to: 350},
+			duration: 2000,
+			delay: 400,
+			ease: Phaser.Math.Easing.Cubic.Out
+		})
 
 		this.tap = this.addText({
 			x: this.CX,
@@ -167,17 +170,11 @@ export class TitleScene extends BaseScene {
 
 	update(time: number, delta: number) {
 		if (this.background.visible) {
-			this.background.y += 0.02 * (this.CY - this.background.y);
-			this.foreground.y += 0.025 * (this.CY - this.foreground.y);
-			this.character.y += 0.02 * (this.CY - this.character.y);
+			this.logo.setOrigin(0, 0.5 + Math.sin((time / 2000) * Math.PI) * 0.05)
+			this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1 && time > 2200
 
 			this.background.alpha += 0.03 * (1 - this.background.alpha);
-			this.character.scaleX = Math.sin((3 * time) / 1000);
 
-			this.title.alpha +=
-				0.02 * ((this.title.visible ? 1 : 0) - this.title.alpha);
-			this.subtitle.alpha +=
-				0.02 * ((this.subtitle.visible ? 1 : 0) - this.subtitle.alpha);
 			this.version.alpha +=
 				0.02 * ((this.version.visible ? 1 : 0) - this.version.alpha);
 
@@ -192,22 +189,12 @@ export class TitleScene extends BaseScene {
 				this.tap.setVisible(false);
 			}
 		}
-
-		this.subtitle.setScale(1 + 0.02 * Math.sin((5 * time) / 1000));
-
-		if (this.isStarting) {
-			this.subtitle.setAlpha(0.6 + 0.4 * Math.sin((50 * time) / 1000));
-		}
+		this.bots.forEach(bot => bot.update(time, delta));
 	}
 
 	progress() {
 		if (!this.background.visible) {
 			this.onBar(1);
-		} else if (!this.subtitle.visible) {
-			this.title.setVisible(true);
-			this.title.setAlpha(1);
-			this.subtitle.setVisible(true);
-			this.subtitle.setAlpha(1);
 		} else if (!this.isStarting) {
 			this.sound.play("t_rustle", { volume: 0.3 });
 			// this.sound.play("m_slice", { volume: 0.3 });
@@ -227,11 +214,7 @@ export class TitleScene extends BaseScene {
 	}
 
 	onBar(bar: number) {
-		if (bar >= 2) {
-			this.title.setVisible(true);
-		}
 		if (bar >= 4) {
-			this.subtitle.setVisible(true);
 			this.credits.setVisible(true);
 		}
 	}

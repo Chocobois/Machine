@@ -24,11 +24,14 @@ export const images: Image[] = [
 	image("title_background", "titlescreen/background.png"),
 	image("title_foreground", "titlescreen/foreground.png"),
 	image("title_character", "titlescreen/character.png"),
+	image("title_logo", "titlescreen/logo.png"),
+	image("title_taptoplay", "titlescreen/taptoplay.png")
 ];
 
 /* Spritesheets */
 export const spritesheets: SpriteSheet[] = [
 	spritesheet("player", "characters/player.png", 256, 256),
+	spritesheet("mainmenukobot", "characters/tilekit_kobots.png", 32, 32),
 	spritesheet("wall", "tiles/wall.png", 256, 256),
 	spritesheet("platform", "tiles/platform.png", 256, 256),
 	spritesheet("rope", "tiles/rope.png", 256, 256),
