@@ -4,7 +4,7 @@
  <tileset firstgid="6" source="../tilesets/colliders.tsx"/>
  <tileset firstgid="38" source="../tilesets/castle_decor.tsx"/>
  <tileset firstgid="62" source="../tilesets/castle_walls.tsx"/>
- <layer id="1" name="input_walls_physics" width="30" height="20">
+ <layer id="1" name="input_layer_walls_physics" width="30" height="20">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,14,14,0,4,4,0,14,4,0,4,14,0,0,14,15,0,15,14,0,0,0,0,0,0,0,0,0,0,0,
@@ -28,7 +28,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="2" name="output_walls_visual" width="30" height="20">
+ <layer id="2" name="output_layer_walls_visual" width="30" height="20">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,72,0,0,86,0,0,70,0,0,88,0,0,0,64,0,0,71,0,0,0,0,0,0,0,0,0,0,0,0,
