@@ -40,7 +40,7 @@ const BundleWinApp = () => {
     { lang: 1033, codepage: 1200 },
     {
       FileDescription: description,
-      ProductName: `${title} by ${team}`,
+      ProductName: title,
       ProductVersion: git_version,
       CompanyName: team,
     }

@@ -117,7 +117,7 @@
             67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":20,
-         "id":32,
+         "id":35,
          "name":"walls_visual",
          "opacity":1,
          "type":"tilelayer",
@@ -126,7 +126,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":35,
+ "nextlayerid":36,
  "nextobjectid":11,
  "orientation":"orthogonal",
  "renderorder":"right-down",
@@ -245,7 +245,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"Platform"
                         }]
                 }, 
                 {
