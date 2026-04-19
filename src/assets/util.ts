@@ -17,6 +17,11 @@ export interface Audio {
 	rate?: number;
 }
 
+export interface TileMap {
+	key: string;
+	path: string;
+}
+
 const imageGlob = import.meta.glob<string>("./images/**/*.png", {
 	query: "?url",
 	import: "default",
@@ -75,4 +80,13 @@ export const loadFont = async (key: string, path: string) => {
 	});
 	await face.load();
 	document.fonts.add(face);
+};
+
+const tilemapGlob = import.meta.glob<string>("./tiled/**/*.json", {
+	query: "?url",
+	import: "default",
+	eager: true,
+});
+export const tilemap = (key: string, path: string): TileMap => {
+	return { key, path: tilemapGlob[`./tiled/${path}`] };
 };

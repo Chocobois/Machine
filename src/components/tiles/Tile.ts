@@ -5,7 +5,10 @@ export enum Type {
 	Wall,
 	Platform,
 	Rope,
+	Climb,
 	Gold,
+	Home,
+	Death,
 }
 
 export type TileCoord = { tileX: number; tileY: number };

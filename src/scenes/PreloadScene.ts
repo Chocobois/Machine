@@ -1,5 +1,5 @@
 import { BaseScene } from "./BaseScene";
-import { images, spritesheets, audios } from "@/assets/assets";
+import { images, spritesheets, audios, tilemaps } from "@/assets/assets";
 import { GrayScalePostFilter } from "@/pipelines/GrayScalePostFilter";
 import { BlurPostFilter } from "@/pipelines/BlurPostFilter";
 import BendWaves from "@/pipelines/BendWavesPostFX";
@@ -17,7 +17,7 @@ export class PreloadScene extends BaseScene {
 		if (renderer.pipelines) {
 			renderer.pipelines.addPostPipeline(
 				"GrayScalePostFilter",
-				GrayScalePostFilter
+				GrayScalePostFilter,
 			);
 			renderer.pipelines.addPostPipeline("BlurPostFilter", BlurPostFilter);
 			renderer.pipelines.addPostPipeline("BendWaves", BendWaves);
@@ -70,6 +70,10 @@ export class PreloadScene extends BaseScene {
 
 		for (let audio of audios) {
 			this.load.audio(audio.key, audio.path);
+		}
+
+		for (let tilemap of tilemaps) {
+			this.load.tilemapTiledJSON(tilemap.key, tilemap.path);
 		}
 	}
 

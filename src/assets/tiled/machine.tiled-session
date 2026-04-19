@@ -45,16 +45,16 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 238.5,
-                "y": 154.75
+                "x": 196,
+                "y": 172.25
             }
         },
         "rules/AutoTileRules.tmx": {
             "scale": 3,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 229.83333333333331,
-                "y": 159.83333333333334
+                "x": 154.33333333333331,
+                "y": 106.33333333333331
             }
         },
         "tilesets/castle_decor.tsx": {
@@ -67,28 +67,31 @@
         },
         "tilesets/colliders.tsx": {
             "scaleInDock": 2,
-            "scaleInEditor": 1
+            "scaleInEditor": 11
         },
         "tilesets/collision.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         }
     },
+    "last.exportedFilePath": "/home/mange61/Work/Machine/src/assets/tiled/maps",
     "last.externalTilesetPath": "/home/mange61/Work/Machine/src/assets/tiled/tilesets",
     "last.imagePath": "/home/mange61/Work/Machine/src/assets/images/castle",
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
         "maps/level1.tmx",
-        "rules/AutoTileRules.tmx"
+        "rules/AutoTileRules.tmx",
+        "tilesets/colliders.tsx"
     ],
     "project": "machine.tiled-project",
     "recentFiles": [
+        "tilesets/colliders.tsx",
         "rules/AutoTileRules.tmx",
         "maps/level1.tmx",
         "tilesets/castle_walls.tsx",
-        "tilesets/colliders.tsx",
         "tilesets/castle_decor.tsx",
         "tilesets/collision.tsx",
         "level1.tmx",
@@ -96,6 +99,7 @@
         "collision.tsx",
         "castle_decor.tsx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,

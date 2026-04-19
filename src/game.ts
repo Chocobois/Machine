@@ -12,10 +12,11 @@ configure({
 export async function Game() {
 	const config: Phaser.Types.Core.GameConfig = {
 		type: Phaser.WEBGL,
-		width: 1920/1,
-		height: 1080/1,
-		mipmapFilter: "LINEAR_MIPMAP_LINEAR",
-		roundPixels: false,
+		width: 1920,
+		height: 1080,
+		// mipmapFilter: "LINEAR_MIPMAP_LINEAR",
+		// roundPixels: false,
+		// pixelArt: true,
 		scale: {
 			mode: Phaser.Scale.FIT,
 		},
