@@ -14,6 +14,7 @@ export type ItemKey = keyof typeof items;
 export interface InventoryItem {
 	item: Item;
 	amount: number;
+	selected?: boolean;
 }
 
 export type Inventory = InventoryItem[];

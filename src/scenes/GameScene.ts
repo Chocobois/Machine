@@ -12,6 +12,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { Inventory, InventoryItem, items } from "@/logic/Inventory";
 import { Level, levels } from "@/logic/levels";
 import { UI_HEIGHT } from "./UIScene";
+import { Cursor } from "@/components/Cursor";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -30,7 +31,7 @@ export class GameScene extends BaseScene {
 	private inputMode: InputMode;
 	private isDraggingCamera = false;
 	private lastPointerPosition = new Phaser.Math.Vector2();
-	private cursor: Phaser.GameObjects.Image;
+	private cursor: Cursor;
 
 	private inventory: InventoryItem[] = [];
 
@@ -56,6 +57,7 @@ export class GameScene extends BaseScene {
 		this.setupListeners();
 		this.setupInput();
 		this.setupCamera();
+
 		this.setInputMode(InputMode.Camera);
 	}
 
@@ -68,7 +70,6 @@ export class GameScene extends BaseScene {
 			amount: item.amount,
 		}));
 
-		console.log("GameScene.emit");
 		this.events.emit("setInventory", this.inventory);
 	}
 
@@ -258,13 +259,7 @@ export class GameScene extends BaseScene {
 	}
 
 	setupListeners() {
-		this.scene.get("UIScene").events.on(
-			"itemSelect",
-			(item: InventoryItem) => {
-				console.log(item);
-			},
-			this,
-		);
+		this.scene.get("UIScene").events.on("toggleItem", this.onToggleItem, this);
 	}
 
 	setupInput() {
@@ -273,13 +268,7 @@ export class GameScene extends BaseScene {
 		this.input.on("pointerupoutside", this.onPointerUp, this);
 		this.input.on("pointermove", this.onPointerMove, this);
 
-		this.cursor = this.add
-			.image(0, 0, "square", 0)
-			.setTint(0xffff00)
-			.setAlpha(0.25)
-			.setOrigin(0.5, 0.5)
-			.setDepth(100)
-			.setVisible(false);
+		this.cursor = new Cursor(this).setDepth(100);
 	}
 
 	private onPointerDown(pointer: Phaser.Input.Pointer): void {
@@ -360,4 +349,21 @@ export class GameScene extends BaseScene {
 	// get tiles(): Tile[][] {
 	// 	return this.tileManager.tiles;
 	// }
+
+	onToggleItem(item: InventoryItem) {
+		console.log("GameScene.onToggleItem");
+		if (this.inputMode == InputMode.Cutscene) return;
+
+		if (item.selected) {
+			item.selected = false;
+			this.setInputMode(InputMode.Camera);
+		} else {
+			this.inventory.forEach((item) => (item.selected = false));
+			item.selected = true;
+			this.cursor.setIcon(item.item.image);
+			this.setInputMode(InputMode.Build);
+		}
+
+		this.events.emit("updateInventory", this.inventory);
+	}
 }

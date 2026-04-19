@@ -1,4 +1,4 @@
-# Gamedev.js 2026 - Machine
+# Gamedev.js 2026 - Kobots
 
 We make game, but faster
 

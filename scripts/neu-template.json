@@ -15,7 +15,7 @@
 	"nativeAllowList": ["app.exit", "window.center"],
 	"modes": {
 		"window": {
-			"title": "Machine",
+			"title": "Kobots",
 			"width": 1440,
 			"height": 845,
 			"minWidth": 960,
