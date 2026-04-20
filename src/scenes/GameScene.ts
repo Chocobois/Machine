@@ -1,18 +1,23 @@
 import { Player } from "@/components/Player";
-import { Rope } from "@/components/Rope";
 import { TILE_UPSCALE, TileManager } from "@/logic/TileManager";
 import {
 	SIZE,
 	Tile,
 	tileToCoord,
-	NeighborTypes,
+	NeighborTiles,
 	TileCoord,
 } from "@/components/tiles/Tile";
 import { BaseScene } from "@/scenes/BaseScene";
-import { Inventory, InventoryItem, items } from "@/logic/Inventory";
-import { Level, levels } from "@/logic/levels";
+import { Inventory, InventoryItem } from "@/logic/Inventory";
+import { LevelKey, levels } from "@/logic/levels";
 import { UI_HEIGHT } from "./UIScene";
 import { Cursor } from "@/components/Cursor";
+import { Item, ItemKey } from "@/logic/Item";
+
+import { Entity } from "@/components/tiles/Entity";
+import { Rope } from "@/components/Rope";
+import { Gold } from "@/components/tiles/Gold";
+import { Stairs } from "@/components/tiles/Stairs";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -33,7 +38,7 @@ export class GameScene extends BaseScene {
 	private lastPointerPosition = new Phaser.Math.Vector2();
 	private cursor: Cursor;
 
-	private inventory: InventoryItem[] = [];
+	private inventory: Inventory = [];
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -44,7 +49,7 @@ export class GameScene extends BaseScene {
 		this.cameras.main.setBackgroundColor(0x63ad9d);
 
 		this.tileManager = new TileManager(this);
-		this.loadLevel(levels.level1);
+		this.loadLevel("level1");
 
 		for (let i = 0; i < 10; i++) {
 			this.addEvent(400 * i, () => {
@@ -61,16 +66,29 @@ export class GameScene extends BaseScene {
 		this.setInputMode(InputMode.Camera);
 	}
 
-	loadLevel(level: Level) {
-		this.tileManager.loadTilemap(level.tilemapKey);
+	loadLevel(key: LevelKey) {
+		this.tileManager.loadTilemap(key);
 
-		// Copy inventory to avoid mutation
-		this.inventory = level.inventory.map((item) => ({
-			item: item.item,
-			amount: item.amount,
-		}));
+		// Shallow copy inventory to avoid mutation
+		this.inventory = levels[key].inventory.map((item) => ({ ...item }));
 
 		this.events.emit("setInventory", this.inventory);
+	}
+
+	canUseItem(tileCoord: TileCoord): boolean {
+		const item = this.selectedItem;
+		if (!item) return false;
+		if (item.amount <= 0) return false;
+
+		const neighbors = this.getNeighborTiles(tileCoord);
+
+		return Item[item.itemKey].allowedPlacements.some((rule) => {
+			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
+				([dir, requiredTile]) => {
+					return neighbors[dir] === requiredTile;
+				},
+			);
+		});
 	}
 
 	update(time: number, delta: number) {
@@ -81,14 +99,7 @@ export class GameScene extends BaseScene {
 		const mouseTile = this.mouseTileCoord;
 		const { x: mx, y: my } = tileToCoord(mouseTile);
 		this.cursor.setPosition(mx, my);
-
-		// Update cursor color based on rope placement validity
-		// const canPlace = this.canPlaceRope(mouseTile);
-		// if (canPlace) {
-		// 	this.cursor.setTint(0x00ff00); // Green for valid
-		// } else {
-		// 	this.cursor.setTint(0xff0000); // Red for invalid
-		// }
+		this.cursor.setAllowed(this.canUseItem(mouseTile));
 
 		// Handle dragging to extend/remove rope
 		if (this.pressedTile && this.input.activePointer.isDown) {
@@ -126,12 +137,8 @@ export class GameScene extends BaseScene {
 		}
 	}
 
-	getNeighborTypes({ tileX, tileY }: TileCoord): NeighborTypes {
+	getNeighborTiles({ tileX, tileY }: TileCoord): NeighborTiles {
 		const getType = (x: number, y: number): Tile => {
-			// const entity = this.entities[y]?.[x];
-			// if (entity) {
-			// 	return entity.tile;
-			// }
 			return this.tileManager.getTileAt({ tileX: x, tileY: y });
 		};
 
@@ -149,7 +156,7 @@ export class GameScene extends BaseScene {
 		this.players.push(player);
 
 		player.on("neighbors", () => {
-			const neighbors = this.getNeighborTypes(player.tileCoord);
+			const neighbors = this.getNeighborTiles(player.tileCoord);
 			player.updateAction(neighbors);
 		});
 		player.setTile({ tileX, tileY });
@@ -170,22 +177,16 @@ export class GameScene extends BaseScene {
 	// 	return this.entities[tileY]?.[tileX] instanceof Rope;
 	// }
 
-	// canPlaceRope({ tileX, tileY }: TileCoord): boolean {
-	// 	// Can't place rope where rope already exists
-	// 	if (this.isRopeAt({ tileX, tileY })) {
-	// 		return true;
-	// 	}
-
-	// 	const center = this.tiles[tileY]?.[tileX] ?? Tile.None;
-	// 	const up = this.tiles[tileY - 1]?.[tileX] ?? Tile.None;
+	// 	const center = this.tiles[tileY]?.[tileX] ?? "None";
+	// 	const up = this.tiles[tileY - 1]?.[tileX] ?? "None";
 
 	// 	// Valid: Type.None with Type.Wall above
-	// 	if (center === Tile.None && up === Tile.Wall) {
+	// 	if (center === "None" && up === "Wall") {
 	// 		return true;
 	// 	}
 
 	// 	// Valid: Type.Platform (center is Platform)
-	// 	if (center === Tile.Platform) {
+	// 	if (center === "Platform") {
 	// 		return true;
 	// 	}
 
@@ -193,21 +194,21 @@ export class GameScene extends BaseScene {
 	// }
 
 	// public getRopeNeighborTypes({ tileX, tileY }: TileCoord): NeighborTypes {
-	// 	const tileUp = this.tiles[tileY - 1]?.[tileX] ?? Tile.None;
-	// 	const tileDown = this.tiles[tileY + 1]?.[tileX] ?? Tile.None;
+	// 	const tileUp = this.tiles[tileY - 1]?.[tileX] ?? "None";
+	// 	const tileDown = this.tiles[tileY + 1]?.[tileX] ?? "None";
 	// 	const ropeUp = this.isRopeAt({ tileX, tileY: tileY - 1 })
-	// 		? Tile.Rope
-	// 		: Tile.None;
+	// 		? "Rope"
+	// 		: "None";
 	// 	const ropeDown = this.isRopeAt({ tileX, tileY: tileY + 1 })
-	// 		? Tile.Rope
-	// 		: Tile.None;
+	// 		? "Rope"
+	// 		: "None";
 
 	// 	return {
-	// 		center: Tile.Rope,
-	// 		up: ropeUp !== Tile.None ? ropeUp : tileUp,
-	// 		down: ropeDown !== Tile.None ? ropeDown : tileDown,
-	// 		left: Tile.None,
-	// 		right: Tile.None,
+	// 		center: "Rope",
+	// 		up: ropeUp !== "None" ? ropeUp : tileUp,
+	// 		down: ropeDown !== "None" ? ropeDown : tileDown,
+	// 		left: "None",
+	// 		right: "None",
 	// 	};
 	// }
 
@@ -272,19 +273,43 @@ export class GameScene extends BaseScene {
 	}
 
 	private onPointerDown(pointer: Phaser.Input.Pointer): void {
-		// Ignore if in build mode
-		if (this.inputMode != InputMode.Camera) return;
+		if (this.inputMode == InputMode.Camera) {
+			this.isDraggingCamera = true;
+			this.lastPointerPosition.set(pointer.x, pointer.y);
+		} else if (this.inputMode == InputMode.Build) {
+			const item = this.selectedItem;
+			if (item) {
+				const tileCoord = this.mouseTileCoord;
 
-		this.isDraggingCamera = true;
-		this.lastPointerPosition.set(pointer.x, pointer.y);
+				if (this.canUseItem(tileCoord)) {
+					const entity = this.createEntityFromItem(item.itemKey, tileCoord);
+					// this.tileManager.addEntity();
 
-		// 	const tileCoord = this.mouseTileCoord;
-		// 	const tileType = this.tileManager.getTileAt(tileCoord);
-		// if (this.canPlaceRope(tileCoord)) {
-		// 	this.pressedTile = { tileCoord, tileType };
-		// 	this.createRope(tileCoord);
-		// 	this.previousTile = { tileCoord, tileType };
-		// }
+					item.amount -= 1;
+					this.events.emit("setInventory", this.inventory);
+				}
+
+				// 	const tileType = this.tileManager.getTileAt(tileCoord);
+				// if (this.canPlaceRope(tileCoord)) {
+				// 	this.pressedTile = { tileCoord, tileType };
+				// 	this.createRope(tileCoord);
+				// 	this.previousTile = { tileCoord, tileType };
+				// }
+			}
+		}
+	}
+
+	createEntityFromItem(key: ItemKey, tileCoord: TileCoord): Entity {
+		switch (key) {
+			case "Rope":
+				return new Rope(this, tileCoord);
+			case "Gold":
+				return new Gold(this, tileCoord);
+			case "Stairs":
+			case "Cannon":
+			case "Ladder":
+				return new Stairs(this, tileCoord);
+		}
 	}
 
 	private onPointerUp(pointer: Phaser.Input.Pointer): void {
@@ -293,7 +318,7 @@ export class GameScene extends BaseScene {
 		// 	if (this.pressedTile) {
 		// 		// Delete rope if: started on rope, didn't move
 		// 		if (
-		// 			this.pressedTile.tileType === Tile.Rope &&
+		// 			this.pressedTile.tileType === "Rope" &&
 		// 			this.previousTile === null
 		// 		) {
 		// 			this.deleteRopeRecursive(this.pressedTile.tileCoord);
@@ -331,27 +356,15 @@ export class GameScene extends BaseScene {
 			worldHeight * TILE_UPSCALE + UI_HEIGHT / zoomLevel - 16 * TILE_UPSCALE,
 		);
 		this.cameras.main.setZoom(zoomLevel);
-
-		// Center camera on level
-		// this.cameras.main.centerOn(
-		// 	(this.width * SIZE) / 2,
-		// 	(this.height * SIZE) / 2,
-		// );
-		// // Zoom to fit the entire level
-		// const zoom = Math.min(
-		// 	this.W / (this.width * SIZE),
-		// 	this.H / (this.height * SIZE),
-		// );
-		// this.cameras.main.zoomTo(zoom, 0);
-		// this.cameras.main.zoomTo(0.3, 0);
 	}
 
 	// get tiles(): Tile[][] {
 	// 	return this.tileManager.tiles;
 	// }
 
+	/* Inventory */
+
 	onToggleItem(item: InventoryItem) {
-		console.log("GameScene.onToggleItem");
 		if (this.inputMode == InputMode.Cutscene) return;
 
 		if (item.selected) {
@@ -360,10 +373,14 @@ export class GameScene extends BaseScene {
 		} else {
 			this.inventory.forEach((item) => (item.selected = false));
 			item.selected = true;
-			this.cursor.setIcon(item.item.image);
+			this.cursor.setIcon(Item[item.itemKey].image);
 			this.setInputMode(InputMode.Build);
 		}
 
 		this.events.emit("updateInventory", this.inventory);
+	}
+
+	get selectedItem(): InventoryItem | undefined {
+		return this.inventory.find((item) => !!item.selected);
 	}
 }

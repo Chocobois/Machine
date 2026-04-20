@@ -1,6 +1,6 @@
 import { GameScene } from "@/scenes/GameScene";
 import {
-	NeighborTypes,
+	NeighborTiles,
 	SIZE,
 	Tile,
 	TileCoord,
@@ -63,32 +63,32 @@ export class Player extends Phaser.GameObjects.Container {
 		this.emit("neighbors");
 	}
 
-	updateAction({ center, up, down, left, right }: NeighborTypes) {
-		if (center == Tile.Rope) {
-			if (up == Tile.Rope) {
+	updateAction({ center, up, down, left, right }: NeighborTiles) {
+		if (center == "Rope") {
+			if (up == "Rope") {
 				return this.setClimb();
 			} else {
 				return this.setWalk(this.facingRight ? 1 : -1);
 			}
 		}
 
-		if (down == Tile.None) {
+		if (down == "None") {
 			return this.setFall();
 		}
 
 		if (this.facingRight) {
-			if (right != Tile.Wall) {
+			if (right != "Wall") {
 				return this.setWalk(1);
-			} else if (left != Tile.Wall) {
+			} else if (left != "Wall") {
 				this.facingRight = false;
 				return this.setWalk(-1);
 			} else {
 				return this.setIdle();
 			}
 		} else {
-			if (left != Tile.Wall) {
+			if (left != "Wall") {
 				return this.setWalk(-1);
-			} else if (right != Tile.Wall) {
+			} else if (right != "Wall") {
 				this.facingRight = true;
 				return this.setWalk(1);
 			} else {

@@ -1,19 +1,33 @@
-import { Inventory, items } from "./Inventory";
+import { tilemap } from "@/assets/util";
+import { Inventory } from "./Inventory";
 
-export interface Level {
-	tilemapKey: string;
+type LevelDef = {
 	title: string;
 	inventory: Inventory;
-}
+};
 
 export const levels = {
 	level1: {
-		tilemapKey: "level1",
 		title: "Level 1",
 		inventory: [
-			{ item: items.Cannon, amount: 1 },
-			{ item: items.Ladder, amount: 2 },
-			{ item: items.Rope, amount: 3 },
+			{ itemKey: "Stairs", amount: 1 },
+			{ itemKey: "Ladder", amount: 2 },
+			{ itemKey: "Rope", amount: 3 },
 		],
 	},
-} as const satisfies { [key: string]: Level };
+	level2: {
+		title: "Level 2",
+		inventory: [
+			{ itemKey: "Cannon", amount: 1 },
+			{ itemKey: "Ladder", amount: 2 },
+			{ itemKey: "Rope", amount: 3 },
+		],
+	},
+} as const satisfies { [key: string]: LevelDef };
+
+export type LevelKey = keyof typeof levels;
+
+export const tilemaps: { [key in LevelKey]: string } = {
+	level1: tilemap(`maps/level1.json`),
+	level2: tilemap(`maps/level2.json`),
+};

@@ -1,5 +1,6 @@
 import { BaseScene } from "./BaseScene";
-import { images, spritesheets, audios, tilemaps } from "@/assets/assets";
+import { images, spritesheets, audios } from "@/assets/assets";
+import { LevelKey, tilemaps } from "@/logic/levels";
 import { GrayScalePostFilter } from "@/pipelines/GrayScalePostFilter";
 import { BlurPostFilter } from "@/pipelines/BlurPostFilter";
 import BendWaves from "@/pipelines/BendWavesPostFX";
@@ -72,8 +73,9 @@ export class PreloadScene extends BaseScene {
 			this.load.audio(audio.key, audio.path);
 		}
 
-		for (let tilemap of tilemaps) {
-			this.load.tilemapTiledJSON(tilemap.key, tilemap.path);
+		for (const key in tilemaps) {
+			const path = tilemaps[key as LevelKey];
+			this.load.tilemapTiledJSON(key, path);
 		}
 	}
 

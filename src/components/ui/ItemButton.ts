@@ -1,6 +1,7 @@
 import { BaseScene } from "@/scenes/BaseScene";
 import { Button } from "./Button";
 import { InventoryItem } from "@/logic/Inventory";
+import { Item } from "@/logic/Item";
 
 export class ItemButton extends Button {
 	public scene: BaseScene;
@@ -27,8 +28,8 @@ export class ItemButton extends Button {
 		this.background.setScale(size / this.background.width);
 		this.add(this.background);
 
-		this.itemIcon = this.scene.add.image(0, 0, item.item.image);
-		this.itemIcon.setScale(size / this.itemIcon.width);
+		this.itemIcon = this.scene.add.image(0, 0, Item[item.itemKey].image);
+		this.itemIcon.setScale((0.8 * size) / this.itemIcon.width);
 		this.add(this.itemIcon);
 
 		this.countText = this.scene

@@ -1,4 +1,4 @@
-import { Image, SpriteSheet, Audio, TileMap, tilemap } from "./util";
+import { Image, SpriteSheet, Audio } from "./util";
 import { image, sound, music, loadFont, spritesheet } from "./util";
 
 /* Images */
@@ -11,11 +11,17 @@ export const images: Image[] = [
 	image("texture_decoration", "castle/decor_16.png"),
 	image("texture_colliders", "castle/colliders.png"),
 
+	// Entities
+	image("gold", "tiles/gold.png"),
+	image("stairs", "tiles/stairs.png"),
+	image("spikes", "tiles/spikes.png"),
+
 	// UI
 	image("item_box", "ui/item_box.png"),
 	image("item_cannon", "ui/item_cannon.png"),
 	image("item_ladder", "ui/item_ladder.png"),
 	image("item_rope", "ui/item_rope.png"),
+	image("item_stairs", "ui/item_stairs.png"),
 	image("ui_gold", "ui/ui_gold.png"),
 	image("ui_lives", "ui/ui_lives.png"),
 
@@ -32,7 +38,6 @@ export const spritesheets: SpriteSheet[] = [
 	spritesheet("wall", "tiles/wall.png", 256, 256),
 	spritesheet("platform", "tiles/platform.png", 256, 256),
 	spritesheet("rope", "tiles/rope.png", 256, 256),
-	spritesheet("gold", "tiles/gold.png", 256, 256),
 ];
 
 /* Audios */
@@ -41,9 +46,6 @@ export const audios: Audio[] = [
 	music("m_first", "first.mp3"),
 	sound("t_rustle", "tree/rustle.mp3", 0.5),
 ];
-
-/* Tilemaps */
-export const tilemaps: TileMap[] = [tilemap("level1", "maps/level1.json")];
 
 /* Fonts */
 await loadFont("Game Font", "Pixelade.ttf");

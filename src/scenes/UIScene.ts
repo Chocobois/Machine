@@ -87,8 +87,6 @@ export class UIScene extends BaseScene {
 	}
 
 	onSetInventory(inventory: Inventory) {
-		console.log("UIScene.onSetInventory");
-
 		this.itemButtons.forEach((itemButton) => itemButton.destroy());
 		this.itemButtons = [];
 
@@ -106,8 +104,6 @@ export class UIScene extends BaseScene {
 	}
 
 	onUpdateInventory(inventory: Inventory) {
-		console.log("UIScene.onUpdateInventory");
-
 		inventory.forEach((item: InventoryItem, index: number) => {
 			const itemButton = this.itemButtons[index];
 			itemButton.selected = !!item.selected;
