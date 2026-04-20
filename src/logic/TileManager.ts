@@ -77,6 +77,7 @@ export class TileManager extends Phaser.GameObjects.Container {
 	}
 
 	private mapTileToEnum(tile: Phaser.Tilemaps.Tile): Tile {
+		console.log("!!!", tile.properties);
 		const tileProp = tile.properties.tile;
 
 		if (!tileProp) return "None";

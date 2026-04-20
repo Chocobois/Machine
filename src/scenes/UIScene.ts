@@ -107,6 +107,7 @@ export class UIScene extends BaseScene {
 		inventory.forEach((item: InventoryItem, index: number) => {
 			const itemButton = this.itemButtons[index];
 			itemButton.selected = !!item.selected;
+			itemButton.setAmount(item.amount);
 		});
 	}
 }

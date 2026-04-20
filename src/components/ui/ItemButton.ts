@@ -58,6 +58,10 @@ export class ItemButton extends Button {
 		this.background.setTint(0xff0000);
 	}
 
+	setAmount(amount: number) {
+		this.countText.setText(`x${amount}`);
+	}
+
 	/* Input */
 
 	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {

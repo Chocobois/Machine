@@ -286,7 +286,7 @@ export class GameScene extends BaseScene {
 					// this.tileManager.addEntity();
 
 					item.amount -= 1;
-					this.events.emit("setInventory", this.inventory);
+					this.events.emit("updateInventory", this.inventory);
 				}
 
 				// 	const tileType = this.tileManager.getTileAt(tileCoord);

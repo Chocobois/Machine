@@ -64,6 +64,14 @@ export class Player extends Phaser.GameObjects.Container {
 	}
 
 	updateAction({ center, up, down, left, right }: NeighborTiles) {
+		switch (center) {
+			case "Wall":
+			case "Death":
+				break;
+			case "Rope":
+				break;
+		}
+
 		if (center == "Rope") {
 			if (up == "Rope") {
 				return this.setClimb();
