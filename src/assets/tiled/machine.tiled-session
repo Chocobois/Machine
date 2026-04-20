@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps/level1.tmx",
+    "activeFile": "maps/level2.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -43,10 +43,18 @@
         },
         "maps/level1.tmx": {
             "scale": 3,
-            "selectedLayer": 0,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 241.33333333333331,
-                "y": 159.33333333333331
+                "x": 198.66666666666669,
+                "y": 156.66666666666669
+            }
+        },
+        "maps/level2.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 156.66666666666669,
+                "y": 73.99999999999999
             }
         },
         "rules/AutoTileRules.tmx": {
@@ -82,15 +90,16 @@
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
-        "maps/level1.tmx",
+        "maps/level2.tmx",
         "rules/AutoTileRules.tmx",
         "tilesets/castle_decor.tsx"
     ],
     "project": "machine.tiled-project",
     "recentFiles": [
-        "maps/level1.tmx",
         "tilesets/castle_decor.tsx",
         "rules/AutoTileRules.tmx",
+        "maps/level2.tmx",
+        "maps/level1.tmx",
         "tilesets/colliders.tsx",
         "tilesets/castle_walls.tsx",
         "tilesets/collision.tsx",
