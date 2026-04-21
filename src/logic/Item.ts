@@ -1,4 +1,4 @@
-import { Tile } from "@/components/tiles/Tile";
+import { Tile } from "./Tile";
 
 type PlacementRule = {
 	center?: Tile;
@@ -28,7 +28,7 @@ export const Item = {
 		image: "item_rope",
 		allowedPlacements: [
 			{ center: "None", up: "Wall" },
-			{ center: "None", up: "Rope" },
+			{ center: "None", up: "Climb" },
 			{ center: "Platform" },
 		],
 	},

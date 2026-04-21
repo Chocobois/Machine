@@ -1,32 +1,26 @@
 import { GameScene } from "@/scenes/GameScene";
-import {
-	NeighborTiles,
-	SIZE,
-	Tile,
-	TileCoord,
-	tileToCoord,
-} from "./tiles/Tile";
+import { NeighborTiles, SIZE, TileCoord } from "@/logic/Tile";
 
 enum Action {
 	Idle,
-	Walk,
-	Climb,
-	Fall,
-	Hurt,
+	Walking,
+	Climbing,
+	Falling,
+	// Hurt,
+	Happy,
 	Dead,
-	Jump,
-	Bump,
 }
 
 const animations: { [key in Action]: number[] } = {
 	[Action.Idle]: [0, 1],
-	[Action.Walk]: [2, 3],
-	[Action.Climb]: [4, 5],
-	[Action.Fall]: [6, 7],
-	[Action.Hurt]: [8],
+	[Action.Walking]: [2, 3],
+	[Action.Climbing]: [4, 5],
+	[Action.Falling]: [6, 7],
+	// [Action.Hurt]: [8],
 	[Action.Dead]: [9],
-	[Action.Jump]: [10, 11],
-	[Action.Bump]: [12, 13],
+	// [Action.Jump]: [10, 11],
+	// [Action.Bump]: [12, 13],
+	[Action.Happy]: [13],
 };
 
 export class Player extends Phaser.GameObjects.Container {
@@ -56,7 +50,7 @@ export class Player extends Phaser.GameObjects.Container {
 	}
 
 	setTile(tileCoord: TileCoord) {
-		const { x, y } = tileToCoord(tileCoord);
+		const { x, y } = TileCoord.tileToCoord(tileCoord);
 		this.setPosition(x, y);
 		this.tileX = tileCoord.tileX;
 		this.tileY = tileCoord.tileY;
@@ -67,61 +61,65 @@ export class Player extends Phaser.GameObjects.Container {
 		switch (center) {
 			case "Wall":
 			case "Death":
+				return this.setDeath();
+			case "Gold":
+				return this.setHappy();
+			case "Climb":
+				if (up != "Wall" && up != "Platform") {
+					return this.setClimb();
+				}
+			case "Home":
 				break;
-			case "Rope":
-				break;
+			case "Platform":
+			case "Stairs":
+			case "None":
+				if (down != "Wall" && down != "Platform") {
+					return this.setFall();
+				}
 		}
 
-		if (center == "Rope") {
-			if (up == "Rope") {
-				return this.setClimb();
-			} else {
-				return this.setWalk(this.facingRight ? 1 : -1);
-			}
+		const dir = this.facingRight ? 1 : -1;
+		const front = this.facingRight ? right : left;
+		const back = this.facingRight ? left : right;
+
+		if (front !== "Wall") {
+			return this.setWalk(dir);
 		}
 
-		if (down == "None") {
-			return this.setFall();
+		if (back !== "Wall") {
+			this.facingRight = !this.facingRight;
+			return this.setWalk(-dir);
 		}
 
-		if (this.facingRight) {
-			if (right != "Wall") {
-				return this.setWalk(1);
-			} else if (left != "Wall") {
-				this.facingRight = false;
-				return this.setWalk(-1);
-			} else {
-				return this.setIdle();
-			}
-		} else {
-			if (left != "Wall") {
-				return this.setWalk(-1);
-			} else if (right != "Wall") {
-				this.facingRight = true;
-				return this.setWalk(1);
-			} else {
-				return this.setIdle();
-			}
-		}
+		return this.setIdle();
 	}
 
 	setIdle() {
 		this.action = Action.Idle;
 	}
 
+	setDeath() {
+		this.action = Action.Dead;
+	}
+
 	setFall() {
-		this.action = Action.Fall;
+		this.action = Action.Falling;
 		this.move(0, 1, 400);
 	}
 
 	setWalk(dtx: number) {
-		this.action = Action.Walk;
+		this.action = Action.Walking;
 		this.move(dtx, 0, 400);
 	}
 
 	setClimb() {
-		this.action = Action.Climb;
+		this.action = Action.Climbing;
 		this.move(0, -1, 800);
+	}
+
+	setHappy() {
+		this.action = Action.Happy;
+		this.emit("collect");
 	}
 
 	move(dtx: number, dty: number, duration: number = 500) {

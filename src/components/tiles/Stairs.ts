@@ -1,5 +1,5 @@
 import { GameScene } from "@/scenes/GameScene";
-import { NeighborTiles, TileCoord } from "./Tile";
+import { NeighborTiles, TileCoord } from "@/logic/Tile";
 import { Entity } from "./Entity";
 
 export class Stairs extends Entity {

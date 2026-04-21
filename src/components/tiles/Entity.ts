@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { NeighborTiles, Tile, TileCoord, tileToCoord } from "./Tile";
+import { NeighborTiles, Tile, TileCoord } from "@/logic/Tile";
 
 export abstract class Entity extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
@@ -9,7 +9,7 @@ export abstract class Entity extends Phaser.GameObjects.Container {
 	protected sprite: Phaser.GameObjects.Sprite;
 
 	constructor(scene: BaseScene, tileCoord: TileCoord) {
-		const { x, y } = tileToCoord(tileCoord);
+		const { x, y } = TileCoord.tileToCoord(tileCoord);
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;

@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Tile, TileCoord } from "../components/tiles/Tile";
+import { Tile, TileCoord } from "./Tile";
 import { LevelKey } from "./levels";
 
 export const TILE_UPSCALE = 16;
@@ -9,14 +9,13 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 	private map: Phaser.Tilemaps.Tilemap;
 	private tiles: Tile[][];
-	// private entities: Entity[];
 
 	constructor(scene: BaseScene) {
 		super(scene);
 		this.scene = scene;
 	}
 
-	loadTilemap(tilemapKey: LevelKey) {
+	loadTilemap(tilemapKey: LevelKey): Tile[][] {
 		/* Map */
 
 		this.map = this.scene.make.tilemap({ key: tilemapKey });
@@ -42,11 +41,11 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 		const layerDecor = this.map.createLayer("layer_decoration", tilesetDecor);
 		const layerWalls = this.map.createLayer("layer_walls_visual", tilesetWalls);
-		// const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
+		const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
 
 		layerDecor?.setScale(TILE_UPSCALE);
 		layerWalls?.setScale(TILE_UPSCALE);
-		// layerLogic?.setScale(TILE_UPSCALE);
+		layerLogic?.setScale(TILE_UPSCALE).setAlpha(0.25);
 		layerWalls?.setPosition((16 / 2) * TILE_UPSCALE);
 
 		/* Physics */
@@ -57,10 +56,11 @@ export class TileManager extends Phaser.GameObjects.Container {
 		if (!layerDataLogic) throw Error("Can't find layer 'layer_logic'");
 
 		this.tiles = [];
-		// this.entities = [];
+		const entityTiles: Tile[][] = [];
 
 		for (let y = 0; y < this.height; y++) {
 			this.tiles[y] = [];
+			entityTiles[y] = [];
 
 			for (let x = 0; x < this.width; x++) {
 				const wallTile = layerDataWalls.data[y][x];
@@ -70,21 +70,36 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 				const entityTile = layerDataLogic.data[y][x];
 				if (entityTile && entityTile.index !== -1) {
-					this.mapTileToEnum(entityTile);
+					entityTiles[y][x] = this.mapTileToEnum(entityTile);
 				}
 			}
 		}
+
+		return entityTiles;
 	}
 
 	private mapTileToEnum(tile: Phaser.Tilemaps.Tile): Tile {
-		console.log("!!!", tile.properties);
-		const tileProp = tile.properties.tile;
+		switch (tile.properties.tile) {
+			// Walls
+			case "Wall":
+				return Tile.Wall;
+			case "Platform":
+				return Tile.Platform;
 
-		if (!tileProp) return "None";
+			// Entities
+			case "Home":
+				return Tile.Home;
+			case "Gold":
+				return Tile.Gold;
+			case "Climb":
+				return Tile.Climb;
+			case "Death":
+				return Tile.Death;
 
-		const type = Tile[tileProp as keyof typeof Tile];
-		if (!type) console.warn("Unknown type", tileProp);
-		return type ?? "None";
+			default:
+				console.warn(`Unknown tile property: ${tile.properties.tile}`);
+				return Tile.None;
+		}
 	}
 
 	public isInside({ tileX, tileY }: TileCoord): boolean {
@@ -103,10 +118,6 @@ export class TileManager extends Phaser.GameObjects.Container {
 	// public getEntityAt(tileCoord: TileCoord): Entity | undefined {
 	// 	return this.entities.find((entity) => entity.tileCoord == tileCoord);
 	// }
-
-	public sameTile(tile1: TileCoord, tile2: TileCoord): boolean {
-		return tile1.tileX === tile2.tileX && tile1.tileY === tile2.tileY;
-	}
 
 	get widthInPixels(): number {
 		return this.map.widthInPixels;
