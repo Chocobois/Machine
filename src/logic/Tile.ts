@@ -34,25 +34,16 @@ export type NeighborEntities = {
 
 /* TileCoord */
 
-export type TileCoord = { tileX: number; tileY: number };
+export type TileCoord = { x: number; y: number };
 
 export namespace TileCoord {
 	export const compare = (a: TileCoord, b: TileCoord): boolean => {
-		return a.tileX === b.tileX && a.tileY === b.tileY;
+		return a.x === b.x && a.y === b.y;
 	};
 	export const add = (coord: TileCoord, dx: number, dy: number): TileCoord => {
-		return {
-			tileX: coord.tileX + dx,
-			tileY: coord.tileY + dy,
-		};
+		return { x: coord.x + dx, y: coord.y + dy };
 	};
-	export const tileToCoord = ({
-		tileX,
-		tileY,
-	}: TileCoord): Phaser.Math.Vector2 => {
-		return new Phaser.Math.Vector2(
-			tileX * SIZE + SIZE / 2,
-			tileY * SIZE + SIZE / 2,
-		);
+	export const tileToCoord = ({ x, y }: TileCoord): Phaser.Math.Vector2 => {
+		return new Phaser.Math.Vector2(x * SIZE + SIZE / 2, y * SIZE + SIZE / 2);
 	};
 }

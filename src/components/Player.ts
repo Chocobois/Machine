@@ -25,8 +25,7 @@ const animations: { [key in Action]: number[] } = {
 
 export class Player extends Phaser.GameObjects.Container {
 	public scene: GameScene;
-	public tileX: number = 0;
-	public tileY: number = 0;
+	public tileCoord: TileCoord;
 
 	private sprite: Phaser.GameObjects.Sprite;
 
@@ -52,8 +51,7 @@ export class Player extends Phaser.GameObjects.Container {
 	setTile(tileCoord: TileCoord) {
 		const { x, y } = TileCoord.tileToCoord(tileCoord);
 		this.setPosition(x, y);
-		this.tileX = tileCoord.tileX;
-		this.tileY = tileCoord.tileY;
+		this.tileCoord = tileCoord;
 		this.emit("neighbors");
 	}
 
@@ -129,12 +127,8 @@ export class Player extends Phaser.GameObjects.Container {
 			x: { from: this.x, to: this.x + dtx * SIZE },
 			y: { from: this.y, to: this.y + dty * SIZE },
 			onComplete: () => {
-				this.setTile({ tileX: this.tileX + dtx, tileY: this.tileY + dty });
+				this.setTile({ x: this.tileCoord.x + dtx, y: this.tileCoord.y + dty });
 			},
 		});
-	}
-
-	get tileCoord(): TileCoord {
-		return { tileX: this.tileX, tileY: this.tileY };
 	}
 }

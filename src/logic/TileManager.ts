@@ -102,17 +102,15 @@ export class TileManager extends Phaser.GameObjects.Container {
 		}
 	}
 
-	public isInside({ tileX, tileY }: TileCoord): boolean {
-		return (
-			tileX >= 0 && tileY >= 0 && tileX < this.width && tileY < this.height
-		);
+	public isInside({ x, y }: TileCoord): boolean {
+		return x >= 0 && y >= 0 && x < this.width && y < this.height;
 	}
 
 	public getTileAt(tileCoord: TileCoord): Tile {
 		if (!this.isInside(tileCoord)) return "Wall";
 
 		// Otherwise return the static tile type
-		return this.tiles[tileCoord.tileY]?.[tileCoord.tileX] ?? "None";
+		return this.tiles[tileCoord.y]?.[tileCoord.x] ?? "None";
 	}
 
 	// public getEntityAt(tileCoord: TileCoord): Entity | undefined {
