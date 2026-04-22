@@ -53,8 +53,8 @@
             "scale": 3,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 156.66666666666669,
-                "y": 73.99999999999999
+                "x": 145,
+                "y": 69.16666666666666
             }
         },
         "rules/AutoTileRules.tmx": {

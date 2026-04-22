@@ -17,19 +17,19 @@ export const Tile = {
 export type Tile = (typeof Tile)[keyof typeof Tile];
 
 export type NeighborTiles = {
-	center: Tile;
-	up: Tile;
-	down: Tile;
-	left: Tile;
-	right: Tile;
+	center: Tile[];
+	up: Tile[];
+	down: Tile[];
+	left: Tile[];
+	right: Tile[];
 };
 
 export type NeighborEntities = {
-	center?: Entity;
-	up?: Entity;
-	down?: Entity;
-	left?: Entity;
-	right?: Entity;
+	center?: Entity[];
+	up?: Entity[];
+	down?: Entity[];
+	left?: Entity[];
+	right?: Entity[];
 };
 
 /* TileCoord */

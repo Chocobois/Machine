@@ -21,5 +21,5 @@ export abstract class Entity extends Phaser.GameObjects.Container {
 
 	update(time: number, delta: number) {}
 
-	abstract updateSprite(neighbors: NeighborTiles): void;
+	updateSprite(neighbors: NeighborTiles) {}
 }

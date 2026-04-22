@@ -16,7 +16,6 @@ export const levels = {
 	level2: {
 		title: "Level 2",
 		inventory: [
-			{ itemKey: "Cannon", amount: 1 },
 			{ itemKey: "Ladder", amount: 2 },
 			{ itemKey: "Rope", amount: 3 },
 		],

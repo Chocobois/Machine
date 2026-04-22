@@ -45,7 +45,7 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 		layerDecor?.setScale(TILE_UPSCALE);
 		layerWalls?.setScale(TILE_UPSCALE);
-		layerLogic?.setScale(TILE_UPSCALE).setAlpha(0.25);
+		layerLogic?.setScale(TILE_UPSCALE).setAlpha(0);
 		layerWalls?.setPosition((16 / 2) * TILE_UPSCALE);
 
 		/* Physics */

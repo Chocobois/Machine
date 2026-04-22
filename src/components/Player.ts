@@ -1,5 +1,5 @@
 import { GameScene } from "@/scenes/GameScene";
-import { NeighborTiles, SIZE, TileCoord } from "@/logic/Tile";
+import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
 
 enum Action {
 	Idle,
@@ -56,35 +56,36 @@ export class Player extends Phaser.GameObjects.Container {
 	}
 
 	updateAction({ center, up, down, left, right }: NeighborTiles) {
-		switch (center) {
-			case "Wall":
-			case "Death":
-				return this.setDeath();
-			case "Gold":
-				return this.setHappy();
-			case "Climb":
-				if (up != "Wall" && up != "Platform") {
-					return this.setClimb();
-				}
-			case "Home":
-				break;
-			case "Platform":
-			case "Stairs":
-			case "None":
-				if (down != "Wall" && down != "Platform") {
-					return this.setFall();
-				}
+		const has = (tiles: Tile[], ...wanted: Tile[]) =>
+			wanted.some((tile) => tiles.includes(tile));
+
+		if (has(center, "Death", "Wall")) {
+			return this.setDeath();
+		}
+
+		if (has(center, "Gold")) {
+			return this.setHappy();
+		}
+
+		if (has(center, "Climb")) {
+			if (!has(up, "Wall")) {
+				return this.setClimb();
+			}
+		}
+
+		if (has(center, "None", "Platform")) {
+			if (!has(down, "Wall", "Platform")) {
+				return this.setFall();
+			}
 		}
 
 		const dir = this.facingRight ? 1 : -1;
 		const front = this.facingRight ? right : left;
 		const back = this.facingRight ? left : right;
 
-		if (front !== "Wall") {
+		if (!has(front, "Wall")) {
 			return this.setWalk(dir);
-		}
-
-		if (back !== "Wall") {
+		} else if (!has(back, "Wall")) {
 			this.facingRight = !this.facingRight;
 			return this.setWalk(-dir);
 		}

@@ -11,6 +11,7 @@ type PlacementRule = {
 type ItemDef = {
 	name: string;
 	image: string;
+	tile: Tile;
 	allowedPlacements: PlacementRule[];
 };
 
@@ -18,6 +19,7 @@ export const Item = {
 	Gold: {
 		name: "Gold",
 		image: "gold",
+		tile: "Gold",
 		allowedPlacements: [
 			{ center: "None", down: "Wall" },
 			{ center: "None", down: "Platform" },
@@ -26,6 +28,7 @@ export const Item = {
 	Rope: {
 		name: "Rope",
 		image: "item_rope",
+		tile: "Climb",
 		allowedPlacements: [
 			{ center: "None", up: "Wall" },
 			{ center: "None", up: "Climb" },
@@ -35,14 +38,7 @@ export const Item = {
 	Ladder: {
 		name: "Ladder",
 		image: "item_ladder",
-		allowedPlacements: [
-			{ center: "None", down: "Wall" },
-			{ center: "None", down: "Platform" },
-		],
-	},
-	Cannon: {
-		name: "Cannon",
-		image: "item_cannon",
+		tile: "Climb",
 		allowedPlacements: [
 			{ center: "None", down: "Wall" },
 			{ center: "None", down: "Platform" },
@@ -51,6 +47,7 @@ export const Item = {
 	Stairs: {
 		name: "Stairs",
 		image: "item_stairs",
+		tile: "Stairs",
 		allowedPlacements: [
 			{ center: "None", down: "Wall" },
 			{ center: "None", down: "Platform" },

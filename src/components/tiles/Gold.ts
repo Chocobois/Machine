@@ -1,5 +1,5 @@
 import { GameScene } from "@/scenes/GameScene";
-import { NeighborTiles, TileCoord } from "@/logic/Tile";
+import { TileCoord } from "@/logic/Tile";
 import { Entity } from "./Entity";
 
 export class Gold extends Entity {
@@ -8,6 +8,4 @@ export class Gold extends Entity {
 		this.tile = "Gold";
 		this.sprite.setTexture("gold");
 	}
-
-	updateSprite({}: NeighborTiles) {}
 }

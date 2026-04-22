@@ -125,8 +125,8 @@ export class GameScene extends BaseScene {
 		this.setInventory(levels[key].inventory);
 	}
 
-	getEntityAt(tileCoord: TileCoord): Entity | undefined {
-		return this.entities.find((entity) =>
+	getEntityAt(tileCoord: TileCoord): Entity[] {
+		return this.entities.filter((entity) =>
 			TileCoord.compare(entity.tileCoord, tileCoord),
 		);
 	}
@@ -141,10 +141,13 @@ export class GameScene extends BaseScene {
 		};
 	}
 
-	getTileAt(tileCoord: TileCoord): Tile {
-		const entity = this.getEntityAt(tileCoord);
-		if (entity) return entity.tile;
-		return this.tileManager.getTileAt(tileCoord);
+	getTileAt(tileCoord: TileCoord): Tile[] {
+		const tiles = [
+			this.tileManager.getTileAt(tileCoord),
+			...this.getEntityAt(tileCoord).map((entity) => entity.tile),
+		];
+		if (tiles.length >= 2) return tiles.filter((tile) => tile != "None");
+		return tiles;
 	}
 
 	getNeighborTiles({ x, y }: TileCoord): NeighborTiles {
@@ -243,11 +246,13 @@ export class GameScene extends BaseScene {
 			player.updateAction(neighbors);
 		});
 		player.on("collect", () => {
-			const entity = this.getEntityAt(player.tileCoord);
-			if (entity) {
+			const entities = this.getEntityAt(player.tileCoord).filter(
+				(entity) => entity.tile == "Gold",
+			);
+			entities.forEach((entity) => {
 				this.entities = this.entities.filter((e) => e != entity);
 				entity.destroy();
-			}
+			});
 		});
 		player.setTile(tileCoord);
 	}
@@ -277,7 +282,6 @@ export class GameScene extends BaseScene {
 			case "Gold":
 				return new Gold(this, tileCoord);
 			case "Stairs":
-			case "Cannon":
 			case "Ladder":
 				return new Stairs(this, tileCoord);
 		}
@@ -285,11 +289,11 @@ export class GameScene extends BaseScene {
 
 	refreshEntitySprites(tileCoord: TileCoord) {
 		const neighbors = this.getNeighborEntities(tileCoord);
-		Object.values(neighbors)
-			.filter((entity) => !!entity)
-			.forEach((entity) => {
+		Object.values(neighbors).forEach((entities) => {
+			entities.forEach((entity) => {
 				entity.updateSprite(this.getNeighborTiles(entity.tileCoord));
 			});
+		});
 	}
 
 	/* Inventory */
@@ -343,10 +347,13 @@ export class GameScene extends BaseScene {
 
 		const neighbors = this.getNeighborTiles(tileCoord);
 
+		if (neighbors.center.includes(Item[item.itemKey].tile)) return false;
+
 		return Item[item.itemKey].allowedPlacements.some((rule) => {
 			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
 				([dir, requiredTile]) => {
-					return neighbors[dir] === requiredTile;
+					const tilesAtDir = neighbors[dir];
+					return tilesAtDir.includes(requiredTile);
 				},
 			);
 		});
