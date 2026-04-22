@@ -4,8 +4,8 @@
   "description": "We make game, but faster!",
   "itch": {
     "upload": false,
-    "username": "username",
-    "game": "game-name"
+    "username": "golen",
+    "game": "kobots"
   },
   "neutralino": {
     "allow": ["app.exit", "window.center", "storage.*"],
