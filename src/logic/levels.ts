@@ -3,18 +3,21 @@ import { Inventory } from "./Inventory";
 
 type LevelDef = {
 	title: string;
+	playerCount: number;
 	inventory: Inventory;
 };
 
 export const levels = {
 	level1: {
 		title: "Level 1",
+		playerCount: 15,
 		inventory: [
 			{ itemKey: "Rope", amount: 20 },
 		],
 	},
 	level2: {
 		title: "Level 2",
+		playerCount: 8,
 		inventory: [
 			{ itemKey: "Ladder", amount: 2 },
 			{ itemKey: "Rope", amount: 3 },

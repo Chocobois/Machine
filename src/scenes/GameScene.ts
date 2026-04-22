@@ -19,6 +19,7 @@ import { Rope } from "@/components/Rope";
 import { Gold } from "@/components/tiles/Gold";
 import { Stairs } from "@/components/tiles/Stairs";
 import { Spikes } from "@/components/tiles/Spikes";
+import { Home } from "@/components/tiles/Home";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -59,12 +60,6 @@ export class GameScene extends BaseScene {
 		this.tileManager = new TileManager(this);
 		this.entities = [];
 		this.loadLevel("level1");
-
-		for (let i = 0; i < 10; i++) {
-			this.addEvent(400 * i, () => {
-				this.addPlayer({ x: 4, y: 4 });
-			});
-		}
 
 		/* Input handling */
 
@@ -109,6 +104,7 @@ export class GameScene extends BaseScene {
 
 	loadLevel(key: LevelKey) {
 		const entityTiles = this.tileManager.loadTilemap(key);
+		const homeCoords: TileCoord[] = [];
 
 		for (let y = 0; y < this.tileManager.height; y++) {
 			for (let x = 0; x < this.tileManager.width; x++) {
@@ -116,13 +112,22 @@ export class GameScene extends BaseScene {
 				if (tile) {
 					const tileCoord = { x, y };
 					const entity = this.createEntityFromTile(tile, tileCoord);
-					this.entities.push(entity);
-					this.refreshEntitySprites(tileCoord);
+
+					if (entity) {
+						this.entities.push(entity);
+						this.refreshEntitySprites(tileCoord);
+					}
+
+					if (tile == "Home") {
+						homeCoords.push(tileCoord);
+					}
 				}
 			}
 		}
 
 		this.setInventory(levels[key].inventory);
+
+		this.spawnPlayers(levels[key].playerCount, homeCoords);
 	}
 
 	getEntityAt(tileCoord: TileCoord): Entity[] {
@@ -237,6 +242,16 @@ export class GameScene extends BaseScene {
 
 	/* Entities */
 
+	spawnPlayers(playerCount: number, homeCoords: TileCoord[]) {
+		for (let i = 0; i < playerCount; i++) {
+			this.addEvent(1000 + 500 * i, () => {
+				// Cycle between homes in case there are multiple
+				const homeCoord = homeCoords[i % homeCoords.length];
+				this.addPlayer(homeCoord);
+			});
+		}
+	}
+
 	addPlayer(tileCoord: TileCoord) {
 		const player = new Player(this);
 		this.players.push(player);
@@ -257,21 +272,21 @@ export class GameScene extends BaseScene {
 		player.setTile(tileCoord);
 	}
 
-	createEntityFromTile(tile: Tile, tileCoord: TileCoord): Entity {
+	createEntityFromTile(tile: Tile, tileCoord: TileCoord): Entity | undefined {
 		switch (tile) {
 			case "Home":
-				return new Gold(this, tileCoord);
+				return new Home(this, tileCoord);
 			case "Climb":
 				return new Rope(this, tileCoord);
 			case "Gold":
 				return new Gold(this, tileCoord);
 			case "Death":
 				return new Spikes(this, tileCoord);
-			case "Stairs":
+
 			case "None":
-			case "Platform":
-			case "Wall":
-				return new Stairs(this, tileCoord);
+				return;
+			default:
+				console.warn("Unknown entity");
 		}
 	}
 
