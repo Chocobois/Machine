@@ -27,26 +27,32 @@ export class TileManager extends Phaser.GameObjects.Container {
 		const tilesetWalls = this.map.addTilesetImage(
 			"tileset_walls",
 			"texture_walls",
-		)!;
+		);
 		const tilesetColliders = this.map.addTilesetImage(
 			"tileset_colliders",
 			"texture_colliders",
-		)!;
+		);
 		const tilesetDecor = this.map.addTilesetImage(
 			"tileset_decoration",
 			"texture_decoration",
-		)!;
+		);
+		if (!tilesetWalls) throw Error("Tileset 'tileset_walls' not found");
+		if (!tilesetColliders) throw Error("Tileset 'tileset_colliders' not found");
+		if (!tilesetDecor) throw Error("Tileset 'tileset_decoration' not found");
 
 		/* Graphics */
 
 		const layerDecor = this.map.createLayer("layer_decoration", tilesetDecor);
 		const layerWalls = this.map.createLayer("layer_walls_visual", tilesetWalls);
 		const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
+		if (!layerDecor) throw Error("Layer 'layer_decoration' not found");
+		if (!layerWalls) throw Error("Layer 'layer_walls_visual' not found");
+		if (!layerLogic) throw Error("Layer 'layer_logic' not found");
 
-		layerDecor?.setScale(TILE_UPSCALE);
-		layerWalls?.setScale(TILE_UPSCALE);
-		layerLogic?.setScale(TILE_UPSCALE).setAlpha(0);
-		layerWalls?.setPosition((16 / 2) * TILE_UPSCALE);
+		layerDecor.setScale(TILE_UPSCALE);
+		layerWalls.setScale(TILE_UPSCALE);
+		layerLogic.setScale(TILE_UPSCALE).setAlpha(0);
+		layerWalls.setPosition((16 / 2) * TILE_UPSCALE);
 
 		/* Physics */
 

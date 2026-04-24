@@ -20,6 +20,7 @@ import { Gold } from "@/components/tiles/Gold";
 import { Stairs } from "@/components/tiles/Stairs";
 import { Spikes } from "@/components/tiles/Spikes";
 import { Home } from "@/components/tiles/Home";
+import { Fan } from "@/components/tiles/Fan";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -94,6 +95,10 @@ export class GameScene extends BaseScene {
 			player.update(time, delta);
 		});
 
+		this.entities.forEach((entity) => {
+			entity.update(time, delta);
+		});
+
 		const mouseTile = this.getMouseTileCoord();
 		const { x: mx, y: my } = TileCoord.tileToCoord(mouseTile);
 		this.cursor.setPosition(mx, my);
@@ -130,7 +135,7 @@ export class GameScene extends BaseScene {
 		this.spawnPlayers(levels[key].playerCount, homeCoords);
 	}
 
-	getEntityAt(tileCoord: TileCoord): Entity[] {
+	getEntitiesAt(tileCoord: TileCoord): Entity[] {
 		return this.entities.filter((entity) =>
 			TileCoord.compare(entity.tileCoord, tileCoord),
 		);
@@ -138,18 +143,22 @@ export class GameScene extends BaseScene {
 
 	getNeighborEntities({ x, y }: TileCoord): NeighborEntities {
 		return {
-			center: this.getEntityAt({ x: x, y: y }),
-			up: this.getEntityAt({ x: x, y: y - 1 }),
-			down: this.getEntityAt({ x: x, y: y + 1 }),
-			left: this.getEntityAt({ x: x - 1, y: y }),
-			right: this.getEntityAt({ x: x + 1, y: y }),
+			center: this.getEntitiesAt({ x: x, y: y }),
+			north: this.getEntitiesAt({ x: x, y: y - 1 }),
+			ne: this.getEntitiesAt({ x: x + 1, y: y - 1 }),
+			east: this.getEntitiesAt({ x: x + 1, y: y }),
+			se: this.getEntitiesAt({ x: x + 1, y: y + 1 }),
+			south: this.getEntitiesAt({ x: x, y: y + 1 }),
+			sw: this.getEntitiesAt({ x: x - 1, y: y + 1 }),
+			west: this.getEntitiesAt({ x: x - 1, y: y }),
+			nw: this.getEntitiesAt({ x: x - 1, y: y - 1 }),
 		};
 	}
 
 	getTileAt(tileCoord: TileCoord): Tile[] {
 		const tiles = [
 			this.tileManager.getTileAt(tileCoord),
-			...this.getEntityAt(tileCoord).map((entity) => entity.tile),
+			...this.getEntitiesAt(tileCoord).map((entity) => entity.tile),
 		];
 		if (tiles.length >= 2) return tiles.filter((tile) => tile != "None");
 		return tiles;
@@ -158,10 +167,14 @@ export class GameScene extends BaseScene {
 	getNeighborTiles({ x, y }: TileCoord): NeighborTiles {
 		return {
 			center: this.getTileAt({ x: x, y: y }),
-			up: this.getTileAt({ x: x, y: y - 1 }),
-			down: this.getTileAt({ x: x, y: y + 1 }),
-			left: this.getTileAt({ x: x - 1, y: y }),
-			right: this.getTileAt({ x: x + 1, y: y }),
+			north: this.getTileAt({ x: x, y: y - 1 }),
+			ne: this.getTileAt({ x: x + 1, y: y - 1 }),
+			east: this.getTileAt({ x: x + 1, y: y }),
+			se: this.getTileAt({ x: x + 1, y: y + 1 }),
+			south: this.getTileAt({ x: x, y: y + 1 }),
+			sw: this.getTileAt({ x: x - 1, y: y + 1 }),
+			west: this.getTileAt({ x: x - 1, y: y }),
+			nw: this.getTileAt({ x: x - 1, y: y - 1 }),
 		};
 	}
 
@@ -243,6 +256,14 @@ export class GameScene extends BaseScene {
 	/* Entities */
 
 	spawnPlayers(playerCount: number, homeCoords: TileCoord[]) {
+		if (homeCoords.length == 0) {
+			console.warn("No Home tile found");
+			homeCoords.push({
+				x: Math.floor(this.tileManager.width / 2),
+				y: Math.floor(this.tileManager.height / 2),
+			});
+		}
+
 		for (let i = 0; i < playerCount; i++) {
 			this.addEvent(1000 + 500 * i, () => {
 				// Cycle between homes in case there are multiple
@@ -254,6 +275,7 @@ export class GameScene extends BaseScene {
 
 	addPlayer(tileCoord: TileCoord) {
 		const player = new Player(this);
+		player.setDepth(10);
 		this.players.push(player);
 
 		player.on("neighbors", () => {
@@ -261,15 +283,19 @@ export class GameScene extends BaseScene {
 			player.updateAction(neighbors);
 		});
 		player.on("collect", () => {
-			const entities = this.getEntityAt(player.tileCoord).filter(
+			// Fetch gold entity
+			const goldEntity = this.getEntitiesAt(player.tileCoord).find(
 				(entity) => entity.tile == "Gold",
 			);
-			entities.forEach((entity) => {
-				this.entities = this.entities.filter((e) => e != entity);
-				entity.destroy();
-			});
+
+			if (goldEntity) {
+				player.setHeldItem(goldEntity.tile); // Add goldEntity sprite data
+
+				this.entities = this.entities.filter((entity) => entity != goldEntity);
+				goldEntity.destroy();
+			}
 		});
-		player.setTile(tileCoord);
+		player.setTileCoord(tileCoord);
 	}
 
 	createEntityFromTile(tile: Tile, tileCoord: TileCoord): Entity | undefined {
@@ -292,13 +318,15 @@ export class GameScene extends BaseScene {
 
 	createEntityFromItem(key: ItemKey, tileCoord: TileCoord): Entity {
 		switch (key) {
+			case "Ladder":
 			case "Rope":
 				return new Rope(this, tileCoord);
 			case "Gold":
 				return new Gold(this, tileCoord);
 			case "Stairs":
-			case "Ladder":
 				return new Stairs(this, tileCoord);
+			case "Fan":
+				return new Fan(this, tileCoord);
 		}
 	}
 
@@ -349,6 +377,11 @@ export class GameScene extends BaseScene {
 				const entity = this.createEntityFromItem(item.itemKey, tileCoord);
 				this.entities.push(entity);
 				this.refreshEntitySprites(tileCoord);
+
+				// Create updrafts if this is a fan
+				if (entity instanceof Fan) {
+					entity.createUpdrafts(this);
+				}
 
 				this.useItem(item);
 			}

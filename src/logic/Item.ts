@@ -2,10 +2,10 @@ import { Tile } from "./Tile";
 
 type PlacementRule = {
 	center?: Tile;
-	up?: Tile;
-	down?: Tile;
-	left?: Tile;
-	right?: Tile;
+	north?: Tile;
+	east?: Tile;
+	south?: Tile;
+	west?: Tile;
 };
 
 type ItemDef = {
@@ -21,8 +21,8 @@ export const Item = {
 		image: "gold",
 		tile: "Gold",
 		allowedPlacements: [
-			{ center: "None", down: "Wall" },
-			{ center: "None", down: "Platform" },
+			{ center: "None", south: "Wall" },
+			{ center: "None", south: "Platform" },
 		],
 	},
 	Rope: {
@@ -30,8 +30,8 @@ export const Item = {
 		image: "item_rope",
 		tile: "Climb",
 		allowedPlacements: [
-			{ center: "None", up: "Wall" },
-			{ center: "None", up: "Climb" },
+			{ center: "None", north: "Wall" },
+			{ center: "None", north: "Climb" },
 			{ center: "Platform" },
 		],
 	},
@@ -40,8 +40,8 @@ export const Item = {
 		image: "item_ladder",
 		tile: "Climb",
 		allowedPlacements: [
-			{ center: "None", down: "Wall" },
-			{ center: "None", down: "Platform" },
+			{ center: "None", south: "Wall" },
+			{ center: "None", south: "Platform" },
 		],
 	},
 	Stairs: {
@@ -49,8 +49,18 @@ export const Item = {
 		image: "item_stairs",
 		tile: "Stairs",
 		allowedPlacements: [
-			{ center: "None", down: "Wall" },
-			{ center: "None", down: "Platform" },
+			{ center: "None", south: "Wall" },
+			{ center: "None", south: "Platform" },
+			{ center: "None", south: "Stairs" },
+		],
+	},
+	Fan: {
+		name: "Fan",
+		image: "item_fan",
+		tile: "Fan",
+		allowedPlacements: [
+			{ center: "None", south: "Wall" },
+			{ center: "None", south: "Platform" },
 		],
 	},
 } satisfies { [key: string]: ItemDef };

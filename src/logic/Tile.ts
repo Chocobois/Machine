@@ -12,24 +12,34 @@ export const Tile = {
 	Gold: "Gold",
 	Climb: "Climb",
 	Stairs: "Stairs",
+	Fan: "Fan",
+	Updraft: "Updraft",
 	Death: "Death",
 } as const;
 export type Tile = (typeof Tile)[keyof typeof Tile];
 
 export type NeighborTiles = {
 	center: Tile[];
-	up: Tile[];
-	down: Tile[];
-	left: Tile[];
-	right: Tile[];
+	north: Tile[];
+	ne: Tile[];
+	east: Tile[];
+	se: Tile[];
+	south: Tile[];
+	sw: Tile[];
+	west: Tile[];
+	nw: Tile[];
 };
 
 export type NeighborEntities = {
 	center?: Entity[];
-	up?: Entity[];
-	down?: Entity[];
-	left?: Entity[];
-	right?: Entity[];
+	north?: Entity[];
+	ne?: Entity[];
+	east?: Entity[];
+	se?: Entity[];
+	south?: Entity[];
+	sw?: Entity[];
+	west?: Entity[];
+	nw?: Entity[];
 };
 
 /* TileCoord */

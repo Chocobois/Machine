@@ -2,8 +2,8 @@ import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
 
-export const UI_HEIGHT = 170;
-export const UI_SIZE = 150;
+export const UI_HEIGHT = 140;
+export const UI_SIZE = 120;
 
 export class UIScene extends BaseScene {
 	private panel: Phaser.GameObjects.Container;

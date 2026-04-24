@@ -22,6 +22,7 @@ export const images: Image[] = [
 	image("item_ladder", "ui/item_ladder.png"),
 	image("item_rope", "ui/item_rope.png"),
 	image("item_stairs", "ui/item_stairs.png"),
+	image("item_fan", "ui/item_fan.png"),
 	image("ui_gold", "ui/ui_gold.png"),
 	image("ui_lives", "ui/ui_lives.png"),
 
@@ -41,6 +42,8 @@ export const spritesheets: SpriteSheet[] = [
 	spritesheet("wall", "tiles/wall.png", 256, 256),
 	spritesheet("platform", "tiles/platform.png", 256, 256),
 	spritesheet("rope", "tiles/rope.png", 256, 256),
+	spritesheet("fan", "tiles/fan.png", 256, 256),
+	spritesheet("updraft", "tiles/updraft.png", 256, 256),
 ];
 
 /* Audios */

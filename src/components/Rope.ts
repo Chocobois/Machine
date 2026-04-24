@@ -9,13 +9,13 @@ export class Rope extends Entity {
 		this.sprite.setTexture("rope");
 	}
 
-	updateSprite({ center, up, down }: NeighborTiles): void {
+	updateSprite({ center, north, south }: NeighborTiles): void {
 		const has = (tiles: Tile[], ...wanted: Tile[]) =>
 			wanted.some((tile) => tiles.includes(tile));
 
 		const y =
-			has(up, "Wall") || has(center, "Platform") ? 0 : has(up, "Climb") ? 1 : 2;
-		const x = has(down, "Wall", "Platform") ? 0 : has(down, "Climb") ? 1 : 2;
+			has(north, "Wall") || has(center, "Platform") ? 0 : has(north, "Climb") ? 1 : 2;
+		const x = has(south, "Wall", "Platform") ? 0 : has(south, "Climb") ? 1 : 2;
 		const index = 3 * y + x;
 		this.sprite.setFrame(index);
 	}

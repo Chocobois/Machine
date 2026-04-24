@@ -6,8 +6,9 @@ enum Action {
 	Walking,
 	Climbing,
 	Falling,
-	// Hurt,
-	Happy,
+	Flying,
+	Collecting,
+	Leaving,
 	Dead,
 }
 
@@ -18,16 +19,19 @@ const animations: { [key in Action]: number[] } = {
 	[Action.Falling]: [6, 7],
 	// [Action.Hurt]: [8],
 	[Action.Dead]: [9],
-	// [Action.Jump]: [10, 11],
+	[Action.Flying]: [10, 11],
 	// [Action.Bump]: [12, 13],
-	[Action.Happy]: [13],
+	[Action.Collecting]: [13],
+	[Action.Leaving]: [0, 1],
 };
 
 export class Player extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 	public tileCoord: TileCoord;
+	public holding: Tile | undefined;
 
 	private sprite: Phaser.GameObjects.Sprite;
+	private heldSprite: Phaser.GameObjects.Sprite;
 
 	private action: Action = Action.Idle;
 	private facingRight: boolean = true;
@@ -39,6 +43,13 @@ export class Player extends Phaser.GameObjects.Container {
 
 		this.sprite = this.scene.add.sprite(0, 0, "player", 0);
 		this.add(this.sprite);
+
+		this.heldSprite = this.scene.add
+			.sprite(0, -0.3 * SIZE, "gold")
+			.setOrigin(0.5, 1.0)
+			.setVisible(false);
+		this.heldSprite.setScale((0.7 * SIZE) / this.heldSprite.width);
+		this.add(this.heldSprite);
 	}
 
 	update(time: number, delta: number) {
@@ -48,87 +59,150 @@ export class Player extends Phaser.GameObjects.Container {
 		this.sprite.setFlipX(!this.facingRight);
 	}
 
-	setTile(tileCoord: TileCoord) {
+	setTileCoord(tileCoord: TileCoord) {
 		const { x, y } = TileCoord.tileToCoord(tileCoord);
 		this.setPosition(x, y);
 		this.tileCoord = tileCoord;
 		this.emit("neighbors");
 	}
 
-	updateAction({ center, up, down, left, right }: NeighborTiles) {
+	updateAction({
+		center,
+		north,
+		ne,
+		east,
+		se,
+		south,
+		sw,
+		west,
+		nw,
+	}: NeighborTiles) {
 		const has = (tiles: Tile[], ...wanted: Tile[]) =>
 			wanted.some((tile) => tiles.includes(tile));
+		const dx = this.facingRight ? 1 : -1;
+		const front = this.facingRight ? east : west;
+		const frontUp = this.facingRight ? ne : nw;
+		const frontDown = this.facingRight ? se : sw;
+		const back = this.facingRight ? west : east;
 
-		if (has(center, "Death", "Wall")) {
-			return this.setDeath();
-		}
+		if (has(center, "Death", "Wall")) return this.die();
 
-		if (has(center, "Gold")) {
-			return this.setHappy();
-		}
+		if (has(center, "Gold") && !this.holding) return this.pickUp();
+		if (has(center, "Home") && this.holding) return this.dropOff();
 
 		if (has(center, "Climb")) {
-			if (!has(up, "Wall")) {
-				return this.setClimb();
+			if (!has(north, "Wall")) {
+				return this.climb();
 			}
+		}
+
+		if (has(center, "Updraft") && !has(north, "Wall")) {
+			this.action = Action.Flying;
+			if (!has(front, "Wall") && !has(frontUp, "Wall")) {
+				return this.move(dx, -1, 400 * 1.4);
+			}
+			return this.move(0, -1, 400);
 		}
 
 		if (has(center, "None", "Platform")) {
-			if (!has(down, "Wall", "Platform")) {
-				return this.setFall();
+			if (!has(south, "Wall", "Platform", "Stairs")) {
+				return this.fall();
 			}
 		}
 
-		const dir = this.facingRight ? 1 : -1;
-		const front = this.facingRight ? right : left;
-		const back = this.facingRight ? left : right;
-
-		if (!has(front, "Wall")) {
-			return this.setWalk(dir);
-		} else if (!has(back, "Wall")) {
-			this.facingRight = !this.facingRight;
-			return this.setWalk(-dir);
+		if (this.facingRight && has(front, "Stairs")) {
+			this.action = Action.Walking;
+			this.move(dx, -1, 400 * 1.4);
+			return;
+		}
+		if (!this.facingRight && has(south, "Stairs")) {
+			this.action = Action.Walking;
+			this.move(dx, 1, 400 * 1.4);
+			return;
 		}
 
-		return this.setIdle();
+		if (!has(front, "Wall", "Stairs")) {
+			return this.walk(dx);
+		} else if (!has(back, "Wall")) {
+			this.facingRight = !this.facingRight;
+			return this.walk(-dx);
+		}
+
+		return this.idle();
 	}
 
-	setIdle() {
+	setHeldItem(tile: Tile | undefined) {
+		console.assert(
+			tile == undefined || tile == "Gold",
+			"Unimplemented setHeldItem",
+		);
+		this.holding = tile;
+		this.heldSprite.setVisible(!!tile);
+	}
+
+	/* Actions */
+
+	private idle() {
 		this.action = Action.Idle;
 	}
 
-	setDeath() {
+	private die() {
 		this.action = Action.Dead;
 	}
 
-	setFall() {
+	private fall() {
 		this.action = Action.Falling;
 		this.move(0, 1, 400);
 	}
 
-	setWalk(dtx: number) {
+	private walk(deltaTileX: number) {
 		this.action = Action.Walking;
-		this.move(dtx, 0, 400);
+		this.move(deltaTileX, 0, 400);
 	}
 
-	setClimb() {
+	private climb() {
 		this.action = Action.Climbing;
 		this.move(0, -1, 800);
 	}
 
-	setHappy() {
-		this.action = Action.Happy;
+	private pickUp() {
+		this.action = Action.Collecting;
 		this.emit("collect");
+
+		this.scene.tweens.add({
+			targets: this,
+			y: { from: this.y, to: this.y - 0.5 * SIZE },
+			duration: 150,
+			easing: Phaser.Math.Easing.Circular.Out,
+			yoyo: true,
+			repeat: 1,
+			onComplete: () => {
+				this.setTileCoord(this.tileCoord);
+			},
+		});
 	}
 
-	move(dtx: number, dty: number, duration: number = 500) {
+	private dropOff() {
+		this.action = Action.Leaving;
+		this.emit("collect");
+
+		this.scene.tweens.add({
+			targets: this,
+			alpha: 0,
+			duration: 1000,
+		});
+	}
+
+	/* Helpers */
+
+	private move(dtx: number, dty: number, duration: number) {
 		this.scene.tweens.add({
 			targets: this,
 			duration,
 			x: { from: this.x, to: this.x + dtx * SIZE },
 			y: { from: this.y, to: this.y + dty * SIZE },
 			onComplete: () => {
-				this.setTile({ x: this.tileCoord.x + dtx, y: this.tileCoord.y + dty });
+				this.setTileCoord(TileCoord.add(this.tileCoord, dtx, dty));
 			},
 		});
 	}

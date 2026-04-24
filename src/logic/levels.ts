@@ -13,14 +13,15 @@ export const levels = {
 		playerCount: 15,
 		inventory: [
 			{ itemKey: "Rope", amount: 20 },
+			{ itemKey: "Fan", amount: 10 },
 		],
 	},
 	level2: {
 		title: "Level 2",
 		playerCount: 8,
 		inventory: [
-			{ itemKey: "Ladder", amount: 2 },
-			{ itemKey: "Rope", amount: 3 },
+			{ itemKey: "Stairs", amount: 10 },
+			{ itemKey: "Rope", amount: 10 },
 		],
 	},
 } as const satisfies { [key: string]: LevelDef };
