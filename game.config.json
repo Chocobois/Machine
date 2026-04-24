@@ -3,7 +3,7 @@
   "title": "Kobots",
   "description": "We make game, but faster!",
   "itch": {
-    "upload": false,
+    "upload": true,
     "username": "golen",
     "game": "kobots"
   },
