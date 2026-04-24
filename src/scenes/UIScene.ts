@@ -2,8 +2,8 @@ import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
 
-export const UI_HEIGHT = 170;
-export const UI_SIZE = 150;
+export const UI_HEIGHT = 140;
+export const UI_SIZE = 120;
 
 export class UIScene extends BaseScene {
 	private panel: Phaser.GameObjects.Container;
@@ -87,8 +87,6 @@ export class UIScene extends BaseScene {
 	}
 
 	onSetInventory(inventory: Inventory) {
-		console.log("UIScene.onSetInventory");
-
 		this.itemButtons.forEach((itemButton) => itemButton.destroy());
 		this.itemButtons = [];
 
@@ -106,11 +104,10 @@ export class UIScene extends BaseScene {
 	}
 
 	onUpdateInventory(inventory: Inventory) {
-		console.log("UIScene.onUpdateInventory");
-
 		inventory.forEach((item: InventoryItem, index: number) => {
 			const itemButton = this.itemButtons[index];
 			itemButton.selected = !!item.selected;
+			itemButton.setAmount(item.amount);
 		});
 	}
 }

@@ -27,4 +27,8 @@ export class Cursor extends Phaser.GameObjects.Container {
 	setIcon(key: string) {
 		this.icon.setTexture(key);
 	}
+
+	setAllowed(allowed: boolean) {
+		this.square.setTint(allowed ? 0x00bb00 : 0xff0000);
+	}
 }

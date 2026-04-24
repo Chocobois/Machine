@@ -1,11 +1,4 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import {
-	NeighborTypes,
-	SIZE,
-	Tile,
-	TileCoord,
-	tileToCoord,
-} from "./tiles/Tile";
 
 const anim = [1, 2, 1, 3]
 const sprites = [

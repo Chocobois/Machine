@@ -42,11 +42,19 @@
             "scaleInDock": 1
         },
         "maps/level1.tmx": {
-            "scale": 3,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 241.33333333333331,
-                "y": 159.33333333333331
+                "x": 244.5,
+                "y": 183
+            }
+        },
+        "maps/level2.tmx": {
+            "scale": 2.8269,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 185.00831299303124,
+                "y": 107.53829282960135
             }
         },
         "rules/AutoTileRules.tmx": {
@@ -83,14 +91,16 @@
     "map.tileWidth": 16,
     "openFiles": [
         "maps/level1.tmx",
+        "maps/level2.tmx",
         "rules/AutoTileRules.tmx",
         "tilesets/castle_decor.tsx"
     ],
     "project": "machine.tiled-project",
     "recentFiles": [
-        "maps/level1.tmx",
         "tilesets/castle_decor.tsx",
         "rules/AutoTileRules.tmx",
+        "maps/level2.tmx",
+        "maps/level1.tmx",
         "tilesets/colliders.tsx",
         "tilesets/castle_walls.tsx",
         "tilesets/collision.tsx",

@@ -1,18 +1,26 @@
 import { Player } from "@/components/Player";
-import { Rope } from "@/components/Rope";
 import { TILE_UPSCALE, TileManager } from "@/logic/TileManager";
 import {
 	SIZE,
 	Tile,
-	tileToCoord,
-	NeighborTypes,
+	NeighborTiles,
 	TileCoord,
-} from "@/components/tiles/Tile";
+	NeighborEntities,
+} from "@/logic/Tile";
 import { BaseScene } from "@/scenes/BaseScene";
-import { Inventory, InventoryItem, items } from "@/logic/Inventory";
-import { Level, levels } from "@/logic/levels";
+import { Inventory, InventoryItem } from "@/logic/Inventory";
+import { LevelKey, levels } from "@/logic/levels";
 import { UI_HEIGHT } from "./UIScene";
 import { Cursor } from "@/components/Cursor";
+import { Item, ItemKey } from "@/logic/Item";
+
+import { Entity } from "@/components/tiles/Entity";
+import { Rope } from "@/components/Rope";
+import { Gold } from "@/components/tiles/Gold";
+import { Stairs } from "@/components/tiles/Stairs";
+import { Spikes } from "@/components/tiles/Spikes";
+import { Home } from "@/components/tiles/Home";
+import { Fan } from "@/components/tiles/Fan";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -21,19 +29,26 @@ enum InputMode {
 }
 
 export class GameScene extends BaseScene {
+	// World
 	private tileManager: TileManager;
+	private entities: Entity[];
 
+	// Kobots
 	private players: Player[] = [];
-	private pressedTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
-	private previousTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
 
 	// Input
 	private inputMode: InputMode;
+	private isHolding = false;
 	private isDraggingCamera = false;
+	private isUsingItem = false;
+	private dragStartPosition = new Phaser.Math.Vector2();
 	private lastPointerPosition = new Phaser.Math.Vector2();
 	private cursor: Cursor;
+	private readonly DRAG_THRESHOLD = 16;
+	// private pressedTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
+	// private previousTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
 
-	private inventory: InventoryItem[] = [];
+	private inventory: Inventory = [];
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -44,13 +59,8 @@ export class GameScene extends BaseScene {
 		this.cameras.main.setBackgroundColor(0x63ad9d);
 
 		this.tileManager = new TileManager(this);
-		this.loadLevel(levels.level1);
-
-		for (let i = 0; i < 10; i++) {
-			this.addEvent(400 * i, () => {
-				this.addPlayer(4, 4);
-			});
-		}
+		this.entities = [];
+		this.loadLevel("level1");
 
 		/* Input handling */
 
@@ -61,261 +71,8 @@ export class GameScene extends BaseScene {
 		this.setInputMode(InputMode.Camera);
 	}
 
-	loadLevel(level: Level) {
-		this.tileManager.loadTilemap(level.tilemapKey);
-
-		// Copy inventory to avoid mutation
-		this.inventory = level.inventory.map((item) => ({
-			item: item.item,
-			amount: item.amount,
-		}));
-
-		this.events.emit("setInventory", this.inventory);
-	}
-
-	update(time: number, delta: number) {
-		this.players.forEach((player) => {
-			player.update(time, delta);
-		});
-
-		const mouseTile = this.mouseTileCoord;
-		const { x: mx, y: my } = tileToCoord(mouseTile);
-		this.cursor.setPosition(mx, my);
-
-		// Update cursor color based on rope placement validity
-		// const canPlace = this.canPlaceRope(mouseTile);
-		// if (canPlace) {
-		// 	this.cursor.setTint(0x00ff00); // Green for valid
-		// } else {
-		// 	this.cursor.setTint(0xff0000); // Red for invalid
-		// }
-
-		// Handle dragging to extend/remove rope
-		if (this.pressedTile && this.input.activePointer.isDown) {
-			// Check if we moved to a different tile
-			const previousOrPressed =
-				this.previousTile?.tileCoord || this.pressedTile.tileCoord;
-			// if (!this.sameTile(mouseTile, previousOrPressed)) {
-			// 	// Dragging down - expand rope
-			// 	if (
-			// 		this.previousTile &&
-			// 		this.isRopeAt(this.previousTile.tileCoord) &&
-			// 		mouseTile.tileY > this.previousTile.tileCoord.tileY &&
-			// 		mouseTile.tileX === this.pressedTile.tileCoord.tileX
-			// 	) {
-			// 		// if (this.canPlaceRope(mouseTile)) {
-			// 		this.createRope(mouseTile);
-			// 		// }
-			// 	}
-
-			// 	// Dragging up - remove rope
-			// 	if (
-			// 		this.isRopeAt(mouseTile) &&
-			// 		this.previousTile &&
-			// 		this.isRopeAt(this.previousTile.tileCoord) &&
-			// 		this.previousTile.tileCoord.tileY > mouseTile.tileY
-			// 	) {
-			// 		this.deleteRope(mouseTile);
-			// 	}
-
-			// 	this.previousTile = {
-			// 		tileCoord: mouseTile,
-			// 		tileType: this.getTileAt(mouseTile),
-			// 	};
-			// }
-		}
-	}
-
-	getNeighborTypes({ tileX, tileY }: TileCoord): NeighborTypes {
-		const getType = (x: number, y: number): Tile => {
-			// const entity = this.entities[y]?.[x];
-			// if (entity) {
-			// 	return entity.tile;
-			// }
-			return this.tileManager.getTileAt({ tileX: x, tileY: y });
-		};
-
-		return {
-			center: getType(tileX, tileY),
-			up: getType(tileX, tileY - 1),
-			down: getType(tileX, tileY + 1),
-			left: getType(tileX - 1, tileY),
-			right: getType(tileX + 1, tileY),
-		};
-	}
-
-	addPlayer(tileX: number, tileY: number) {
-		const player = new Player(this);
-		this.players.push(player);
-
-		player.on("neighbors", () => {
-			const neighbors = this.getNeighborTypes(player.tileCoord);
-			player.updateAction(neighbors);
-		});
-		player.setTile({ tileX, tileY });
-	}
-
-	get mouseTileCoord(): TileCoord {
-		const worldPoint = this.cameras.main.getWorldPoint(
-			this.input.activePointer.x,
-			this.input.activePointer.y,
-		);
-		return {
-			tileX: Math.floor(worldPoint.x / SIZE),
-			tileY: Math.floor(worldPoint.y / SIZE),
-		};
-	}
-
-	// private isRopeAt({ tileX, tileY }: TileCoord): boolean {
-	// 	return this.entities[tileY]?.[tileX] instanceof Rope;
-	// }
-
-	// canPlaceRope({ tileX, tileY }: TileCoord): boolean {
-	// 	// Can't place rope where rope already exists
-	// 	if (this.isRopeAt({ tileX, tileY })) {
-	// 		return true;
-	// 	}
-
-	// 	const center = this.tiles[tileY]?.[tileX] ?? Tile.None;
-	// 	const up = this.tiles[tileY - 1]?.[tileX] ?? Tile.None;
-
-	// 	// Valid: Type.None with Type.Wall above
-	// 	if (center === Tile.None && up === Tile.Wall) {
-	// 		return true;
-	// 	}
-
-	// 	// Valid: Type.Platform (center is Platform)
-	// 	if (center === Tile.Platform) {
-	// 		return true;
-	// 	}
-
-	// 	return false;
-	// }
-
-	// public getRopeNeighborTypes({ tileX, tileY }: TileCoord): NeighborTypes {
-	// 	const tileUp = this.tiles[tileY - 1]?.[tileX] ?? Tile.None;
-	// 	const tileDown = this.tiles[tileY + 1]?.[tileX] ?? Tile.None;
-	// 	const ropeUp = this.isRopeAt({ tileX, tileY: tileY - 1 })
-	// 		? Tile.Rope
-	// 		: Tile.None;
-	// 	const ropeDown = this.isRopeAt({ tileX, tileY: tileY + 1 })
-	// 		? Tile.Rope
-	// 		: Tile.None;
-
-	// 	return {
-	// 		center: Tile.Rope,
-	// 		up: ropeUp !== Tile.None ? ropeUp : tileUp,
-	// 		down: ropeDown !== Tile.None ? ropeDown : tileDown,
-	// 		left: Tile.None,
-	// 		right: Tile.None,
-	// 	};
-	// }
-
-	// private createRope({ tileX, tileY }: TileCoord): void {
-	// 	if (!this.entities[tileY]?.[tileX]) {
-	// 		const rope = new Rope(this, tileX, tileY);
-	// 		this.entities[tileY][tileX] = rope;
-	// 		this.updateRopesSprites(tileX);
-	// 	}
-	// }
-
-	// private deleteRope({ tileX, tileY }: TileCoord): void {
-	// 	const entity = this.entities[tileY]?.[tileX];
-	// 	if (entity instanceof Rope) {
-	// 		entity.destroy();
-	// 		this.entities[tileY][tileX] = undefined;
-	// 		this.updateRopesSprites(tileX);
-	// 	}
-	// }
-
-	// private deleteRopeRecursive({ tileX, tileY }: TileCoord): void {
-	// 	if (!this.isRopeAt({ tileX, tileY })) {
-	// 		return;
-	// 	}
-
-	// 	this.deleteRope({ tileX, tileY });
-
-	// 	// Recursively delete connected ropes above and below
-	// 	this.deleteRopeRecursive({ tileX, tileY: tileY - 1 });
-	// 	this.deleteRopeRecursive({ tileX, tileY: tileY + 1 });
-	// }
-
-	// private updateRopesSprites(tileX: number): void {
-	// 	// Update all ropes in this column
-	// 	for (let tileY = 0; tileY < this.entities.length; tileY++) {
-	// 		const entity = this.entities[tileY]?.[tileX];
-	// 		if (entity instanceof Rope) {
-	// 			entity.updateSprite(this.getRopeNeighborTypes({ tileX, tileY }));
-	// 		}
-	// 	}
-	// }
-
-	/* Input handling */
-
-	setInputMode(inputMode: InputMode) {
-		this.inputMode = inputMode;
-
-		this.cursor.setVisible(inputMode == InputMode.Build);
-	}
-
 	setupListeners() {
 		this.scene.get("UIScene").events.on("toggleItem", this.onToggleItem, this);
-	}
-
-	setupInput() {
-		this.input.on("pointerdown", this.onPointerDown, this);
-		this.input.on("pointerup", this.onPointerUp, this);
-		this.input.on("pointerupoutside", this.onPointerUp, this);
-		this.input.on("pointermove", this.onPointerMove, this);
-
-		this.cursor = new Cursor(this).setDepth(100);
-	}
-
-	private onPointerDown(pointer: Phaser.Input.Pointer): void {
-		// Ignore if in build mode
-		if (this.inputMode != InputMode.Camera) return;
-
-		this.isDraggingCamera = true;
-		this.lastPointerPosition.set(pointer.x, pointer.y);
-
-		// 	const tileCoord = this.mouseTileCoord;
-		// 	const tileType = this.tileManager.getTileAt(tileCoord);
-		// if (this.canPlaceRope(tileCoord)) {
-		// 	this.pressedTile = { tileCoord, tileType };
-		// 	this.createRope(tileCoord);
-		// 	this.previousTile = { tileCoord, tileType };
-		// }
-	}
-
-	private onPointerUp(pointer: Phaser.Input.Pointer): void {
-		this.isDraggingCamera = false;
-
-		// 	if (this.pressedTile) {
-		// 		// Delete rope if: started on rope, didn't move
-		// 		if (
-		// 			this.pressedTile.tileType === Tile.Rope &&
-		// 			this.previousTile === null
-		// 		) {
-		// 			this.deleteRopeRecursive(this.pressedTile.tileCoord);
-		// 		}
-		// 	}
-		// 	this.pressedTile = null;
-		// 	this.previousTile = null;
-	}
-
-	private onPointerMove(pointer: Phaser.Input.Pointer): void {
-		if (!this.isDraggingCamera) return;
-
-		const dx = pointer.x - this.lastPointerPosition.x;
-		const dy = pointer.y - this.lastPointerPosition.y;
-
-		const cam = this.cameras.main;
-
-		// Move opposite to drag direction for "grab world" feel
-		cam.scrollX -= dx / cam.zoom;
-		cam.scrollY -= dy / cam.zoom;
-
-		this.lastPointerPosition.set(pointer.x, pointer.y);
 	}
 
 	setupCamera() {
@@ -331,27 +88,267 @@ export class GameScene extends BaseScene {
 			worldHeight * TILE_UPSCALE + UI_HEIGHT / zoomLevel - 16 * TILE_UPSCALE,
 		);
 		this.cameras.main.setZoom(zoomLevel);
-
-		// Center camera on level
-		// this.cameras.main.centerOn(
-		// 	(this.width * SIZE) / 2,
-		// 	(this.height * SIZE) / 2,
-		// );
-		// // Zoom to fit the entire level
-		// const zoom = Math.min(
-		// 	this.W / (this.width * SIZE),
-		// 	this.H / (this.height * SIZE),
-		// );
-		// this.cameras.main.zoomTo(zoom, 0);
-		// this.cameras.main.zoomTo(0.3, 0);
 	}
 
-	// get tiles(): Tile[][] {
-	// 	return this.tileManager.tiles;
-	// }
+	update(time: number, delta: number) {
+		this.players.forEach((player) => {
+			player.update(time, delta);
+		});
+
+		this.entities.forEach((entity) => {
+			entity.update(time, delta);
+		});
+
+		const mouseTile = this.getMouseTileCoord();
+		const { x: mx, y: my } = TileCoord.tileToCoord(mouseTile);
+		this.cursor.setPosition(mx, my);
+		this.cursor.setAllowed(this.canUseItem(mouseTile));
+	}
+
+	/* Tiles */
+
+	loadLevel(key: LevelKey) {
+		const entityTiles = this.tileManager.loadTilemap(key);
+		const homeCoords: TileCoord[] = [];
+
+		for (let y = 0; y < this.tileManager.height; y++) {
+			for (let x = 0; x < this.tileManager.width; x++) {
+				const tile = entityTiles[y][x];
+				if (tile) {
+					const tileCoord = { x, y };
+					const entity = this.createEntityFromTile(tile, tileCoord);
+
+					if (entity) {
+						this.entities.push(entity);
+						this.refreshEntitySprites(tileCoord);
+					}
+
+					if (tile == "Home") {
+						homeCoords.push(tileCoord);
+					}
+				}
+			}
+		}
+
+		this.setInventory(levels[key].inventory);
+
+		this.spawnPlayers(levels[key].playerCount, homeCoords);
+	}
+
+	getEntitiesAt(tileCoord: TileCoord): Entity[] {
+		return this.entities.filter((entity) =>
+			TileCoord.compare(entity.tileCoord, tileCoord),
+		);
+	}
+
+	getNeighborEntities({ x, y }: TileCoord): NeighborEntities {
+		return {
+			center: this.getEntitiesAt({ x: x, y: y }),
+			north: this.getEntitiesAt({ x: x, y: y - 1 }),
+			ne: this.getEntitiesAt({ x: x + 1, y: y - 1 }),
+			east: this.getEntitiesAt({ x: x + 1, y: y }),
+			se: this.getEntitiesAt({ x: x + 1, y: y + 1 }),
+			south: this.getEntitiesAt({ x: x, y: y + 1 }),
+			sw: this.getEntitiesAt({ x: x - 1, y: y + 1 }),
+			west: this.getEntitiesAt({ x: x - 1, y: y }),
+			nw: this.getEntitiesAt({ x: x - 1, y: y - 1 }),
+		};
+	}
+
+	getTileAt(tileCoord: TileCoord): Tile[] {
+		const tiles = [
+			this.tileManager.getTileAt(tileCoord),
+			...this.getEntitiesAt(tileCoord).map((entity) => entity.tile),
+		];
+		if (tiles.length >= 2) return tiles.filter((tile) => tile != "None");
+		return tiles;
+	}
+
+	getNeighborTiles({ x, y }: TileCoord): NeighborTiles {
+		return {
+			center: this.getTileAt({ x: x, y: y }),
+			north: this.getTileAt({ x: x, y: y - 1 }),
+			ne: this.getTileAt({ x: x + 1, y: y - 1 }),
+			east: this.getTileAt({ x: x + 1, y: y }),
+			se: this.getTileAt({ x: x + 1, y: y + 1 }),
+			south: this.getTileAt({ x: x, y: y + 1 }),
+			sw: this.getTileAt({ x: x - 1, y: y + 1 }),
+			west: this.getTileAt({ x: x - 1, y: y }),
+			nw: this.getTileAt({ x: x - 1, y: y - 1 }),
+		};
+	}
+
+	/* Input handling */
+
+	setupInput() {
+		this.input.on("pointerdown", this.onPointerDown, this);
+		this.input.on("pointerup", this.onPointerUp, this);
+		this.input.on("pointerupoutside", this.onPointerUp, this);
+		this.input.on("pointermove", this.onPointerMove, this);
+
+		this.cursor = new Cursor(this).setDepth(100);
+	}
+
+	setInputMode(inputMode: InputMode) {
+		this.inputMode = inputMode;
+		this.cursor.setVisible(inputMode == InputMode.Build);
+	}
+
+	onPointerDown(pointer: Phaser.Input.Pointer): void {
+		if (this.inputMode == InputMode.Cutscene) return;
+
+		// Store initial position for drag threshold detection
+		this.dragStartPosition.set(pointer.x, pointer.y);
+		this.lastPointerPosition.set(pointer.x, pointer.y);
+
+		this.isHolding = true;
+		this.isDraggingCamera = false;
+		this.isUsingItem = false;
+
+		if (this.inputMode == InputMode.Build) {
+			this.attemptUseItem();
+		}
+	}
+
+	onPointerMove(pointer: Phaser.Input.Pointer): void {
+		if (this.inputMode == InputMode.Cutscene) return;
+
+		if (this.isUsingItem) {
+			this.attemptUseItem();
+		} else if (this.isDraggingCamera) {
+			const dx = pointer.x - this.lastPointerPosition.x;
+			const dy = pointer.y - this.lastPointerPosition.y;
+
+			this.cameras.main.scrollX -= dx / this.cameras.main.zoom;
+			this.cameras.main.scrollY -= dy / this.cameras.main.zoom;
+		} else if (this.isHolding) {
+			const dragDistance = Phaser.Math.Distance.Between(
+				this.dragStartPosition.x,
+				this.dragStartPosition.y,
+				pointer.x,
+				pointer.y,
+			);
+			if (dragDistance >= this.DRAG_THRESHOLD) {
+				this.isDraggingCamera = true;
+			}
+		}
+
+		this.lastPointerPosition.set(pointer.x, pointer.y);
+	}
+
+	onPointerUp(pointer: Phaser.Input.Pointer): void {
+		this.isHolding = false;
+		this.isDraggingCamera = false;
+		this.isUsingItem = false;
+	}
+
+	getMouseTileCoord(): TileCoord {
+		const worldPoint = this.cameras.main.getWorldPoint(
+			this.input.activePointer.x,
+			this.input.activePointer.y,
+		);
+		return {
+			x: Math.floor(worldPoint.x / SIZE),
+			y: Math.floor(worldPoint.y / SIZE),
+		};
+	}
+
+	/* Entities */
+
+	spawnPlayers(playerCount: number, homeCoords: TileCoord[]) {
+		if (homeCoords.length == 0) {
+			console.warn("No Home tile found");
+			homeCoords.push({
+				x: Math.floor(this.tileManager.width / 2),
+				y: Math.floor(this.tileManager.height / 2),
+			});
+		}
+
+		for (let i = 0; i < playerCount; i++) {
+			this.addEvent(1000 + 500 * i, () => {
+				// Cycle between homes in case there are multiple
+				const homeCoord = homeCoords[i % homeCoords.length];
+				this.addPlayer(homeCoord);
+			});
+		}
+	}
+
+	addPlayer(tileCoord: TileCoord) {
+		const player = new Player(this);
+		player.setDepth(10);
+		this.players.push(player);
+
+		player.on("neighbors", () => {
+			const neighbors = this.getNeighborTiles(player.tileCoord);
+			player.updateAction(neighbors);
+		});
+		player.on("collect", () => {
+			// Fetch gold entity
+			const goldEntity = this.getEntitiesAt(player.tileCoord).find(
+				(entity) => entity.tile == "Gold",
+			);
+
+			if (goldEntity) {
+				player.setHeldItem(goldEntity.tile); // Add goldEntity sprite data
+
+				this.entities = this.entities.filter((entity) => entity != goldEntity);
+				goldEntity.destroy();
+			}
+		});
+		player.setTileCoord(tileCoord);
+	}
+
+	createEntityFromTile(tile: Tile, tileCoord: TileCoord): Entity | undefined {
+		switch (tile) {
+			case "Home":
+				return new Home(this, tileCoord);
+			case "Climb":
+				return new Rope(this, tileCoord);
+			case "Gold":
+				return new Gold(this, tileCoord);
+			case "Death":
+				return new Spikes(this, tileCoord);
+
+			case "None":
+				return;
+			default:
+				console.warn("Unknown entity");
+		}
+	}
+
+	createEntityFromItem(key: ItemKey, tileCoord: TileCoord): Entity {
+		switch (key) {
+			case "Ladder":
+			case "Rope":
+				return new Rope(this, tileCoord);
+			case "Gold":
+				return new Gold(this, tileCoord);
+			case "Stairs":
+				return new Stairs(this, tileCoord);
+			case "Fan":
+				return new Fan(this, tileCoord);
+		}
+	}
+
+	refreshEntitySprites(tileCoord: TileCoord) {
+		const neighbors = this.getNeighborEntities(tileCoord);
+		Object.values(neighbors).forEach((entities) => {
+			entities.forEach((entity) => {
+				entity.updateSprite(this.getNeighborTiles(entity.tileCoord));
+			});
+		});
+	}
+
+	/* Inventory */
+
+	setInventory(inventory: Inventory) {
+		// Shallow copy inventory to avoid mutation
+		this.inventory = inventory.map((item) => ({ ...item }));
+
+		this.events.emit("setInventory", this.inventory);
+	}
 
 	onToggleItem(item: InventoryItem) {
-		console.log("GameScene.onToggleItem");
 		if (this.inputMode == InputMode.Cutscene) return;
 
 		if (item.selected) {
@@ -360,8 +357,63 @@ export class GameScene extends BaseScene {
 		} else {
 			this.inventory.forEach((item) => (item.selected = false));
 			item.selected = true;
-			this.cursor.setIcon(item.item.image);
+			this.cursor.setIcon(Item[item.itemKey].image);
 			this.setInputMode(InputMode.Build);
+		}
+
+		this.events.emit("updateInventory", this.inventory);
+	}
+
+	getSelectedItem(): InventoryItem | undefined {
+		return this.inventory.find((item) => !!item.selected);
+	}
+
+	attemptUseItem() {
+		const item = this.getSelectedItem();
+		if (item) {
+			const tileCoord = this.getMouseTileCoord();
+
+			if (this.canUseItem(tileCoord)) {
+				const entity = this.createEntityFromItem(item.itemKey, tileCoord);
+				this.entities.push(entity);
+				this.refreshEntitySprites(tileCoord);
+
+				// Create updrafts if this is a fan
+				if (entity instanceof Fan) {
+					entity.createUpdrafts(this);
+				}
+
+				this.useItem(item);
+			}
+		}
+	}
+
+	canUseItem(tileCoord: TileCoord): boolean {
+		const item = this.getSelectedItem();
+		if (!item) return false;
+		if (item.amount <= 0) return false;
+
+		const neighbors = this.getNeighborTiles(tileCoord);
+
+		if (neighbors.center.includes(Item[item.itemKey].tile)) return false;
+
+		return Item[item.itemKey].allowedPlacements.some((rule) => {
+			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
+				([dir, requiredTile]) => {
+					const tilesAtDir = neighbors[dir];
+					return tilesAtDir.includes(requiredTile);
+				},
+			);
+		});
+	}
+
+	useItem(item: InventoryItem) {
+		this.isUsingItem = true;
+
+		item.amount -= 1;
+		if (item.amount <= 0) {
+			item.selected = false;
+			this.setInputMode(InputMode.Camera);
 		}
 
 		this.events.emit("updateInventory", this.inventory);

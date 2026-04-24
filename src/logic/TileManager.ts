@@ -1,7 +1,6 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Tile, TileCoord } from "../components/tiles/Tile";
-import { Rope } from "../components/Rope";
-import { Level } from "./levels";
+import { Tile, TileCoord } from "./Tile";
+import { LevelKey } from "./levels";
 
 export const TILE_UPSCALE = 16;
 
@@ -10,14 +9,13 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 	private map: Phaser.Tilemaps.Tilemap;
 	private tiles: Tile[][];
-	private entities: (Rope | undefined)[][];
 
 	constructor(scene: BaseScene) {
 		super(scene);
 		this.scene = scene;
 	}
 
-	loadTilemap(tilemapKey: string) {
+	loadTilemap(tilemapKey: LevelKey): Tile[][] {
 		/* Map */
 
 		this.map = this.scene.make.tilemap({ key: tilemapKey });
@@ -29,26 +27,32 @@ export class TileManager extends Phaser.GameObjects.Container {
 		const tilesetWalls = this.map.addTilesetImage(
 			"tileset_walls",
 			"texture_walls",
-		)!;
+		);
 		const tilesetColliders = this.map.addTilesetImage(
 			"tileset_colliders",
 			"texture_colliders",
-		)!;
+		);
 		const tilesetDecor = this.map.addTilesetImage(
 			"tileset_decoration",
 			"texture_decoration",
-		)!;
+		);
+		if (!tilesetWalls) throw Error("Tileset 'tileset_walls' not found");
+		if (!tilesetColliders) throw Error("Tileset 'tileset_colliders' not found");
+		if (!tilesetDecor) throw Error("Tileset 'tileset_decoration' not found");
 
 		/* Graphics */
 
 		const layerDecor = this.map.createLayer("layer_decoration", tilesetDecor);
 		const layerWalls = this.map.createLayer("layer_walls_visual", tilesetWalls);
 		const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
+		if (!layerDecor) throw Error("Layer 'layer_decoration' not found");
+		if (!layerWalls) throw Error("Layer 'layer_walls_visual' not found");
+		if (!layerLogic) throw Error("Layer 'layer_logic' not found");
 
-		layerDecor?.setScale(TILE_UPSCALE);
-		layerWalls?.setScale(TILE_UPSCALE);
-		layerLogic?.setScale(TILE_UPSCALE);
-		layerWalls?.setPosition((16 / 2) * TILE_UPSCALE);
+		layerDecor.setScale(TILE_UPSCALE);
+		layerWalls.setScale(TILE_UPSCALE);
+		layerLogic.setScale(TILE_UPSCALE).setAlpha(0);
+		layerWalls.setPosition((16 / 2) * TILE_UPSCALE);
 
 		/* Physics */
 
@@ -58,64 +62,66 @@ export class TileManager extends Phaser.GameObjects.Container {
 		if (!layerDataLogic) throw Error("Can't find layer 'layer_logic'");
 
 		this.tiles = [];
-		this.entities = [];
+		const entityTiles: Tile[][] = [];
 
 		for (let y = 0; y < this.height; y++) {
 			this.tiles[y] = [];
-			this.entities[y] = [];
+			entityTiles[y] = [];
 
 			for (let x = 0; x < this.width; x++) {
-				let result = Tile.None;
-
 				const wallTile = layerDataWalls.data[y][x];
 				if (wallTile && wallTile.index !== -1) {
-					result = this.mapTileToEnum(wallTile);
+					this.tiles[y][x] = this.mapTileToEnum(wallTile);
 				}
 
 				const entityTile = layerDataLogic.data[y][x];
 				if (entityTile && entityTile.index !== -1) {
-					const mapped = this.mapTileToEnum(entityTile);
-					if (mapped !== Tile.None) {
-						result = mapped;
-					}
+					entityTiles[y][x] = this.mapTileToEnum(entityTile);
 				}
-
-				this.tiles[y][x] = result;
 			}
 		}
+
+		return entityTiles;
 	}
 
 	private mapTileToEnum(tile: Phaser.Tilemaps.Tile): Tile {
-		const tileProp = tile.properties.tile;
+		switch (tile.properties.tile) {
+			// Walls
+			case "Wall":
+				return Tile.Wall;
+			case "Platform":
+				return Tile.Platform;
 
-		if (!tileProp) return Tile.None;
+			// Entities
+			case "Home":
+				return Tile.Home;
+			case "Gold":
+				return Tile.Gold;
+			case "Climb":
+				return Tile.Climb;
+			case "Death":
+				return Tile.Death;
 
-		const type = Tile[tileProp as keyof typeof Tile];
-		if (!type) console.warn("Unknown type", tileProp);
-		return type ?? Tile.None;
-	}
-
-	public isInside({ tileX, tileY }: TileCoord): boolean {
-		return (
-			tileX >= 0 && tileY >= 0 && tileX < this.width && tileY < this.height
-		);
-	}
-
-	public getTileAt({ tileX, tileY }: TileCoord): Tile {
-		if (!this.isInside({ tileX, tileY })) return Tile.Wall;
-
-		// Check if entity exists at this location first
-		const entity = this.entities[tileY]?.[tileX];
-		if (entity) {
-			return entity.tile;
+			default:
+				console.warn(`Unknown tile property: ${tile.properties.tile}`);
+				return Tile.None;
 		}
-		// Otherwise return the static tile type
-		return this.tiles[tileY]?.[tileX] ?? Tile.None;
 	}
 
-	public sameTile(tile1: TileCoord, tile2: TileCoord): boolean {
-		return tile1.tileX === tile2.tileX && tile1.tileY === tile2.tileY;
+	public isInside({ x, y }: TileCoord): boolean {
+		return x >= 0 && y >= 0 && x < this.width && y < this.height;
 	}
+
+	public getTileAt(tileCoord: TileCoord): Tile {
+		if (!this.isInside(tileCoord)) return "Wall";
+
+		// Otherwise return the static tile type
+		return this.tiles[tileCoord.y]?.[tileCoord.x] ?? "None";
+	}
+
+	// public getEntityAt(tileCoord: TileCoord): Entity | undefined {
+	// 	return this.entities.find((entity) => entity.tileCoord == tileCoord);
+	// }
 
 	get widthInPixels(): number {
 		return this.map.widthInPixels;
