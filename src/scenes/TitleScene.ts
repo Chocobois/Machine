@@ -16,6 +16,16 @@ role
 role
 role`;
 
+const slideinduration = 2000;
+const botspawninterval = 800;
+
+enum MainMenuState {
+  NotStarted,
+  SlideIn,
+  Idle,
+  Starting
+}
+
 export class TitleScene extends BaseScene {
 	public sky: Phaser.GameObjects.Image;
 	public background: Phaser.GameObjects.Image;
@@ -32,14 +42,17 @@ export class TitleScene extends BaseScene {
 	public select2: Phaser.Sound.WebAudioSound;
 
 	public isStarting: boolean;
+	public state: MainMenuState;
 
 	public bots: MainMenuKobot[];
+	private botspawntimer = botspawninterval;
 
 	constructor() {
 		super({ key: "TitleScene" });
 	}
 
 	create(): void {
+		this.state = MainMenuState.NotStarted;
 		this.fade(false, 200, 0x000000);
 
 		this.sky = this.add.image(this.CX, this.CY, "title_sky");
@@ -51,53 +64,23 @@ export class TitleScene extends BaseScene {
 		this.containToScreen(this.sky);
 		this.containToScreen(this.background);
 		this.containToScreen(this.foreground);
-		this.logo.y += 9000
-		this.taptoplay.y += 9000
-
-		this.background.setVisible(false);
-		this.background.setAlpha(0);
+		this.background.y += 9000;
+		this.foreground.y += 9000;
+		this.logo.y += 9000;
+		this.taptoplay.y += 9000;
 
 		this.bots = [];
-		for(let i = 0; i < 10; i++)
-		{
-			this.addEvent(2000 + 1000 * i, () => {
-				let bot = new MainMenuKobot(this)
-				bot.move();
-				this.bots.push(bot);
-			})
-		}
-
-		this.tweens.add({
-			targets: [this.background, this.foreground],
-			y: {from: 1000, to: 0},
-			duration: 2000,
-			ease: Phaser.Math.Easing.Cubic.Out
-		})
-		this.tweens.add({
-			targets: [this.logo],
-			y: {from: 1170, to: 170},
-			duration: 2000,
-			delay: 400,
-			ease: Phaser.Math.Easing.Cubic.Out
-		})
-		this.tweens.add({
-			targets: [this.taptoplay],
-			y: {from: 1350, to: 350},
-			duration: 2000,
-			delay: 400,
-			ease: Phaser.Math.Easing.Cubic.Out
-		})
 
 		this.tap = this.addText({
 			x: this.CX,
 			y: this.CY,
-			size: 140,
-			color: "#000",
+			size: 120,
+			color: "#FFF",
 			text: "Tap to focus",
 		});
 		this.tap.setOrigin(0.5);
-		this.tap.setAlpha(-1);
-		this.tap.setStroke("#FFF", 4);
+		this.tap.setAlpha(1);
+		this.tap.setStroke("#000", 16);
 		this.tap.setPadding(2);
 
 		this.version = this.addText({
@@ -111,10 +94,12 @@ export class TitleScene extends BaseScene {
 		this.version.setAlpha(-1);
 		this.version.setStroke("#FFF", 4);
 		this.version.setPadding(2);
+		this.version.setDepth(20);
 
 		this.credits = this.add.container(0, 0);
 		this.credits.setVisible(false);
 		this.credits.setAlpha(0);
+		this.credits.setDepth(20);
 
 		let credits1 = this.addText({
 			x: 0.65 * this.W,
@@ -141,37 +126,90 @@ export class TitleScene extends BaseScene {
 		this.credits.add(credits2);
 
 		// Music
-		if (!this.musicTitle) {
-			this.musicTitle = new Music(this, "m_first", { volume: 0.4 });
-			this.musicTitle.on("bar", this.onBar, this);
-			this.musicTitle.on("beat", this.onBeat, this);
-
-			// this.select = this.sound.add("dayShift", { volume: 0.8, rate: 1.0 }) as Phaser.Sound.WebAudioSound;
-			// this.select2 = this.sound.add("nightShift", { volume: 0.8, rate: 1.0 }) as Phaser.Sound.WebAudioSound;
-		}
+		if (!this.musicTitle) { this.musicTitle = new Music(this, "m_first", { volume: 0.4 }); }
 		this.musicTitle.play();
 
 		// Input
-
 		this.input.keyboard
 			?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-			.on("down", this.progress, this);
+			.on("down", this.on_input, this);
 		this.input.on(
 			"pointerdown",
 			(pointer: PointerEvent) => {
 				if (pointer.button == 0) {
-					this.progress();
+					this.on_input();
 				}
 			},
 			this
 		);
+
 		this.isStarting = false;
 	}
 
+	set_state(_newstate: MainMenuState) {
+		this.state = _newstate;
+		switch(this.state) {
+			case MainMenuState.SlideIn:
+				//this.musicTitle.play();
+				this.tap.setVisible(false);
+				// Slide in Tweens
+				this.tweens.add({
+					targets: [this.background, this.foreground],
+					y: {from: 1000, to: 0},
+					duration: slideinduration,
+					ease: Phaser.Math.Easing.Cubic.Out
+				})
+				this.tweens.add({
+					targets: [this.logo],
+					y: {from: 1170, to: 170},
+					duration: slideinduration,
+					delay: 400,
+					ease: Phaser.Math.Easing.Cubic.Out
+				})
+				this.tweens.add({
+					targets: [this.taptoplay],
+					y: {from: 1350, to: 350},
+					duration: slideinduration,
+					delay: 400,
+					ease: Phaser.Math.Easing.Cubic.Out
+				})
+
+				this.addEvent(slideinduration, () => {
+						this.set_state(MainMenuState.Idle)
+				})
+
+				break;
+			case MainMenuState.Idle:
+				this.credits.setVisible(true);
+				break;
+			case MainMenuState.Starting:
+				this.sound.play("t_rustle", { volume: 0.3 });
+				this.isStarting = true;
+				this.flash(3000, 0xffffff, 0.6);
+
+				this.addEvent(1000, () => {
+					this.fade(true, 1000, 0x000000);
+					this.addEvent(1050, () => {
+						this.musicTitle.stop();
+						this.scene.start("GameScene");
+					});
+				});
+				break;
+		}
+	}
+	spawn_bot() {
+		let bot = new MainMenuKobot(this);
+		//bot.duration *= 1 + (Math.random() - 0.5 / 2);
+		bot.move();
+		this.addEvent(bot.duration * 2, () => {
+			bot.destroy()
+		});
+		this.bots.push(bot);
+	}
 	update(time: number, delta: number) {
-		if (this.background.visible) {
+		if (this.state > 0) {
 			this.logo.setOrigin(0, 0.5 + Math.sin((time / 2000) * Math.PI) * 0.05)
-			this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1 && time > 2200
+			this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1 && this.state > 1
 
 			this.background.alpha += 0.03 * (1 - this.background.alpha);
 
@@ -181,45 +219,34 @@ export class TitleScene extends BaseScene {
 			if (this.credits.visible) {
 				this.credits.alpha += 0.02 * (1 - this.credits.alpha);
 			}
-		} else {
-			this.tap.alpha += 0.01 * (1 - this.tap.alpha);
+			
+			if (this.state > 1){
+				this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1;
 
+				if (this.botspawntimer > 0) { this.botspawntimer -= delta }
+				else { 
+					this.spawn_bot();
+					this.botspawntimer = botspawninterval;
+				}
+			}
+			
+		} else {
 			if (this.musicTitle.seek > 0) {
-				this.background.setVisible(true);
+				this.set_state(MainMenuState.SlideIn)
 				this.tap.setVisible(false);
 			}
 		}
 		this.bots.forEach(bot => bot.update(time, delta));
 	}
 
-	progress() {
-		if (!this.background.visible) {
-			this.onBar(1);
-		} else if (!this.isStarting) {
-			this.sound.play("t_rustle", { volume: 0.3 });
-			// this.sound.play("m_slice", { volume: 0.3 });
-			// this.sound.play("u_attack_button", { volume: 0.5 });
-			// this.select2.play();
-			this.isStarting = true;
-			this.flash(3000, 0xffffff, 0.6);
-
-			this.addEvent(1000, () => {
-				this.fade(true, 1000, 0x000000);
-				this.addEvent(1050, () => {
-					this.musicTitle.stop();
-					this.scene.start("GameScene");
-				});
-			});
+	on_input(){
+		switch(this.state) {
+			case MainMenuState.NotStarted:
+				//this.set_state(MainMenuState.SlideIn)
+				break;
+			case MainMenuState.Idle:
+				this.set_state(MainMenuState.Starting)
+				break;
 		}
-	}
-
-	onBar(bar: number) {
-		if (bar >= 4) {
-			this.credits.setVisible(true);
-		}
-	}
-
-	onBeat(time: number) {
-		// this.select.play();
 	}
 }

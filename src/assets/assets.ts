@@ -31,11 +31,16 @@ export const images: Image[] = [
 /* Spritesheets */
 export const spritesheets: SpriteSheet[] = [
 	spritesheet("player", "characters/player.png", 256, 256),
-	spritesheet("mainmenukobot", "characters/tilekit_kobots.png", 32, 32),
 	spritesheet("wall", "tiles/wall.png", 256, 256),
 	spritesheet("platform", "tiles/platform.png", 256, 256),
 	spritesheet("rope", "tiles/rope.png", 256, 256),
 	spritesheet("gold", "tiles/gold.png", 256, 256),
+
+	spritesheet("kobot_red", "characters/kobot_red.png", 32, 32),
+	spritesheet("kobot_yellow", "characters/kobot_yellow.png", 32, 32),
+	spritesheet("kobot_green", "characters/kobot_green.png", 32, 32),
+	spritesheet("kobot_blue", "characters/kobot_blue.png", 32, 32),
+	spritesheet("kobot_violet", "characters/kobot_violet.png", 32, 32),
 ];
 
 /* Audios */
@@ -49,4 +54,4 @@ export const audios: Audio[] = [
 export const tilemaps: TileMap[] = [tilemap("level1", "maps/level1.json")];
 
 /* Fonts */
-await loadFont("Game Font", "Pixelade.ttf");
+await loadFont("Game Font", "editundo.ttf");
