@@ -14,7 +14,6 @@ export const images: Image[] = [
 	// Entities
 	image("gold", "tiles/gold.png"),
 	image("stairs", "tiles/stairs.png"),
-	image("spikes", "tiles/spikes.png"),
 
 	// UI
 	image("item_box", "ui/item_box.png"),
@@ -23,6 +22,7 @@ export const images: Image[] = [
 	image("item_rope", "ui/item_rope.png"),
 	image("item_stairs", "ui/item_stairs.png"),
 	image("item_fan", "ui/item_fan.png"),
+	image("item_zipline", "ui/item_zipline.png"),
 	image("ui_gold", "ui/ui_gold.png"),
 	image("ui_lives", "ui/ui_lives.png"),
 
@@ -37,18 +37,14 @@ export const images: Image[] = [
 
 /* Spritesheets */
 export const spritesheets: SpriteSheet[] = [
-	spritesheet("player", "characters/player.png", 256, 256),
-	spritesheet("wall", "tiles/wall.png", 256, 256),
-	spritesheet("platform", "tiles/platform.png", 256, 256),
-	spritesheet("rope", "tiles/rope.png", 256, 256),
+	spritesheet("entities", "castle/entities_64.png", 64, 64),
+	spritesheet("environment", "castle/environment_64.png", 64, 64),
 
 	spritesheet("kobots_red", "characters/kobots_red.png", 32, 32),
-	spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
-	spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
-	spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
-	spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
-	spritesheet("fan", "tiles/fan.png", 256, 256),
-	spritesheet("updraft", "tiles/updraft.png", 256, 256),
+	// spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
+	// spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
+	// spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
+	// spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
 ];
 
 /* Audios */

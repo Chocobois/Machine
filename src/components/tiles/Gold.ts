@@ -1,11 +1,12 @@
 import { GameScene } from "@/scenes/GameScene";
-import { TileCoord } from "@/logic/Tile";
+import { SIZE, TileCoord } from "@/logic/Tile";
 import { Entity } from "./Entity";
 
 export class Gold extends Entity {
 	constructor(scene: GameScene, tileCoord: TileCoord) {
 		super(scene, tileCoord);
 		this.tile = "Gold";
-		this.sprite.setTexture("gold");
+		this.sprite.setTexture("environment", 8);
+		this.sprite.setScale(SIZE / this.sprite.width);
 	}
 }

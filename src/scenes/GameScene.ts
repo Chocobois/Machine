@@ -21,6 +21,7 @@ import { Stairs } from "@/components/tiles/Stairs";
 import { Spikes } from "@/components/tiles/Spikes";
 import { Home } from "@/components/tiles/Home";
 import { Fan } from "@/components/tiles/Fan";
+import { Zipline } from "@/components/Zipline";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -327,6 +328,8 @@ export class GameScene extends BaseScene {
 				return new Stairs(this, tileCoord);
 			case "Fan":
 				return new Fan(this, tileCoord);
+			case "Zipline":
+				return new Zipline(this, tileCoord);
 		}
 	}
 

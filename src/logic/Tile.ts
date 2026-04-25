@@ -14,6 +14,7 @@ export const Tile = {
 	Stairs: "Stairs",
 	Fan: "Fan",
 	Updraft: "Updraft",
+	Zipline: "Zipline",
 	Death: "Death",
 } as const;
 export type Tile = (typeof Tile)[keyof typeof Tile];

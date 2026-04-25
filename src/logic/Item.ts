@@ -63,6 +63,21 @@ export const Item = {
 			{ center: "None", south: "Platform" },
 		],
 	},
+	Zipline: {
+		name: "Zipline",
+		image: "item_zipline",
+		tile: "Zipline",
+		allowedPlacements: [
+			{ center: "None", west: "Zipline" },
+			{ center: "None", east: "Zipline" },
+			{ center: "None", south: "Wall" },
+			{ center: "None", south: "Platform" },
+			{ center: "None", west: "Wall" },
+			{ center: "None", west: "Platform" },
+			{ center: "None", east: "Wall" },
+			{ center: "None", east: "Platform" },
+		],
+	},
 } satisfies { [key: string]: ItemDef };
 
 export type Item = (typeof Item)[keyof typeof Item];
