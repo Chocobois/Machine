@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="37" nextobjectid="11">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="39" nextobjectid="11">
  <editorsettings>
-  <export target="level1.json" format="json"/>
+  <export target="leveldev1.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="../tilesets/castle_decor.tsx"/>
  <tileset firstgid="25" source="../tilesets/colliders.tsx"/>
