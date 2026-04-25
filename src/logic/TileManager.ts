@@ -42,13 +42,16 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 		/* Graphics */
 
+		const layerPhysics = this.map.createLayer("layer_walls_physics", tilesetColliders);
 		const layerDecor = this.map.createLayer("layer_decoration", tilesetDecor);
 		const layerWalls = this.map.createLayer("layer_walls_visual", tilesetWalls);
 		const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
+		if (!layerPhysics) throw Error("Layer 'layer_physics' not found");
 		if (!layerDecor) throw Error("Layer 'layer_decoration' not found");
 		if (!layerWalls) throw Error("Layer 'layer_walls_visual' not found");
 		if (!layerLogic) throw Error("Layer 'layer_logic' not found");
 
+		layerPhysics.setScale(TILE_UPSCALE);
 		layerDecor.setScale(TILE_UPSCALE);
 		layerWalls.setScale(TILE_UPSCALE);
 		layerLogic.setScale(TILE_UPSCALE).setAlpha(0);

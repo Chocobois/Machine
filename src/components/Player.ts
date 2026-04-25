@@ -116,12 +116,12 @@ export class Player extends Phaser.GameObjects.Container {
 
 		if (this.facingRight && has(front, "Stairs")) {
 			this.action = Action.Walking;
-			this.move(dx, -1, 400 * 1.4);
+			this.move(dx, -1, 600 * 1.4);
 			return;
 		}
 		if (!this.facingRight && has(south, "Stairs")) {
 			this.action = Action.Walking;
-			this.move(dx, 1, 400 * 1.4);
+			this.move(dx, 1, 600 * 1.4);
 			return;
 		}
 
@@ -158,7 +158,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private fall() {
 		if (this.action != Action.Falling) this.fallSpeed = 0;
 		this.fallSpeed += 1;
-		const duration = 400 / (1 + 0.4 * this.fallSpeed);
+		const duration = 500 / (1 + 0.4 * this.fallSpeed);
 
 		this.action = Action.Falling;
 		this.move(0, 1, duration);
@@ -166,7 +166,7 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private walk(deltaTileX: number) {
 		this.action = Action.Walking;
-		this.move(deltaTileX, 0, 400);
+		this.move(deltaTileX, 0, 600);
 	}
 
 	private climb() {
