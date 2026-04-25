@@ -10,7 +10,7 @@ export class Rope extends Entity {
 		this.sprite.setScale(SIZE / this.sprite.width);
 	}
 
-	updateSprite({ center, north, south }: NeighborTiles): void {
+	updateSprite({ north, south }: NeighborTiles): void {
 		const has = (tiles: Tile[], ...wanted: Tile[]) =>
 			wanted.some((tile) => tiles.includes(tile));
 

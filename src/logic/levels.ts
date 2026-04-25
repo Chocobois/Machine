@@ -29,6 +29,7 @@ export const levels = {
 		inventory: [
 			{ itemKey: "Rope", amount: 20 },
 			{ itemKey: "Fan", amount: 10 },
+			{ itemKey: "Zipline", amount: 10 },
 		],
 	},
 	leveldev2: {

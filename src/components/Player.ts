@@ -97,6 +97,15 @@ export class Player extends Phaser.GameObjects.Container {
 			}
 		}
 
+		if (
+			has(center, "Zipline") &&
+			has(front, "Zipline") &&
+			!has(front, "Wall")
+		) {
+			this.action = Action.Climbing;
+			return this.move(dx, 0, 800);
+		}
+
 		if (has(center, "Updraft") && !has(north, "Wall")) {
 			this.action = Action.Flying;
 			if (!has(front, "Wall") && !has(frontUp, "Wall")) {
@@ -105,7 +114,7 @@ export class Player extends Phaser.GameObjects.Container {
 			return this.move(0, -1, 400);
 		}
 
-		if (has(center, "None", "Platform")) {
+		if (has(center, "None", "Platform", "Zipline")) {
 			if (!has(south, "Wall", "Platform", "Stairs")) {
 				return this.fall();
 			}

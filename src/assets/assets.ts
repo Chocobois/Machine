@@ -22,6 +22,7 @@ export const images: Image[] = [
 	image("item_rope", "ui/item_rope.png"),
 	image("item_stairs", "ui/item_stairs.png"),
 	image("item_fan", "ui/item_fan.png"),
+	image("item_zipline", "ui/item_zipline.png"),
 	image("ui_gold", "ui/ui_gold.png"),
 	image("ui_lives", "ui/ui_lives.png"),
 
