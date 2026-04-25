@@ -97,11 +97,7 @@ export class Player extends Phaser.GameObjects.Container {
 			}
 		}
 
-		if (
-			has(center, "Zipline") &&
-			has(front, "Zipline") &&
-			!has(front, "Wall")
-		) {
+		if (has(center, "Zipline") && has(front, "Zipline")) {
 			this.action = Action.Climbing;
 			return this.move(dx, 0, 800);
 		}
