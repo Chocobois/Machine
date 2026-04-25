@@ -42,6 +42,7 @@ export class Player extends Phaser.GameObjects.Container {
 		this.scene = scene;
 
 		this.sprite = this.scene.add.sprite(0, 0, "player", 0);
+		this.sprite.setScale(SIZE / this.sprite.width);
 		this.add(this.sprite);
 
 		this.heldSprite = this.scene.add

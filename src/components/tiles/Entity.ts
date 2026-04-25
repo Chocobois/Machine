@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { NeighborTiles, Tile, TileCoord } from "@/logic/Tile";
+import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
 
 export abstract class Entity extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
@@ -16,6 +16,7 @@ export abstract class Entity extends Phaser.GameObjects.Container {
 		this.tileCoord = tileCoord;
 
 		this.sprite = this.scene.add.sprite(0, 0, "blank", 0);
+		this.sprite.setScale(SIZE / this.sprite.width);
 		this.add(this.sprite);
 	}
 
