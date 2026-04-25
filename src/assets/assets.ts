@@ -14,6 +14,8 @@ export const images: Image[] = [
 	// Entities
 	image("gold", "tiles/gold.png"),
 	image("stairs", "tiles/stairs.png"),
+	image("home_01", "castle/tilekit_castle_home_01.png"),
+	image("home_02", "castle/tilekit_castle_home_02.png"),
 
 	// UI
 	image("item_box", "ui/item_box.png"),
@@ -41,10 +43,10 @@ export const spritesheets: SpriteSheet[] = [
 	spritesheet("environment", "castle/environment_64.png", 64, 64),
 
 	spritesheet("kobots_red", "characters/kobots_red.png", 32, 32),
-	// spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
-	// spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
-	// spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
-	// spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
+	spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
+	spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
+	spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
+	spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
 
 	spritesheet("cursor", "ui/cursor.png", 256, 256),
 ];

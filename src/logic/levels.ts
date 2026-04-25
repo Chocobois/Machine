@@ -10,7 +10,7 @@ type LevelDef = {
 export const levels = {
 	level1: {
 		title: "Level 1",
-		playerCount: 15,
+		playerCount: 8,
 		inventory: [
 			{ itemKey: "Rope", amount: 2 }
 		],
