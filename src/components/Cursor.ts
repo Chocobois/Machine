@@ -20,15 +20,19 @@ export class Cursor extends Phaser.GameObjects.Container {
 		this.add(this.square);
 
 		this.icon = scene.add
-			.image(0, 0, "item_rope", 0)
-			.setTint(0x000000)
+			.image(0, 0, "cursor", 0)
 			.setAlpha(0.25);
 		this.icon.setScale(SIZE / this.icon.width);
 		this.add(this.icon);
 	}
 
-	setIcon(key: string) {
-		this.icon.setTexture(key);
+	setAxis(axis: "x" | "y" | "") {
+		const frames = {
+			x: 0,
+			y: 1,
+			"": 2,
+		};
+		this.icon.setTexture("cursor", frames[axis]);
 	}
 
 	setAllowed(allowed: boolean) {

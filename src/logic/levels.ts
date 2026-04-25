@@ -50,7 +50,6 @@ export const levels = {
 		title: "Level 6",
 		playerCount: 8,
 		inventory: [
-			{ itemKey: "Stairs", amount: 5 },
 			{ itemKey: "Rope", amount: 2 },
 			{ itemKey: "Zipline", amount: 2 },
 		],

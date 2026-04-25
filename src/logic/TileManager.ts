@@ -2,8 +2,6 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { SIZE, Tile, TileCoord } from "./Tile";
 import { LevelKey } from "./levels";
 
-export const TILE_UPSCALE = SIZE / 16;
-
 export class TileManager extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
 
@@ -13,6 +11,22 @@ export class TileManager extends Phaser.GameObjects.Container {
 	constructor(scene: BaseScene) {
 		super(scene);
 		this.scene = scene;
+
+		this.scene.textures
+			.get("texture_walls")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		this.scene.textures
+			.get("texture_decoration")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		this.scene.textures
+			.get("environment")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		this.scene.textures
+			.get("entities")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		this.scene.textures
+			.get("decorations")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
 	}
 
 	loadTilemap(tilemapKey: LevelKey): Tile[][] {
@@ -51,11 +65,9 @@ export class TileManager extends Phaser.GameObjects.Container {
 		if (!layerWalls) throw Error("Layer 'layer_walls_visual' not found");
 		if (!layerLogic) throw Error("Layer 'layer_logic' not found");
 
-		layerPhysics.setScale(TILE_UPSCALE);
-		layerDecor.setScale(TILE_UPSCALE);
-		layerWalls.setScale(TILE_UPSCALE);
-		layerLogic.setScale(TILE_UPSCALE).setAlpha(0);
-		layerWalls.setPosition((16 / 2) * TILE_UPSCALE);
+		layerPhysics.setAlpha(0);
+		layerLogic.setAlpha(0);
+		layerWalls.setPosition(16);
 
 		/* Physics */
 

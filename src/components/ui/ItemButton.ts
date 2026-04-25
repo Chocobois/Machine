@@ -24,18 +24,18 @@ export class ItemButton extends Button {
 		this.scene = scene;
 		this.item = item;
 
-		this.background = this.scene.add.image(0, 0, "item_box");
+		this.background = this.scene.add.image(0, 0, "ui_box");
 		this.background.setScale(size / this.background.width);
 		this.add(this.background);
 
-		this.itemIcon = this.scene.add.image(0, 0, Item[item.itemKey].image);
+		this.itemIcon = this.scene.add.image(0, 0, Item[item.itemKey].image, Item[item.itemKey].frame);
 		this.itemIcon.setScale((0.8 * size) / this.itemIcon.width);
 		this.add(this.itemIcon);
 
 		this.countText = this.scene
 			.addText({
-				x: 0.45 * size,
-				y: 0.45 * size,
+				x: 0.5 * size,
+				y: 0.5 * size,
 				size: 40,
 				text: `x${item.amount}`,
 				color: "black",

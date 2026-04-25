@@ -12,7 +12,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private tween: Phaser.Tweens.Tween;
 	private clickOnHold: boolean;
 
-	constructor(scene: BaseScene, x: number, y: number, clickOnHold = true) {
+	constructor(scene: BaseScene, x: number, y: number, clickOnHold = false) {
 		super(scene, x, y);
 		this.scene = scene;
 		scene.add.existing(this);

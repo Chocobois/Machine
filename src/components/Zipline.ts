@@ -1,9 +1,9 @@
-import { GameScene } from "@/scenes/GameScene";
+import { BaseScene } from "@/scenes/BaseScene";
 import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
 import { Entity } from "./tiles/Entity";
 
 export class Zipline extends Entity {
-	constructor(scene: GameScene, tileCoord: TileCoord) {
+	constructor(scene: BaseScene, tileCoord: TileCoord) {
 		super(scene, tileCoord);
 		this.tile = "Zipline";
 		this.sprite.setTexture("entities", 8);
@@ -30,6 +30,8 @@ export class Zipline extends Entity {
 		else if (wall && left) this.sprite.setFrame(14);
 		else if (right) this.sprite.setFrame(3);
 		else if (left) this.sprite.setFrame(4);
+
+		this.sprite.setAlpha(this.isEnabled() ? 1 : 0.3);
 	}
 
 	destroy(): void {

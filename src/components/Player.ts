@@ -40,20 +40,25 @@ export class Player extends Phaser.GameObjects.Container {
 		super(scene, 0, 0);
 		scene.add.existing(this);
 		this.scene = scene;
-		
+
 		let sprite_id = Phaser.Math.RND.pick([
-			"kobots_red", 
-			"kobots_yellow", 
-			"kobots_green", 
-			"kobots_blue", 
-			"kobots_violet"
+			"kobots_red",
+			// "kobots_yellow",
+			// "kobots_green",
+			// "kobots_blue",
+			// "kobots_violet"
 		]);
+		this.scene.textures
+			.get("kobots_red")
+			.setFilter(Phaser.Textures.FilterMode.NEAREST);
+
 		this.sprite = this.scene.add.sprite(0, 0, sprite_id, 0);
 		this.sprite.setScale(SIZE / this.sprite.width);
 		this.add(this.sprite);
 
+		const frame = Phaser.Math.RND.pick([0, 1, 2, 3]);
 		this.heldSprite = this.scene.add
-			.sprite(0, -0.4 * SIZE, "gold")
+			.sprite(0, -0.4 * SIZE, "treasure", frame)
 			.setOrigin(0.5, 1.0)
 			.setVisible(false);
 		this.heldSprite.setScale((0.7 * SIZE) / this.heldSprite.width);
@@ -99,7 +104,14 @@ export class Player extends Phaser.GameObjects.Container {
 		if (has(center, "Home") && this.holding) return this.dropOff();
 
 		if (has(center, "Climb")) {
-			if (!has(north, "Wall")) {
+			if (
+				this.action == Action.Climbing &&
+				has(front, "None") &&
+				has(frontDown, "Wall", "Platform")
+			) {
+				// TODO FIX
+				// Do nothing, ie, leave the rope
+			} else if (!has(north, "Wall")) {
 				return this.climb();
 			}
 		}
@@ -219,7 +231,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private move(dtx: number, dty: number, duration: number) {
 		this.scene.tweens.add({
 			targets: this,
-			duration,
+			duration: duration,
 			x: { from: this.x, to: this.x + dtx * SIZE },
 			y: { from: this.y, to: this.y + dty * SIZE },
 			onComplete: () => {
