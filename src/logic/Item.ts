@@ -11,6 +11,7 @@ export type PlacementRule = {
 type ItemDef = {
 	name: string;
 	image: string;
+	frame: number;
 	tile: Tile;
 	rules: {
 		start: PlacementRule[];
@@ -25,7 +26,8 @@ type ItemDef = {
 export const Item = {
 	Rope: {
 		name: "Rope",
-		image: "item_rope",
+		image: "entities",
+		frame: 2,
 		tile: "Climb",
 		rules: {
 			start: [{ center: "None", north: "Wall" }, { center: "Platform" }],
@@ -38,7 +40,8 @@ export const Item = {
 	},
 	Fan: {
 		name: "Fan",
-		image: "item_fan",
+		image: "entities",
+		frame: 10,
 		tile: "Fan",
 		rules: {
 			start: [
@@ -54,7 +57,8 @@ export const Item = {
 	},
 	Zipline: {
 		name: "Zipline",
-		image: "item_zipline",
+		image: "entities",
+		frame: 3,
 		tile: "Zipline",
 		rules: {
 			start: [
