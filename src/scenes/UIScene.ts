@@ -7,7 +7,7 @@ export const UI_SIZE = 120;
 
 export class UIScene extends BaseScene {
 	private panel: Phaser.GameObjects.Container;
-	private background: Phaser.GameObjects.Rectangle;
+	private background: Phaser.GameObjects.Image;
 	private livesText: Phaser.GameObjects.Text;
 	private goldText: Phaser.GameObjects.Text;
 
@@ -24,27 +24,31 @@ export class UIScene extends BaseScene {
 		this.panel.width = this.W;
 		this.panel.height = UI_HEIGHT;
 
-		this.background = this.add.rectangle(
-			0,
-			0,
-			this.panel.width,
-			this.panel.height,
-			0xffffff,
-		);
+		//this.background = this.add.rectangle(
+			//0,
+			//0,
+			//this.panel.width,
+			//this.panel.height,
+			//0xffffff,
+		//);
+		this.background = this.add.image(0, 0, "ui_bar")
+		this.background.setScale(this.W / this.background.width);
+		this.textures.get("ui_bar").setFilter(Phaser.Textures.FilterMode.NEAREST); 
 		this.panel.add(this.background);
 
 		/* Lives */
 
 		const livesX = -this.panel.width / 2 + UI_SIZE;
 
-		const livesIcon = this.add.image(livesX, 0, "ui_lives");
-		livesIcon.setScale(UI_SIZE / livesIcon.width);
+		const livesIcon = this.add.image(livesX, 20, "ui_lives");
+		this.textures.get("ui_lives").setFilter(Phaser.Textures.FilterMode.NEAREST); 
+		livesIcon.setScale(UI_SIZE / livesIcon.width * 1.4);
 		this.panel.add(livesIcon);
 
 		this.livesText = this.addText({
-			x: livesX + 0.5 * UI_SIZE,
+			x: livesX + 0.6 * UI_SIZE,
 			y: 0.5 * UI_SIZE,
-			size: 60,
+			size: 40,
 			color: "black",
 			text: "x123",
 		})
@@ -63,7 +67,7 @@ export class UIScene extends BaseScene {
 		this.goldText = this.addText({
 			x: goldX + 0.5 * UI_SIZE,
 			y: 0.5 * UI_SIZE,
-			size: 60,
+			size: 40,
 			color: "black",
 			text: "$456",
 		})

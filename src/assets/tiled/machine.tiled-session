@@ -3,8 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps/level1.tmx",
+    "activeFile": "maps/level4.tmx",
     "expandedProjectPaths": [
+        "tilesets",
+        ".",
+        "rules",
+        "maps"
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -42,27 +46,107 @@
             "scaleInDock": 1
         },
         "maps/level1.tmx": {
-            "scale": 2,
+            "scale": 3,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 244.5,
-                "y": 183
+                "x": 194.33333333333331,
+                "y": 193.5
             }
         },
         "maps/level2.tmx": {
-            "scale": 2.8269,
+            "scale": 4,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 186.5,
+                "y": 241.125
+            }
+        },
+        "maps/level3.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 287,
+                "y": 194.5
+            }
+        },
+        "maps/level3BACKUP.tmx": {
+            "scale": 3,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 185.00831299303124,
-                "y": 107.53829282960135
+                "x": 279.33333333333326,
+                "y": 145.16666666666663
+            }
+        },
+        "maps/level4.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 273.66666666666663,
+                "y": 131.83333333333334
+            }
+        },
+        "maps/level5.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 239.66666666666666,
+                "y": 204.16666666666663
+            }
+        },
+        "maps/level6.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 195.66666666666666,
+                "y": 190.83333333333334
+            }
+        },
+        "maps/level7.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 237,
+                "y": 191.16666666666663
+            }
+        },
+        "maps/level_dev1.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 227,
+                "y": 176.5
+            }
+        },
+        "maps/level_dev2.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 170,
+                "y": 109.625
+            }
+        },
+        "maps/leveldev1.tmx": {
+            "scale": 3.1785416666666664,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 240.04719145310352,
+                "y": 159.9790260208429
+            }
+        },
+        "maps/leveldev2.tmx": {
+            "scale": 4.334375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 176.03460706560924,
+                "y": 96.0922855082913
             }
         },
         "rules/AutoTileRules.tmx": {
             "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 240,
-                "y": 160
+                "x": 215,
+                "y": 159.83333333333334
             }
         },
         "tilesets/castle_decor.tsx": {
@@ -92,22 +176,24 @@
     "openFiles": [
         "maps/level1.tmx",
         "maps/level2.tmx",
-        "rules/AutoTileRules.tmx",
-        "tilesets/castle_decor.tsx"
+        "maps/level3.tmx",
+        "maps/level4.tmx",
+        "rules/AutoTileRules.tmx"
     ],
     "project": "machine.tiled-project",
     "recentFiles": [
-        "tilesets/castle_decor.tsx",
-        "rules/AutoTileRules.tmx",
-        "maps/level2.tmx",
+        "maps/level7.tmx",
+        "maps/leveldev2.tmx",
+        "maps/level_dev2.tmx",
+        "maps/level_dev1.tmx",
+        "maps/level3.tmx",
         "maps/level1.tmx",
+        "maps/level2.tmx",
+        "rules/AutoTileRules.tmx",
+        "maps/level4.tmx",
+        "tilesets/castle_decor.tsx",
         "tilesets/colliders.tsx",
-        "tilesets/castle_walls.tsx",
-        "tilesets/collision.tsx",
-        "level1.tmx",
-        "AutoTileRules.tmx",
-        "collision.tsx",
-        "castle_decor.tsx"
+        "tilesets/castle_walls.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

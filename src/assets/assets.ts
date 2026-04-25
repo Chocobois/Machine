@@ -16,6 +16,7 @@ export const images: Image[] = [
 	image("home_02", "castle/tilekit_castle_home_02.png"),
 
 	// UI
+	image("ui_bar", "ui/bar.png"),
 	image("ui_box", "ui/box.png"),
 	image("ui_gold", "ui/gold.png"),
 	image("ui_lives", "ui/lives.png"),
