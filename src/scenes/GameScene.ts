@@ -22,6 +22,7 @@ import { Home } from "@/components/tiles/Home";
 import { Fan } from "@/components/tiles/Fan";
 import { Zipline } from "@/components/Zipline";
 import { Updraft } from "@/components/tiles/Updraft";
+import { Ladder } from "@/components/Ladder";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -510,7 +511,7 @@ export class GameScene extends BaseScene {
 			case "Home":
 				return new Home(this, tileCoord);
 			case "Climb":
-				return new Rope(this, tileCoord);
+				return new Ladder(this, tileCoord);
 			case "Gold":
 				return new Gold(this, tileCoord);
 			case "Death":
