@@ -15,10 +15,8 @@ export async function Game() {
 		type: Phaser.WEBGL,
 		width: 1280,
 		height: 960,
-		// mipmapFilter: "NEAREST_MIPMAP_NEAREST",
 		mipmapFilter: "LINEAR_MIPMAP_LINEAR",
-		// roundPixels: false,
-		// pixelArt: true,
+		disableContextMenu: true,
 		scale: {
 			mode: Phaser.Scale.FIT,
 		},

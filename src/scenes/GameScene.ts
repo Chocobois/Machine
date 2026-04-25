@@ -1,5 +1,5 @@
 import { Player } from "@/components/Player";
-import { TILE_UPSCALE, TileManager } from "@/logic/TileManager";
+import { TileManager } from "@/logic/TileManager";
 import {
 	SIZE,
 	Tile,
@@ -17,7 +17,6 @@ import { Item, ItemKey, PlacementRule } from "@/logic/Item";
 import { Entity } from "@/components/tiles/Entity";
 import { Rope } from "@/components/Rope";
 import { Gold } from "@/components/tiles/Gold";
-import { Stairs } from "@/components/tiles/Stairs";
 import { Spikes } from "@/components/tiles/Spikes";
 import { Home } from "@/components/tiles/Home";
 import { Fan } from "@/components/tiles/Fan";
@@ -41,7 +40,6 @@ export class GameScene extends BaseScene {
 	// Input
 	private inputMode: InputMode;
 	private isHolding = false;
-	private isDraggingCamera = false;
 	private isUsingItem = false;
 	private dragStartPosition = new Phaser.Math.Vector2();
 	private lastPointerPosition = new Phaser.Math.Vector2();
@@ -50,6 +48,9 @@ export class GameScene extends BaseScene {
 	private readonly DRAG_THRESHOLD = 16;
 	// private pressedTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
 	// private previousTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
+
+	private isDraggingCamera = false;
+	private cameraTarget = new Phaser.Math.Vector2();
 
 	private buildStartTile?: TileCoord;
 	private previewCoords: TileCoord[] = [];
@@ -87,15 +88,21 @@ export class GameScene extends BaseScene {
 		// Set camera bounds
 		const worldWidth = this.tileManager.widthInPixels;
 		const worldHeight = this.tileManager.heightInPixels;
-		const zoomLevel = 0.25;
+		const zoomLevel = 4;
 
 		this.cameras.main.setBounds(
-			8 * TILE_UPSCALE,
-			8 * TILE_UPSCALE,
-			worldWidth * TILE_UPSCALE - 16 * TILE_UPSCALE,
-			worldHeight * TILE_UPSCALE + UI_HEIGHT / zoomLevel - 16 * TILE_UPSCALE,
+			8,
+			8,
+			worldWidth - 16,
+			worldHeight + UI_HEIGHT / zoomLevel - 16,
 		);
+
 		this.cameras.main.setZoom(zoomLevel);
+		this.cameras.main.setRoundPixels(true);
+
+		this.cameraTarget.set(-500, -300);
+		this.cameras.main.scrollX = this.cameraTarget.x;
+		this.cameras.main.scrollY = this.cameraTarget.y;
 	}
 
 	update(time: number, delta: number) {
@@ -251,8 +258,10 @@ export class GameScene extends BaseScene {
 			const dx = pointer.x - this.lastPointerPosition.x;
 			const dy = pointer.y - this.lastPointerPosition.y;
 
-			this.cameras.main.scrollX -= dx / this.cameras.main.zoom;
-			this.cameras.main.scrollY -= dy / this.cameras.main.zoom;
+			this.cameraTarget.x -= dx / this.cameras.main.zoom;
+			this.cameraTarget.y -= dy / this.cameras.main.zoom;
+			this.cameras.main.scrollX = this.cameraTarget.x;
+			this.cameras.main.scrollY = this.cameraTarget.y;
 		}
 		// Player is holding and dragging, wait to confirm click or drag
 		else if (this.isHolding) {
@@ -566,12 +575,12 @@ export class GameScene extends BaseScene {
 	}
 
 	createUpdraftFromFan(fan: Fan) {
-		const maxLength = 6;
+		const maxLength = 8;
 
 		const created: Entity[] = [];
 		let current = fan.tileCoord;
 
-		for (let i = 0; i <= maxLength; i++) {
+		for (let i = 0; i < maxLength; i++) {
 			const next = { x: current.x, y: current.y - i };
 
 			const blockingTiles = this.getTileAt(next);

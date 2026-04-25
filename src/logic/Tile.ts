@@ -1,6 +1,6 @@
 import { Entity } from "@/components/tiles/Entity";
 
-export const SIZE = 256;
+export const SIZE = 16;
 
 /* Tile types */
 
