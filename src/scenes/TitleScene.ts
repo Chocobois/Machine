@@ -4,17 +4,11 @@ import { Music } from "@/logic/Music";
 import { title, version } from "@/version.json";
 import { MainMenuKobot } from "@/components/MainMenuKobot";
 
-const creditsLeft = `${title} 
+const creditsLeft = `Golen
+Naika`;
 
-@Handle
-@Handle
-@Handle`;
-
-const creditsRight = `
-
-role
-role
-role`;
+const creditsRight = `code
+art`;
 
 const slideinduration = 2000;
 const botspawninterval = 800;
@@ -102,25 +96,25 @@ export class TitleScene extends BaseScene {
 		this.credits.setDepth(20);
 
 		let credits1 = this.addText({
-			x: 0.65 * this.W,
-			y: 0,
+			x: 60,
+			y: this.H - 100,
 			size: 40,
 			color: "#c2185b",
 			text: creditsLeft,
 		});
-		credits1.setStroke("#FFF", 10);
+		credits1.setStroke("#FFF", 6);
 		credits1.setPadding(2);
 		credits1.setLineSpacing(0);
 		this.credits.add(credits1);
 
 		let credits2 = this.addText({
-			x: 0.85 * this.W,
-			y: 0,
+			x: 200,
+			y: this.H - 100,
 			size: 40,
 			color: "#c2185b",
 			text: creditsRight,
 		});
-		credits2.setStroke("#FFF", 10);
+		credits2.setStroke("#FFF", 6);
 		credits2.setPadding(2);
 		credits2.setLineSpacing(0);
 		this.credits.add(credits2);

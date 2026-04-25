@@ -2,11 +2,11 @@ import { BaseScene } from "@/scenes/BaseScene";
 
 const anim = [1, 2, 1, 3]
 const sprites = [
-	"kobot_red",
-	"kobot_yellow",
-	"kobot_green",
-	"kobot_blue",
-	"kobot_violet"
+	"kobots_red",
+	"kobots_yellow",
+	"kobots_green",
+	"kobots_blue",
+	"kobots_violet"
 ]
 
 export class MainMenuKobot extends Phaser.GameObjects.Container {

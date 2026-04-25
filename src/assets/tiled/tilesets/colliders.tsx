@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="tileset_colliders" tilewidth="16" tileheight="16" tilecount="32" columns="8">
+<tileset version="1.10" tiledversion="1.12.1" name="tileset_colliders" tilewidth="16" tileheight="16" tilecount="32" columns="8">
  <image source="../../images/castle/colliders.png" width="128" height="64"/>
  <tile id="0">
   <properties>
@@ -53,32 +53,32 @@
  </tile>
  <tile id="10">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="ButtonPink"/>
   </properties>
  </tile>
  <tile id="11">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="BlockPink"/>
   </properties>
  </tile>
  <tile id="12">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="ButtonGreen"/>
   </properties>
  </tile>
  <tile id="13">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="BlockGreen"/>
   </properties>
  </tile>
  <tile id="14">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="ButtonBlue"/>
   </properties>
  </tile>
  <tile id="15">
   <properties>
-   <property name="tile" value=""/>
+   <property name="tile" value="BlockBlue"/>
   </properties>
  </tile>
  <tile id="16">
