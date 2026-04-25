@@ -60,7 +60,7 @@ export class GameScene extends BaseScene {
 
 		this.tileManager = new TileManager(this);
 		this.entities = [];
-		this.loadLevel("level1");
+		this.loadLevel("leveldev1");
 
 		/* Input handling */
 
