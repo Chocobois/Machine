@@ -42,7 +42,7 @@ export class UIScene extends BaseScene {
 
 		const livesIcon = this.add.image(livesX, 20, "ui_lives");
 		this.textures.get("ui_lives").setFilter(Phaser.Textures.FilterMode.NEAREST); 
-		livesIcon.setScale(UI_SIZE / livesIcon.width * 1.4);
+		livesIcon.setScale(UI_SIZE / livesIcon.width * 1.35);
 		this.panel.add(livesIcon);
 
 		this.livesText = this.addText({
@@ -58,10 +58,11 @@ export class UIScene extends BaseScene {
 
 		/* Gold */
 
-		const goldX = this.panel.width / 2 - UI_SIZE;
+		const goldX = this.panel.width / 2 - UI_SIZE + 20;
 
-		const goldIcon = this.add.image(goldX, 0, "ui_gold");
-		goldIcon.setScale(UI_SIZE / goldIcon.width);
+		const goldIcon = this.add.image(goldX, 5, "ui_gold");
+		this.textures.get("ui_gold").setFilter(Phaser.Textures.FilterMode.NEAREST); 
+		goldIcon.setScale(UI_SIZE / goldIcon.width * 0.9);
 		this.panel.add(goldIcon);
 
 		this.goldText = this.addText({
