@@ -92,7 +92,10 @@ export class Player extends Phaser.GameObjects.Container {
 		if (has(center, "Home") && this.holding) return this.dropOff();
 
 		if (has(center, "Climb")) {
-			if (!has(north, "Wall")) {
+			if (this.action == Action.Climbing && has(front, "None") && has(frontDown, "Wall", "Platform")) { // TODO FIX
+				// Do nothing, ie, leave the rope
+			}
+			else if (!has(north, "Wall")) {
 				return this.climb();
 			}
 		}
@@ -212,7 +215,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private move(dtx: number, dty: number, duration: number) {
 		this.scene.tweens.add({
 			targets: this,
-			duration,
+			duration: duration / 2,
 			x: { from: this.x, to: this.x + dtx * SIZE },
 			y: { from: this.y, to: this.y + dty * SIZE },
 			onComplete: () => {
