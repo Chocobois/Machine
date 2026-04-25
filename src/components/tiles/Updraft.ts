@@ -12,9 +12,15 @@ export class Updraft extends Entity {
 	}
 
 	update(time: number, delta: number) {
-		const frames = [1, 6, 11, 16];
-		const index = Math.floor(time / 100) % frames.length;
-		this.sprite.setFrame(frames[index]);
+		this.sprite.setAlpha(this.isEnabled() ? 1 : 0.3);
+
+		if (this.isEnabled()) {
+			const frames = [1, 6, 11, 16];
+			const index = Math.floor(time / 100) % frames.length;
+			this.sprite.setFrame(frames[index]);
+		} else {
+			this.sprite.setFrame(11);
+		}
 	}
 
 	updateSprite({}: NeighborTiles) {}

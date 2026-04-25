@@ -1,6 +1,6 @@
 import { Tile } from "./Tile";
 
-type PlacementRule = {
+export type PlacementRule = {
 	center?: Tile;
 	north?: Tile;
 	east?: Tile;
@@ -12,71 +12,68 @@ type ItemDef = {
 	name: string;
 	image: string;
 	tile: Tile;
-	allowedPlacements: PlacementRule[];
+	rules: {
+		start: PlacementRule[];
+		middle: PlacementRule[];
+		end: PlacementRule[];
+		axis: "x" | "y" | "";
+		min: number;
+		max: number;
+	};
 };
 
 export const Item = {
-	Gold: {
-		name: "Gold",
-		image: "gold",
-		tile: "Gold",
-		allowedPlacements: [
-			{ center: "None", south: "Wall" },
-			{ center: "None", south: "Platform" },
-		],
-	},
 	Rope: {
 		name: "Rope",
 		image: "item_rope",
 		tile: "Climb",
-		allowedPlacements: [
-			{ center: "None", north: "Wall" },
-			{ center: "None", north: "Climb" },
-			{ center: "Platform" },
-		],
-	},
-	Ladder: {
-		name: "Ladder",
-		image: "item_ladder",
-		tile: "Climb",
-		allowedPlacements: [
-			{ center: "None", south: "Wall" },
-			{ center: "None", south: "Platform" },
-		],
-	},
-	Stairs: {
-		name: "Stairs",
-		image: "item_stairs",
-		tile: "Stairs",
-		allowedPlacements: [
-			{ center: "None", south: "Wall" },
-			{ center: "None", south: "Platform" },
-			{ center: "None", south: "Stairs" },
-		],
+		rules: {
+			start: [{ center: "None", north: "Wall" }, { center: "Platform" }],
+			middle: [{ center: "None" }],
+			end: [{ center: "None" }],
+			axis: "y",
+			min: 2,
+			max: 8,
+		},
 	},
 	Fan: {
 		name: "Fan",
 		image: "item_fan",
 		tile: "Fan",
-		allowedPlacements: [
-			{ center: "None", south: "Wall" },
-			{ center: "None", south: "Platform" },
-		],
+		rules: {
+			start: [
+				{ center: "None", south: "Wall" },
+				{ center: "None", south: "Platform" },
+			],
+			middle: [{ center: "None" }],
+			end: [{ center: "None" }],
+			axis: "",
+			min: 1,
+			max: 1,
+		},
 	},
 	Zipline: {
 		name: "Zipline",
 		image: "item_zipline",
 		tile: "Zipline",
-		allowedPlacements: [
-			{ center: "None", west: "Zipline" },
-			{ center: "None", east: "Zipline" },
-			{ center: "None", south: "Wall" },
-			{ center: "None", south: "Platform" },
-			{ center: "None", west: "Wall" },
-			{ center: "None", west: "Platform" },
-			{ center: "None", east: "Wall" },
-			{ center: "None", east: "Platform" },
-		],
+		rules: {
+			start: [
+				{ center: "None", south: "Wall" },
+				{ center: "None", south: "Platform" },
+				{ center: "None", west: "Wall" },
+				{ center: "None", east: "Wall" },
+			],
+			middle: [{ center: "None" }],
+			end: [
+				{ center: "None", south: "Wall" },
+				{ center: "None", south: "Platform" },
+				{ center: "None", west: "Wall" },
+				{ center: "None", east: "Wall" },
+			],
+			axis: "x",
+			min: 3,
+			max: 8,
+		},
 	},
 } satisfies { [key: string]: ItemDef };
 

@@ -45,6 +45,8 @@ export const spritesheets: SpriteSheet[] = [
 	// spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
 	// spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
 	// spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
+
+	spritesheet("cursor", "ui/cursor.png", 256, 256),
 ];
 
 /* Audios */
