@@ -32,7 +32,7 @@ export const images: Image[] = [
 	image("title_foreground", "titlescreen/foreground.png"),
 	image("title_character", "titlescreen/character.png"),
 	image("title_logo", "titlescreen/logo.png"),
-	image("title_taptoplay", "titlescreen/taptoplay.png")
+	image("title_taptoplay", "titlescreen/taptoplay.png"),
 ];
 
 /* Spritesheets */
@@ -42,11 +42,11 @@ export const spritesheets: SpriteSheet[] = [
 	spritesheet("platform", "tiles/platform.png", 256, 256),
 	spritesheet("rope", "tiles/rope.png", 256, 256),
 
-	spritesheet("kobot_red", "characters/kobot_red.png", 32, 32),
-	spritesheet("kobot_yellow", "characters/kobot_yellow.png", 32, 32),
-	spritesheet("kobot_green", "characters/kobot_green.png", 32, 32),
-	spritesheet("kobot_blue", "characters/kobot_blue.png", 32, 32),
-	spritesheet("kobot_violet", "characters/kobot_violet.png", 32, 32),
+	spritesheet("kobots_red", "characters/kobots_red.png", 32, 32),
+	spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
+	spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
+	spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
+	spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
 	spritesheet("fan", "tiles/fan.png", 256, 256),
 	spritesheet("updraft", "tiles/updraft.png", 256, 256),
 ];

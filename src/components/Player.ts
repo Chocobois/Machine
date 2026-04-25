@@ -1,5 +1,6 @@
 import { GameScene } from "@/scenes/GameScene";
 import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
+import { GrayScalePostFilter } from "@/pipelines/GrayScalePostFilter";
 
 enum Action {
 	Idle,
@@ -14,15 +15,13 @@ enum Action {
 
 const animations: { [key in Action]: number[] } = {
 	[Action.Idle]: [0, 1],
-	[Action.Walking]: [2, 3],
+	[Action.Walking]: [0, 2, 1, 3],
 	[Action.Climbing]: [4, 5],
 	[Action.Falling]: [6, 7],
-	// [Action.Hurt]: [8],
-	[Action.Dead]: [9],
-	[Action.Flying]: [10, 11],
-	// [Action.Bump]: [12, 13],
-	[Action.Collecting]: [13],
-	[Action.Leaving]: [0, 1],
+	[Action.Dead]: [0],
+	[Action.Flying]: [6, 7],
+	[Action.Collecting]: [0],
+	[Action.Leaving]: [0],
 };
 
 export class Player extends Phaser.GameObjects.Container {
@@ -35,17 +34,19 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private action: Action = Action.Idle;
 	private facingRight: boolean = true;
+	private fallSpeed: number = 0;
 
 	constructor(scene: GameScene) {
 		super(scene, 0, 0);
 		scene.add.existing(this);
 		this.scene = scene;
 
-		this.sprite = this.scene.add.sprite(0, 0, "player", 0);
+		this.sprite = this.scene.add.sprite(0, 0, "kobots_red", 0);
+		this.sprite.setScale(SIZE / this.sprite.width);
 		this.add(this.sprite);
 
 		this.heldSprite = this.scene.add
-			.sprite(0, -0.3 * SIZE, "gold")
+			.sprite(0, -0.4 * SIZE, "gold")
 			.setOrigin(0.5, 1.0)
 			.setVisible(false);
 		this.heldSprite.setScale((0.7 * SIZE) / this.heldSprite.width);
@@ -109,6 +110,9 @@ export class Player extends Phaser.GameObjects.Container {
 				return this.fall();
 			}
 		}
+		if (this.fallSpeed > 6) {
+			return this.die();
+		}
 
 		if (this.facingRight && has(front, "Stairs")) {
 			this.action = Action.Walking;
@@ -148,11 +152,16 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private die() {
 		this.action = Action.Dead;
+		this.sprite.setPostPipeline(GrayScalePostFilter);
 	}
 
 	private fall() {
+		if (this.action != Action.Falling) this.fallSpeed = 0;
+		this.fallSpeed += 1;
+		const duration = 400 / (1 + 0.4 * this.fallSpeed);
+
 		this.action = Action.Falling;
-		this.move(0, 1, 400);
+		this.move(0, 1, duration);
 	}
 
 	private walk(deltaTileX: number) {

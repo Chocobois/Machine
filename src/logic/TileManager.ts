@@ -1,8 +1,8 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Tile, TileCoord } from "./Tile";
+import { SIZE, Tile, TileCoord } from "./Tile";
 import { LevelKey } from "./levels";
 
-export const TILE_UPSCALE = 16;
+export const TILE_UPSCALE = SIZE / 16;
 
 export class TileManager extends Phaser.GameObjects.Container {
 	public scene: BaseScene;

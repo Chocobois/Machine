@@ -265,7 +265,7 @@ export class GameScene extends BaseScene {
 		}
 
 		for (let i = 0; i < playerCount; i++) {
-			this.addEvent(1000 + 500 * i, () => {
+			this.addEvent(1000 + 1000 * i, () => {
 				// Cycle between homes in case there are multiple
 				const homeCoord = homeCoords[i % homeCoords.length];
 				this.addPlayer(homeCoord);

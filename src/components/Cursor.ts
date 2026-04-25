@@ -1,3 +1,4 @@
+import { SIZE } from "@/logic/Tile";
 import { BaseScene } from "@/scenes/BaseScene";
 
 export class Cursor extends Phaser.GameObjects.Container {
@@ -15,12 +16,14 @@ export class Cursor extends Phaser.GameObjects.Container {
 			.image(0, 0, "square", 0)
 			.setTint(0xffff00)
 			.setAlpha(0.25);
+		this.square.setScale(SIZE / this.square.width);
 		this.add(this.square);
 
 		this.icon = scene.add
 			.image(0, 0, "item_rope", 0)
 			.setTint(0x000000)
 			.setAlpha(0.25);
+		this.icon.setScale(SIZE / this.icon.width);
 		this.add(this.icon);
 	}
 
