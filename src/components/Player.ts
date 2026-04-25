@@ -40,8 +40,15 @@ export class Player extends Phaser.GameObjects.Container {
 		super(scene, 0, 0);
 		scene.add.existing(this);
 		this.scene = scene;
-
-		this.sprite = this.scene.add.sprite(0, 0, "kobots_red", 0);
+		
+		let sprite_id = Phaser.Math.RND.pick([
+			"kobots_red", 
+			"kobots_yellow", 
+			"kobots_green", 
+			"kobots_blue", 
+			"kobots_violet"
+		]);
+		this.sprite = this.scene.add.sprite(0, 0, sprite_id, 0);
 		this.sprite.setScale(SIZE / this.sprite.width);
 		this.add(this.sprite);
 

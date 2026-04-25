@@ -6,7 +6,7 @@ export class Gold extends Entity {
 	constructor(scene: GameScene, tileCoord: TileCoord) {
 		super(scene, tileCoord);
 		this.tile = "Gold";
-		this.sprite.setTexture("environment", 8);
+		this.sprite.setTexture("environment", 9);
 		this.sprite.setScale(SIZE / this.sprite.width);
 	}
 }
