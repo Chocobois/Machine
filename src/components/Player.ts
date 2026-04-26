@@ -103,7 +103,7 @@ export class Player extends Phaser.GameObjects.Container {
 
 		// Interactions
 		if (center.includes("Gold") && !this.holding) return this.pickUp();
-		if (center.includes("Home") && this.holding) return this.dropOff();
+		if (center.includes("Home") && this.readyToLeave) return this.dropOff();
 
 		// Climbing
 		if (center.includes("Climb")) {
@@ -180,6 +180,9 @@ export class Player extends Phaser.GameObjects.Container {
 	private die() {
 		this.action = Action.Dead;
 		this.sprite.setPostPipeline(GrayScalePostFilter);
+
+		// TODO: Add animation and trigger on end
+		this.emit("leave");
 	}
 
 	private fall() {
@@ -215,7 +218,7 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private dropOff() {
 		this.action = Action.Leaving;
-		this.emit("collect");
+		this.emit("leave");
 
 		this.scene.tweens.add({
 			targets: this,
@@ -236,5 +239,13 @@ export class Player extends Phaser.GameObjects.Container {
 				this.setTileCoord(TileCoord.add(this.tileCoord, dtx, dty));
 			},
 		});
+	}
+
+	get readyToLeave(): boolean {
+		return !!this.holding || this.scene.timeToLeave;
+	}
+
+	get hasLeft(): boolean {
+		return this.action == Action.Leaving || this.action == Action.Dead;
 	}
 }

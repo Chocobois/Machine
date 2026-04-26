@@ -33,11 +33,13 @@ enum InputMode {
 
 export class GameScene extends BaseScene {
 	// World
+	private level: LevelKey;
 	private tileManager: TileManager;
 	private entities: Entity[];
 
 	// Kobots
 	private players: Player[] = [];
+	public timeToLeave: boolean;
 	public playSpeed = 1;
 
 	// Input
@@ -73,6 +75,8 @@ export class GameScene extends BaseScene {
 	create({ level }: { level: LevelKey }): void {
 		this.fade(false, 200, 0x000000);
 		this.cameras.main.setBackgroundColor(0x63ad9d);
+		this.level = level;
+		this.timeToLeave = false;
 
 		this.tileManager = new TileManager(this);
 		this.entities = [];
@@ -690,7 +694,12 @@ export class GameScene extends BaseScene {
 			if (chest && chest instanceof Chest) {
 				chest.takeTreasure();
 				player.setHeldItem("Gold");
+
+				this.checkLevelCriteria();
 			}
+		});
+		player.on("leave", () => {
+			this.checkLevelCriteria();
 		});
 		player.setTileCoord(tileCoord);
 	}
@@ -870,6 +879,26 @@ export class GameScene extends BaseScene {
 
 	onSetPlaySpeed(playSpeed: number) {
 		this.playSpeed = playSpeed;
-		console.log("PLAYSPEED", playSpeed);
+	}
+
+	get noMoreGold(): boolean {
+		const chests = this.entities.filter(
+			(entity) => entity.tile == "Gold" && entity.isEnabled(),
+		);
+		return chests.length == 0;
+	}
+
+	get noMorePlayers(): boolean {
+		return this.players.every((player) => player.hasLeft);
+	}
+
+	checkLevelCriteria() {
+		if (this.noMoreGold) {
+			this.timeToLeave = true;
+		}
+
+		if (this.noMorePlayers) {
+			this.scene.start("OverworldScene", { level: this.level });
+		}
 	}
 }
