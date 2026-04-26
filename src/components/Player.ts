@@ -42,7 +42,8 @@ export class Player extends Phaser.GameObjects.Container {
 		this.scene = scene;
 
 		let sprite_id = Phaser.Math.RND.pick([
-			"kobots_red",
+			"kobots_orange",
+			// "kobots_red",
 			// "kobots_yellow",
 			// "kobots_green",
 			// "kobots_blue",

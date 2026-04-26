@@ -49,24 +49,24 @@
             "scale": 3,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 233.66666666666666,
-                "y": 143.66666666666669
+                "x": 181.99999999999997,
+                "y": 154.83333333333334
             }
         },
         "maps/level2.tmx": {
-            "scale": 3,
+            "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 161.83333333333331,
-                "y": 158.99999999999997
+                "x": 61.75,
+                "y": 186.875
             }
         },
         "maps/level3.tmx": {
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 281.75,
-                "y": 169
+                "x": 273.3333333333333,
+                "y": 74.5
             }
         },
         "maps/level3BACKUP.tmx": {
@@ -81,8 +81,8 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 278.75,
-                "y": 156
+                "x": 317,
+                "y": 152.75
             }
         },
         "maps/level5.tmx": {
@@ -125,14 +125,6 @@
                 "y": 109.625
             }
         },
-        "maps/level_vertical.tmx": {
-            "scale": 2,
-            "selectedLayer": -1,
-            "viewCenter": {
-                "x": 233.75,
-                "y": 281
-            }
-        },
         "maps/leveldev1.tmx": {
             "scale": 3.1785416666666664,
             "selectedLayer": 2,
@@ -153,8 +145,8 @@
             "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 156.83333333333331,
-                "y": 103.99999999999999
+                "x": 215,
+                "y": 159.83333333333334
             }
         },
         "tilesets/castle_decor.tsx": {
@@ -190,7 +182,6 @@
     ],
     "project": "machine.tiled-project",
     "recentFiles": [
-        "tilesets/castle_walls.tsx",
         "maps/level7.tmx",
         "maps/leveldev2.tmx",
         "maps/level_dev2.tmx",
@@ -201,7 +192,8 @@
         "rules/AutoTileRules.tmx",
         "maps/level4.tmx",
         "tilesets/castle_decor.tsx",
-        "tilesets/colliders.tsx"
+        "tilesets/colliders.tsx",
+        "tilesets/castle_walls.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

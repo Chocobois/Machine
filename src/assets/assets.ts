@@ -38,6 +38,7 @@ export const spritesheets: SpriteSheet[] = [
 	spritesheet("treasure", "castle/treasure.png", 32, 32),
 
 	// Characters
+	spritesheet("kobots_orange", "characters/kobots_orange.png", 32, 32),
 	spritesheet("kobots_red", "characters/kobots_red.png", 32, 32),
 	spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
 	spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),

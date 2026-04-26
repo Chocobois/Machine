@@ -17,14 +17,14 @@ export const levels = {
 	},
 	level2: {
 		title: "Level 2",
-		playerCount: 8,
+		playerCount: 15,
 		inventory: [
 			{ itemKey: "Rope", amount: 3 }, //
 		],
 	},
 	level3: {
 		title: "Level 3",
-		playerCount: 8,
+		playerCount: 12,
 		inventory: [
 			{ itemKey: "Fan", amount: 3 },
 			{ itemKey: "Rope", amount: 1 },
@@ -32,14 +32,14 @@ export const levels = {
 	},
 	level4: {
 		title: "Level 4",
-		playerCount: 8,
+		playerCount: 10,
 		inventory: [
 			{ itemKey: "Zipline", amount: 3 }, //
 		],
 	},
 	level5: {
 		title: "Level 5",
-		playerCount: 8,
+		playerCount: 20,
 		inventory: [
 			{ itemKey: "Fan", amount: 3 },
 			{ itemKey: "Rope", amount: 1 },
@@ -48,7 +48,7 @@ export const levels = {
 	},
 	level6: {
 		title: "Level 6",
-		playerCount: 8,
+		playerCount: 12,
 		inventory: [
 			{ itemKey: "Rope", amount: 2 },
 			{ itemKey: "Zipline", amount: 2 },
@@ -61,14 +61,6 @@ export const levels = {
 			{ itemKey: "Rope", amount: 20 },
 			{ itemKey: "Fan", amount: 10 },
 			{ itemKey: "Zipline", amount: 10 },
-		],
-	},
-	leveldev2: {
-		title: "Level Dev 2",
-		playerCount: 8,
-		inventory: [
-			{ itemKey: "Rope", amount: 20 },
-			{ itemKey: "Fan", amount: 10 },
 		],
 	},
 	level_vertical: {
@@ -92,7 +84,6 @@ export const tilemaps: { [key in LevelKey]: string } = {
 	level5: tilemap(`maps/level5.json`),
 	level6: tilemap(`maps/level6.json`),
 	leveldev1: tilemap(`maps/leveldev1.json`),
-	leveldev2: tilemap(`maps/leveldev2.json`),
 	level_vertical: tilemap(`maps/level_vertical.json`),
 };
 

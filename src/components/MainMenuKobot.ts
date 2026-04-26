@@ -3,6 +3,7 @@ import { SIZE } from "@/logic/Tile";
 
 const anim = [1, 2, 1, 3]
 const sprites = [
+	"kobots_orange",
 	"kobots_red",
 	"kobots_yellow",
 	"kobots_green",
@@ -24,6 +25,7 @@ export class MainMenuKobot extends Phaser.GameObjects.Container {
 		super(scene, 0, scene.H - 140);
 		scene.add.existing(this);
 		this.scene = scene;
+		this.colorid = 0;
 		this.sprite = this.scene.add.sprite(0, 0, sprites[this.colorid], 0).setOrigin(0.5,1).setScale(2);
 		this.x = -this.sprite.displayWidth;
 		this.add(this.sprite);
