@@ -16,6 +16,8 @@ export const images: Image[] = [
 	image("ui_box", "ui/box.png"),
 	image("ui_gold", "ui/gold.png"),
 	image("ui_lives", "ui/lives.png"),
+	image("ui_wrapup", "ui/wrapup.png"),
+	image("ui_retry", "ui/retry.png"),
 
 	// Titlescreen
 	image("title_sky", "titlescreen/sky.png"),
