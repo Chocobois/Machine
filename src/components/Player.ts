@@ -182,6 +182,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private die() {
 		this.action = Action.Dead;
 		this.sprite.setPostPipeline(GrayScalePostFilter);
+		this.heldSprite.setVisible(false);
 
 		// TODO: Add animation and trigger on end
 		this.emit("leave");
