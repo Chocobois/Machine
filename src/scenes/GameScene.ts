@@ -6,13 +6,14 @@ import {
 	NeighborTiles,
 	TileCoord,
 	NeighborEntities,
+	TileDef,
 } from "@/logic/Tile";
 import { BaseScene } from "@/scenes/BaseScene";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { LevelKey, levels } from "@/logic/levels";
 import { UI_HEIGHT } from "./UIScene";
 import { Cursor } from "@/components/Cursor";
-import { Item, ItemKey, PlacementRule } from "@/logic/Item";
+import { Item, ItemKey, PlacementCondition, PropertyTest } from "@/logic/Item";
 
 import { Entity } from "@/components/tiles/Entity";
 import { Rope } from "@/components/Rope";
@@ -448,6 +449,21 @@ export class GameScene extends BaseScene {
 			end = { x: end.x, y: start.y };
 		}
 
+		// Clamp to max length
+		const dx = Math.abs(end.x - start.x);
+		const dy = Math.abs(end.y - start.y);
+		const distance = Math.max(dx, dy) + 1;
+
+		if (distance > rules.max) {
+			if (rules.axis === "y") {
+				const direction = end.y > start.y ? 1 : -1;
+				end.y = start.y + direction * (rules.max - 1);
+			} else if (rules.axis === "x") {
+				const direction = end.x > start.x ? 1 : -1;
+				end.x = start.x + direction * (rules.max - 1);
+			}
+		}
+
 		const minX = Math.min(start.x, end.x);
 		const maxX = Math.max(start.x, end.x);
 		const minY = Math.min(start.y, end.y);
@@ -477,11 +493,11 @@ export class GameScene extends BaseScene {
 			entity.setPreview(true);
 			entity.setEnabled(false);
 
-			this.entities.push(entity); // TEMPORARILY include for neighbor logic
+			this.entities.push(entity); // Temporarily include for neighbor logic
 			return entity;
 		});
 
-		// Update sprites (important!)
+		// Update sprites
 		this.previewCoords.forEach((coord) => {
 			this.refreshEntitySprites(coord, true, true);
 		});
@@ -517,7 +533,7 @@ export class GameScene extends BaseScene {
 		if (coords.length < rules.min || coords.length > rules.max) return false;
 
 		return coords.every((coord, index) => {
-			let ruleSet: PlacementRule[];
+			let ruleSet: PlacementCondition[];
 
 			if (index === 0) ruleSet = rules.start;
 			else if (index === coords.length - 1) ruleSet = rules.end;
@@ -527,16 +543,61 @@ export class GameScene extends BaseScene {
 		});
 	}
 
-	matchesAnyRule(coord: TileCoord, rules: PlacementRule[]): boolean {
+	matchesAnyRule(coord: TileCoord, conditions: PlacementCondition[]): boolean {
+		const item = this.getSelectedItem();
+		if (!item) return false;
+
+		const itemTile = Item[item.itemKey].tile;
+
+		// Can't place on itself
+		if (!this.canBuildOn(coord, itemTile)) return false;
+
 		const neighbors = this.getNeighborTiles(coord, true, false);
 
-		return rules.some((rule) => {
-			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
-				([dir, required]) => {
-					return neighbors[dir].includes(required);
-				},
-			);
+		return conditions.some((condition) => {
+			// All directions specified in this condition must pass their tests
+			return (
+				Object.entries(condition) as [
+					keyof NeighborTiles,
+					PropertyTest | PropertyTest[],
+				][]
+			).every(([dir, tests]) => {
+				const tilesInDir = neighbors[dir];
+				const testArray = Array.isArray(tests) ? tests : [tests];
+
+				// All property tests must pass for at least one tile in this direction
+				return tilesInDir.some((tile) => {
+					const def = TileDef[tile];
+					return testArray.every((test) => test(def));
+				});
+			});
 		});
+	}
+
+	canBuildOn(coord: TileCoord, itemTile: Tile): boolean {
+		const neighbors = this.getNeighborTiles(coord, true, false);
+		const centerTiles = neighbors.center;
+
+		// Check if center is buildable (not an obstacle, or is passable air)
+		const isBuildable = centerTiles.every((tile) => !TileDef[tile].isObstacle);
+
+		if (!isBuildable) return false;
+
+		// Check tile-specific restrictions
+		const def = TileDef[itemTile];
+		if (def.disallowedAbove) {
+			if (centerTiles.some((tile) => def.disallowedAbove!.includes(tile))) {
+				return false;
+			}
+		}
+
+		if (def.allowedAbove) {
+			if (!centerTiles.some((tile) => def.allowedAbove!.includes(tile))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	clearPreview() {
@@ -670,6 +731,7 @@ export class GameScene extends BaseScene {
 		);
 		Object.values(neighbors).forEach((entities) => {
 			entities.forEach((entity) => {
+				if (includePreview && !entity.isPreview()) return;
 				entity.updateSprite(
 					this.getNeighborTiles(
 						entity.tileCoord,
@@ -707,7 +769,7 @@ export class GameScene extends BaseScene {
 	}
 
 	createUpdraftFromFan(fan: Fan) {
-		const maxLength = 8;
+		const maxLength = 6;
 
 		const created: Entity[] = [];
 		let current = fan.tileCoord;
@@ -768,17 +830,18 @@ export class GameScene extends BaseScene {
 		if (!item) return false;
 		if (item.amount <= 0) return false;
 
-		const neighbors = this.getNeighborTiles(tileCoord, true);
-		if (neighbors.center.includes(Item[item.itemKey].tile)) return false;
+		const neighbors = this.getNeighborTiles(tileCoord, true, false);
+		const itemTile = Item[item.itemKey].tile;
 
-		return Item[item.itemKey].rules.start.some((rule) => {
-			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
-				([dir, requiredTile]) => {
-					const tilesAtDir = neighbors[dir];
-					return tilesAtDir.includes(requiredTile);
-				},
-			);
-		});
+		// Can't place if the same tile already exists
+		if (neighbors.center.includes(itemTile)) return false;
+
+		// Can't build on obstacles (unless specifically allowed)
+		if (!this.canBuildOn(tileCoord, itemTile)) return false;
+
+		// Check placement rules
+		const rules = Item[item.itemKey].rules;
+		return this.matchesAnyRule(tileCoord, rules.start);
 	}
 
 	useItem(item: InventoryItem) {

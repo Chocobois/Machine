@@ -57,3 +57,86 @@ export namespace TileCoord {
 		return new Phaser.Math.Vector2(x * SIZE + SIZE / 2, y * SIZE + SIZE / 2);
 	};
 }
+
+/* Tile definitions */
+
+// Define the physical and interaction properties of each tile type
+export type TileDef = {
+	// Physics
+	isSolid: boolean; // blocks movement
+	isFloor: boolean; // can stand on top
+
+	// Building/placement
+	isObstacle: boolean; // can't build through it
+	allowedAbove?: Tile[]; // if specified, can only be placed on these tiles
+	disallowedAbove?: Tile[]; // can't be placed on these tiles
+
+	// Interaction
+	isInteractable: boolean; // player can detect/interact with it
+};
+
+export const TileDef: { [key in Tile]: TileDef } = {
+	None: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: false,
+		isInteractable: false,
+	},
+	Wall: {
+		isSolid: true,
+		isFloor: true,
+		isObstacle: true,
+		isInteractable: false,
+	},
+	Platform: {
+		isSolid: false, // not solid on sides
+		isFloor: true, // acts as floor from above
+		isObstacle: false,
+		isInteractable: false,
+	},
+	Home: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: true,
+		isInteractable: true,
+	},
+	Gold: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: true,
+		isInteractable: true,
+	},
+	Death: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: true,
+		isInteractable: true,
+	},
+	Fan: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: false,
+		isInteractable: true,
+		disallowedAbove: ["Fan"],
+	},
+	Updraft: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: false,
+		isInteractable: true,
+	},
+	Zipline: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: false,
+		isInteractable: true,
+		disallowedAbove: ["Zipline"],
+	},
+	Climb: {
+		isSolid: false,
+		isFloor: false,
+		isObstacle: false,
+		isInteractable: true,
+		disallowedAbove: ["Climb"],
+	},
+};

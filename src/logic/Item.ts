@@ -1,11 +1,10 @@
-import { Tile } from "./Tile";
+import { Fan } from "@/components/tiles/Fan";
+import { NeighborTiles, Tile, TileDef } from "./Tile";
 
-export type PlacementRule = {
-	center?: Tile;
-	north?: Tile;
-	east?: Tile;
-	south?: Tile;
-	west?: Tile;
+export type PropertyTest = (def: TileDef) => boolean;
+
+export type PlacementCondition = {
+	[key in keyof NeighborTiles]?: PropertyTest | PropertyTest[];
 };
 
 type ItemDef = {
@@ -14,9 +13,9 @@ type ItemDef = {
 	frame: number;
 	tile: Tile;
 	rules: {
-		start: PlacementRule[];
-		middle: PlacementRule[];
-		end: PlacementRule[];
+		start: PlacementCondition[];
+		middle: PlacementCondition[];
+		end: PlacementCondition[];
 		axis: "x" | "y" | "";
 		min: number;
 		max: number;
@@ -30,9 +29,12 @@ export const Item = {
 		frame: 2,
 		tile: "Climb",
 		rules: {
-			start: [{ center: "None", north: "Wall" }, { center: "Platform" }],
-			middle: [{ center: "None" }, { center: "Zipline" }],
-			end: [{ center: "None" }, { center: "Zipline" }],
+			start: [
+				{ center: (d) => !d.isSolid, north: (d) => d.isSolid },
+				{ center: (d) => !d.isSolid && d.isFloor },
+			],
+			middle: [{ center: (d) => !d.isFloor }],
+			end: [{ center: (d) => !d.isFloor }],
 			axis: "y",
 			min: 2,
 			max: 8,
@@ -44,12 +46,9 @@ export const Item = {
 		frame: 10,
 		tile: "Fan",
 		rules: {
-			start: [
-				{ center: "None", south: "Wall" },
-				{ center: "None", south: "Platform" },
-			],
-			middle: [{ center: "None" }],
-			end: [{ center: "None" }],
+			start: [{ center: (d) => !d.isSolid, south: (d) => d.isFloor }],
+			middle: [{ center: (d) => !d.isSolid }],
+			end: [{ center: (d) => !d.isSolid }],
 			axis: "",
 			min: 1,
 			max: 1,
@@ -62,25 +61,15 @@ export const Item = {
 		tile: "Zipline",
 		rules: {
 			start: [
-				{ center: "None", south: "Wall" },
-				{ center: "None", south: "Platform" },
-				{ center: "None", west: "Wall" },
-				{ center: "None", east: "Wall" },
-				{ center: "Climb", south: "Wall" },
-				{ center: "Climb", south: "Platform" },
-				{ center: "Climb", west: "Wall" },
-				{ center: "Climb", east: "Wall" },
+				{ center: (d) => !d.isFloor, south: (d) => d.isFloor },
+				{ center: (d) => !d.isFloor, west: (d) => d.isSolid },
+				{ center: (d) => !d.isFloor, east: (d) => d.isSolid },
 			],
-			middle: [{ center: "None" }],
+			middle: [{ center: (d) => !d.isSolid }],
 			end: [
-				{ center: "None", south: "Wall" },
-				{ center: "None", south: "Platform" },
-				{ center: "None", west: "Wall" },
-				{ center: "None", east: "Wall" },
-				{ center: "Climb", south: "Wall" },
-				{ center: "Climb", south: "Platform" },
-				{ center: "Climb", west: "Wall" },
-				{ center: "Climb", east: "Wall" },
+				{ center: (d) => !d.isFloor, south: (d) => d.isFloor },
+				{ center: (d) => !d.isFloor, west: (d) => d.isSolid },
+				{ center: (d) => !d.isFloor, east: (d) => d.isSolid },
 			],
 			axis: "x",
 			min: 3,

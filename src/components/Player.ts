@@ -1,5 +1,5 @@
 import { GameScene } from "@/scenes/GameScene";
-import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
+import { NeighborTiles, SIZE, Tile, TileCoord, TileDef } from "@/logic/Tile";
 import { GrayScalePostFilter } from "@/pipelines/GrayScalePostFilter";
 
 enum Action {
@@ -90,57 +90,74 @@ export class Player extends Phaser.GameObjects.Container {
 		west,
 		nw,
 	}: NeighborTiles) {
-		const has = (tiles: Tile[], ...wanted: Tile[]) =>
-			wanted.some((tile) => tiles.includes(tile));
+		const check = (tiles: Tile[], test: (def: TileDef) => boolean) =>
+			tiles.some((tile) => test(TileDef[tile]));
+
 		const dx = this.facingRight ? 1 : -1;
 		const front = this.facingRight ? east : west;
 		const frontUp = this.facingRight ? ne : nw;
 		const frontDown = this.facingRight ? se : sw;
 		const back = this.facingRight ? west : east;
 
-		if (has(center, "Death", "Wall")) return this.die();
+		// Fatal tiles
+		if (center.includes("Death") || check(center, (d) => d.isSolid)) {
+			return this.die();
+		}
 
-		if (has(center, "Gold") && !this.holding) return this.pickUp();
-		if (has(center, "Home") && this.holding) return this.dropOff();
+		// Interactions
+		if (center.includes("Gold") && !this.holding) return this.pickUp();
+		if (center.includes("Home") && this.holding) return this.dropOff();
 
-		if (has(center, "Climb")) {
+		// Climbing
+		if (center.includes("Climb")) {
 			if (
 				this.action == Action.Climbing &&
-				has(front, "None") &&
-				has(frontDown, "Wall", "Platform")
+				!check(front, (d) => d.isSolid) &&
+				check(frontDown, (d) => d.isFloor)
 			) {
-				// TODO FIX
-				// Do nothing, ie, leave the rope
-			} else if (!has(north, "Wall")) {
+				// Leave the rope
+			} else if (!check(north, (d) => d.isSolid)) {
 				return this.climb();
 			}
 		}
 
-		if (has(center, "Zipline") && has(front, "Zipline")) {
+		// Zipline
+		if (center.includes("Zipline") && front.includes("Zipline")) {
 			this.action = Action.Climbing;
 			return this.move(dx, 0, 800);
 		}
 
-		if (has(center, "Updraft") && !has(north, "Wall")) {
+		// Updraft
+		if (center.includes("Updraft") && !check(north, (d) => d.isSolid)) {
 			this.action = Action.Flying;
-			if (!has(front, "Wall") && !has(frontUp, "Wall")) {
+			if (
+				!check(front, (d) => d.isSolid) &&
+				!check(frontUp, (d) => d.isSolid)
+			) {
 				return this.move(dx, -1, 400 * 1.4);
 			}
 			return this.move(0, -1, 400);
 		}
 
-		if (has(center, "None", "Platform", "Zipline")) {
-			if (!has(south, "Wall", "Platform")) {
+		// Gravity
+		if (
+			check(center, (d) => !d.isSolid) ||
+			center.includes("Platform") ||
+			center.includes("Zipline")
+		) {
+			if (!check(south, (d) => d.isFloor)) {
 				return this.fall();
 			}
 		}
+
 		if (this.fallSpeed > 6) {
 			return this.die();
 		}
 
-		if (!has(front, "Wall")) {
+		// Walking
+		if (!check(front, (d) => d.isSolid)) {
 			return this.walk(dx);
-		} else if (!has(back, "Wall")) {
+		} else if (!check(back, (d) => d.isSolid)) {
 			this.facingRight = !this.facingRight;
 			return this.walk(-dx);
 		}
