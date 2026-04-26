@@ -1,6 +1,6 @@
 import { UILevelStatePanel } from "@/components/ui/UILevelStatePanel";
 import { UIPanel, UI_HEIGHT } from "@/components/ui/UIPanel";
-import { UISpeedPanel } from "@/components/ui/UISpeedPanel";
+import { PLAY_SPEEDS, UISpeedPanel } from "@/components/ui/UISpeedPanel";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { Music } from "@/logic/Music";
 import { BaseScene } from "@/scenes/BaseScene";
@@ -37,9 +37,14 @@ export class UIScene extends BaseScene {
 	}
 
 	setupListeners() {
-		const gameScene = this.scene.get("GameScene");
-		const overworldScene = this.scene.get("OverworldScene");
 		const titleScene = this.scene.get("TitleScene");
+		const overworldScene = this.scene.get("OverworldScene");
+		const gameScene = this.scene.get("GameScene");
+
+		// GameScene
+		overworldScene.events.on("setSeek", (seek: number) => {
+			this.music.setSeek(seek);
+		});
 
 		// GameScene
 		gameScene.events.on("setInventory", (inventory: Inventory) => {
@@ -53,8 +58,18 @@ export class UIScene extends BaseScene {
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
 			this.events.emit("toggleItem", item, item);
 		});
+		this.levelStatePanel.on("retry", () => {
+			this.events.emit("restartLevel");
+		});
 		this.speedPanel.on("setPlaySpeed", (playSpeed: number) => {
 			this.events.emit("setPlaySpeed", playSpeed);
+
+			const rate = [0.5, 1, 1, 2][PLAY_SPEEDS.indexOf(playSpeed)];
+			this.tweens.add({
+				targets: this.music,
+				rate,
+				duration: 500,
+			});
 		});
 
 		// Toggle UI visibility based on scene
@@ -66,6 +81,7 @@ export class UIScene extends BaseScene {
 			if (!this.music.isPlaying) {
 				this.music.play();
 			}
+			this.speedPanel.resetSpeed();
 		});
 		gameScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(true),
