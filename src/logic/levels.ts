@@ -43,7 +43,7 @@ export const levels = {
 		inventory: [
 			{ itemKey: "Fan", amount: 3 },
 			{ itemKey: "Rope", amount: 1 },
-			{ itemKey: "Zipline", amount: 1 }
+			{ itemKey: "Zipline", amount: 1 },
 		],
 	},
 	level6: {
@@ -71,6 +71,15 @@ export const levels = {
 			{ itemKey: "Fan", amount: 10 },
 		],
 	},
+	level_vertical: {
+		title: "The Climb",
+		playerCount: 12,
+		inventory: [
+			{ itemKey: "Rope", amount: 20 },
+			{ itemKey: "Fan", amount: 20 },
+			{ itemKey: "Zipline", amount: 20 },
+		],
+	},
 } as const satisfies { [key: string]: LevelDef };
 
 export type LevelKey = keyof typeof levels;
@@ -83,5 +92,6 @@ export const tilemaps: { [key in LevelKey]: string } = {
 	level5: tilemap(`maps/level5.json`),
 	level6: tilemap(`maps/level6.json`),
 	leveldev1: tilemap(`maps/leveldev1.json`),
-	leveldev2: tilemap(`maps/leveldev2.json`)
+	leveldev2: tilemap(`maps/leveldev2.json`),
+	level_vertical: tilemap(`maps/level_vertical.json`),
 };
