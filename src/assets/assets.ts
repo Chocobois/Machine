@@ -55,6 +55,36 @@ export const audios: Audio[] = [
 	music("flykten", "flykten.mp3"),
 
 	sound("t_rustle", "tree/rustle.mp3", 0.5),
+
+	sound("voice_dragn_1", "voice/dragn_1.mp3"),
+	sound("voice_dragn_2", "voice/dragn_2.mp3"),
+	sound("voice_dragn_3", "voice/dragn_3.mp3"),
+	sound("voice_dragn_4", "voice/dragn_4.mp3"),
+	sound("voice_dragn_5", "voice/dragn_5.mp3"),
+	sound("voice_dragn_6", "voice/dragn_6.mp3"),
+	sound("voice_dragn_7", "voice/dragn_7.mp3"),
+	sound("voice_dragn_8", "voice/dragn_8.mp3"),
+	sound("voice_generic", "voice/generic.mp3"),
+	sound("voice_kobl_1", "voice/kobl_1.mp3"),
+	sound("voice_kobl_2", "voice/kobl_2.mp3"),
+	sound("voice_kobl_3", "voice/kobl_3.mp3"),
+	sound("voice_kobl_4", "voice/kobl_4.mp3"),
+
+	sound("ui_title_begin", "ui/title_begin.mp3"),
+	sound("ui_buy", "ui/buy.mp3"),
+	sound("ui_paper", "ui/paper.mp3"),
+	sound("ui_sparkle", "ui/sparkle.mp3"),
+	sound("ui_button", "ui/button.mp3"),
+	sound("ui_tooltip", "ui/tooltip.mp3"),
+	sound("ui_collect", "ui/collect.mp3"),
+	sound("tree_rustle", "tree/rustle.mp3"),
+	sound("squeak", "placeholder/placeholder_squeak.mp3"),
+	sound("capture", "placeholder/placeholder_capture.mp3"),
+	sound("scream", "placeholder/placeholder_scream.mp3"),
+	sound("fried", "placeholder/placeholder_fried.mp3"),
+	sound("explosion", "placeholder/placeholder_explosion.mp3"),
+	sound("hit", "placeholder/placeholder_hit.mp3"),
+	sound("demolish", "placeholder/placeholder_demolish.mp3"),
 ];
 
 /* Fonts */
