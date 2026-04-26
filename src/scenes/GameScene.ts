@@ -101,6 +101,7 @@ export class GameScene extends BaseScene {
 		ui.events.on("toggleItem", this.onToggleItem, this);
 		ui.events.on("setPlaySpeed", this.onSetPlaySpeed, this);
 		ui.events.on("restartLevel", this.onRestartLevel, this);
+		ui.events.on("onMusicBar", this.onMusicBar, this);
 
 		this.events.once("shutdown", () => {
 			ui.events.off("toggleItem", this.onToggleItem, this);
@@ -635,12 +636,17 @@ export class GameScene extends BaseScene {
 		coords.forEach((coord) => {
 			const entity = this.createEntityFromItem(item.itemKey, coord);
 			this.entities.push(entity);
-			entity.on("toggle", this.onEntityToggle, this);
 			created.push(entity);
+
+			entity.on("toggle", this.onEntityToggle, this);
+			entity.on("sound", (key: string, volume: number = 0.5) => {
+				this.playLocationSound(entity.tileCoord, key, volume);
+			});
 		});
 
 		// Assign parent/children
 		const parent = created[0];
+		parent.onBuild();
 
 		for (let i = 1; i < created.length; i++) {
 			const child = created[i];
@@ -701,6 +707,9 @@ export class GameScene extends BaseScene {
 		});
 		player.on("leave", () => {
 			this.checkLevelCriteria();
+		});
+		player.on("sound", (key: string, volume: number = 0.5) => {
+			this.playLocationSound(player.tileCoord, key, volume);
 		});
 		player.setTileCoord(tileCoord);
 	}
@@ -874,6 +883,45 @@ export class GameScene extends BaseScene {
 		this.setInputMode(InputMode.Camera);
 
 		this.events.emit("updateInventory", this.inventory);
+	}
+
+	/* Audio */
+
+	public playLocationSound(tileCoord: TileCoord, key: string, volume: number) {
+		if (!this.game.hasFocus) return;
+
+		const position = TileCoord.tileToCoord(tileCoord);
+
+		const offset = position.subtract(this.cameraTarget);
+		const distance = offset.length();
+
+		// Volume falloff
+		const maxDistance = 200;
+		const volumeFactor = Phaser.Math.Clamp(1 - distance / maxDistance, 0, 1);
+		const finalVolume = volume * volumeFactor;
+
+		// Stereo pan
+		const pan = Phaser.Math.Clamp(offset.x / 100, -1, 1);
+
+		// Optional: skip if inaudible
+		if (finalVolume <= 0) return;
+
+		this.sound.play(key, {
+			volume: finalVolume,
+			pan: pan,
+		});
+	}
+
+	onMusicBar(bar: number) {
+		if (bar % 2 == 0) {
+			const yippers = this.players.filter(
+				(player) => !player.hasLeft && !!player.holding,
+			);
+			Phaser.Math.RND.shuffle(yippers);
+			yippers.length = 4;
+
+			yippers.forEach((player) => player.yip());
+		}
 	}
 
 	/* Time magic */

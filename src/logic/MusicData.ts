@@ -2,7 +2,7 @@ const overlap = 2;
 
 const Data = {
 	flykten: {
-		offset: 574 / 44100,
+		offset: 580 / 44100 - 0.05,
 		bpm: 190,
 		loop: true,
 		start: 446222 / 44100 + overlap,

@@ -177,7 +177,7 @@ export class TitleScene extends BaseScene {
 				this.credits.setVisible(true);
 				break;
 			case MainMenuState.Starting:
-				this.sound.play("t_rustle", { volume: 0.3 });
+				this.sound.play("kobl_1", { volume: 0.5 });
 				this.isStarting = true;
 				this.flash(3000, 0xffffff, 0.6);
 

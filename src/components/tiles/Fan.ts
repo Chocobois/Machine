@@ -26,5 +26,13 @@ export class Fan extends Entity {
 	onClick() {
 		this.setEnabled(!this.isEnabled());
 		this.emit("toggle");
+
+		this.emit("sound", this.enabled ? "toggle1" : "toggle2", 0.5);
+		this.emit("sound", this.enabled ? "fan_on" : "fan_off", 0.5);
+	}
+
+	onBuild() {
+		this.emit("sound", "clank", 0.4);
+		this.emit("sound", "fan_on", 0.5);
 	}
 }

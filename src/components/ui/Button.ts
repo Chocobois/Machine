@@ -31,7 +31,7 @@ export class Button extends Phaser.GameObjects.Container {
 		gameObject: Phaser.GameObjects.Image,
 		draggable = false,
 		useCircle = false,
-		padding = 0
+		padding = 0,
 	) {
 		const config: Phaser.Types.Input.InputConfiguration = {
 			useHandCursor: true,
@@ -42,7 +42,7 @@ export class Button extends Phaser.GameObjects.Container {
 			config.hitArea = new Phaser.Geom.Circle(
 				gameObject.width / 2,
 				gameObject.height / 2,
-				gameObject.width / 2 + padding
+				gameObject.width / 2 + padding,
 			);
 			config.hitAreaCallback = Phaser.Geom.Circle.Contains;
 		} else {
@@ -50,7 +50,7 @@ export class Button extends Phaser.GameObjects.Container {
 				0,
 				0,
 				gameObject.width + padding,
-				gameObject.height + padding
+				gameObject.height + padding,
 			);
 			config.hitAreaCallback = Phaser.Geom.Rectangle.Contains;
 		}
@@ -112,7 +112,7 @@ export class Button extends Phaser.GameObjects.Container {
 		pointer: Phaser.Input.Pointer,
 		localX: number,
 		localY: number,
-		event: Phaser.Types.Input.EventData
+		event: Phaser.Types.Input.EventData,
 	) {
 		// this.hover = true;
 	}
@@ -121,10 +121,12 @@ export class Button extends Phaser.GameObjects.Container {
 		pointer: Phaser.Input.Pointer,
 		localX: number,
 		localY: number,
-		event: Phaser.Types.Input.EventData
+		event: Phaser.Types.Input.EventData,
 	) {
 		this.hold = true;
 		this.blocked = false;
+
+		this.scene.sound.play("toggle2", { volume: 0.1 });
 
 		if (this.clickOnHold) {
 			this.emit("click");
@@ -135,10 +137,11 @@ export class Button extends Phaser.GameObjects.Container {
 		pointer: Phaser.Input.Pointer,
 		localX: number,
 		localY: number,
-		event: Phaser.Types.Input.EventData
+		event: Phaser.Types.Input.EventData,
 	) {
 		if (this.hold && !this.blocked) {
 			this.hold = false;
+			this.scene.sound.play("toggle1", { volume: 0.1 });
 
 			if (!this.clickOnHold) {
 				this.emit("click");

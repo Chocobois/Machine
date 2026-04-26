@@ -68,7 +68,10 @@ export class Player extends Phaser.GameObjects.Container {
 		const index = Math.floor(time / 250) % frames.length;
 		this.sprite.setFrame(frames[index]);
 		this.sprite.setFlipX(!this.facingRight);
-		this.heldSprite.setOrigin(0.5, 1 + Math.sin((time / 400 * Math.PI) % Math.PI) * 0.1)
+		this.heldSprite.setOrigin(
+			0.5,
+			1 + Math.sin(((time / 400) * Math.PI) % Math.PI) * 0.1,
+		);
 	}
 
 	setTileCoord(tileCoord: TileCoord) {
@@ -228,6 +231,14 @@ export class Player extends Phaser.GameObjects.Container {
 			alpha: 0,
 			duration: 1000,
 		});
+	}
+
+	/* Audio */
+
+	yip() {
+		const sounds = ["kobot_1", "kobot_2"];
+		const key = Phaser.Math.RND.pick(sounds);
+		this.emit("sound", key, 1.0);
 	}
 
 	/* Helpers */
