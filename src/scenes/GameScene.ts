@@ -187,6 +187,8 @@ export class GameScene extends BaseScene {
 
 		this.setInventory(levels[key].inventory);
 		this.spawnPlayers(levels[key].playerCount, homeCoords);
+		this.events.emit("setPlayerCount", levels[key].playerCount);
+		this.events.emit("setTreasureCount", levels[key].treasureCount);
 	}
 
 	getHomeCoords(): TileCoord[] {
@@ -958,6 +960,8 @@ export class GameScene extends BaseScene {
 		if (this.noMorePlayers) {
 			this.scene.start("OverworldScene", { level: this.level });
 		}
+
+		this.events.emit("setInventory", this.inventory);
 	}
 
 	onRestartLevel() {

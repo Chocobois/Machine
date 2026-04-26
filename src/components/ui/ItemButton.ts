@@ -59,7 +59,7 @@ export class ItemButton extends Button {
 	}
 
 	setAmount(amount: number) {
-		this.countText.setText(`x${amount}`);
+		this.countText.setText(`×${amount}`);
 	}
 
 	/* Input */

@@ -56,6 +56,12 @@ export class UIScene extends BaseScene {
 		gameScene.events.on("updateInventory", (inventory: Inventory) => {
 			this.uiPanel.updateInventory(inventory);
 		});
+		gameScene.events.on("setPlayerCount", (count: number) => {
+			this.uiPanel.setLives(count);
+		});
+		gameScene.events.on("setTreasureCount", (count: number) => {
+			this.uiPanel.setGold(count);
+		});
 
 		// UI interactions
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
