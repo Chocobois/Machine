@@ -57,7 +57,7 @@ export class Player extends Phaser.GameObjects.Container {
 		this.heldSprite = this.scene.add
 			.sprite(0, -0.35 * SIZE, "treasure", frame)
 			.setOrigin(0.5, 1.0)
-			.setVisible(true);
+			.setVisible(false);
 		this.heldSprite.setScale(SIZE / this.heldSprite.width);
 		this.add(this.heldSprite);
 	}
