@@ -985,7 +985,7 @@ export class GameScene extends BaseScene {
 			this.addEvent(500, () => {
 				this.scene.start("OverworldScene", {
 					level: this.level,
-					restart: true,
+					restart: !victory,
 				});
 			});
 		});
