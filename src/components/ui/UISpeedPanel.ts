@@ -4,7 +4,7 @@ const PANEL_WIDTH = 256;
 const PANEL_HEIGHT = 64;
 const BUTTON_SIZE = 64;
 
-const PLAY_SPEEDS = [0.2, 1, 3, 12];
+export const PLAY_SPEEDS = [0.2, 1, 3, 12];
 
 export class UISpeedPanel extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
@@ -57,6 +57,10 @@ export class UISpeedPanel extends Phaser.GameObjects.Container {
 		this.buttons.forEach((btn, index) => {
 			btn.setSelected(PLAY_SPEEDS[index] === this.currentSpeed);
 		});
+	}
+
+	resetSpeed() {
+		this.setPlaySpeed(1);
 	}
 }
 
