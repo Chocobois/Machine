@@ -18,11 +18,19 @@ export class OverworldScene extends BaseScene {
 
 		const text = this.addText({
 			x: this.CX,
-			y: this.CY,
-			text: `Up next\n"${levels[this.nextLevel].title}"`,
-			size: 64,
+			y: this.CY - 50,
+			text: "next",
+			size: 32,
 		});
 		text.setOrigin(0.5);
+
+		const title = this.addText({
+			x: this.CX,
+			y: this.CY,
+			text: levels[this.nextLevel].title,
+			size: 64,
+		});
+		title.setOrigin(0.5);
 
 		this.setupListeners();
 		this.addEvent(2000, () => {

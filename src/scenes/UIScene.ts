@@ -36,9 +36,6 @@ export class UIScene extends BaseScene {
 
 		// OverworldScene
 		const overworldScene = this.scene.get("OverworldScene");
-		overworldScene.events.on("setVisible", (state: boolean) => {
-			this.uiPanel.setVisible(state);
-		});
 
 		// UI interactions
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
@@ -47,5 +44,18 @@ export class UIScene extends BaseScene {
 		this.speedPanel.on("setPlaySpeed", (playSpeed: number) => {
 			this.events.emit("setPlaySpeed", playSpeed);
 		});
+
+		// Toggle UI visibility based on scene
+		gameScene.events.on(Phaser.Scenes.Events.START, () =>
+			this.setVisible(true),
+		);
+		overworldScene.events.on(Phaser.Scenes.Events.START, () =>
+			this.setVisible(false),
+		);
+	}
+
+	setVisible(state: boolean) {
+		this.uiPanel.setVisible(state);
+		this.speedPanel.setVisible(state);
 	}
 }
