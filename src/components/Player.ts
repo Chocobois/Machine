@@ -233,7 +233,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private move(dtx: number, dty: number, duration: number) {
 		this.scene.tweens.add({
 			targets: this,
-			duration: duration,
+			duration: duration / this.scene.playSpeed,
 			x: { from: this.x, to: this.x + dtx * SIZE },
 			y: { from: this.y, to: this.y + dty * SIZE },
 			onComplete: () => {

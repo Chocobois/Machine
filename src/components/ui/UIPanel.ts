@@ -5,7 +5,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 export const UI_HEIGHT = 150;
 export const UI_SIZE = 120;
 
-export class Panel extends Phaser.GameObjects.Container {
+export class UIPanel extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
 
 	private background: Phaser.GameObjects.Image;
@@ -78,10 +78,6 @@ export class Panel extends Phaser.GameObjects.Container {
 		const goldX = this.width / 2 - UI_SIZE + 20;
 
 		const goldIcon = this.scene.add.image(goldX, 5, "ui_gold");
-		this.scene.textures
-			.get("ui_gold")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-
 		goldIcon.setScale((UI_SIZE / goldIcon.width) * 0.9);
 		this.add(goldIcon);
 

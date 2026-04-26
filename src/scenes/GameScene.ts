@@ -23,7 +23,7 @@ import { Fan } from "@/components/tiles/Fan";
 import { Zipline } from "@/components/tiles/Zipline";
 import { Updraft } from "@/components/tiles/Updraft";
 import { Ladder } from "@/components/tiles/Ladder";
-import { UI_HEIGHT } from "@/components/ui/Panel";
+import { UI_HEIGHT } from "@/components/ui/UIPanel";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -38,6 +38,7 @@ export class GameScene extends BaseScene {
 
 	// Kobots
 	private players: Player[] = [];
+	public playSpeed = 1;
 
 	// Input
 	private inputMode: InputMode;
@@ -94,6 +95,7 @@ export class GameScene extends BaseScene {
 		const ui = this.scene.get("UIScene");
 
 		ui.events.on("toggleItem", this.onToggleItem, this);
+		ui.events.on("setPlaySpeed", this.onSetPlaySpeed, this);
 
 		this.events.once("shutdown", () => {
 			ui.events.off("toggleItem", this.onToggleItem, this);
@@ -865,5 +867,12 @@ export class GameScene extends BaseScene {
 		this.setInputMode(InputMode.Camera);
 
 		this.events.emit("updateInventory", this.inventory);
+	}
+
+	/* Time magic */
+
+	onSetPlaySpeed(playSpeed: number) {
+		this.playSpeed = playSpeed;
+		console.log("PLAYSPEED", playSpeed);
 	}
 }
