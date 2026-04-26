@@ -788,7 +788,7 @@ export class GameScene extends BaseScene {
 	}
 
 	createUpdraftFromFan(fan: Fan) {
-		const maxLength = 6;
+		const maxLength = 8;
 
 		const created: Entity[] = [];
 		let current = fan.tileCoord;
