@@ -55,10 +55,10 @@ export class Player extends Phaser.GameObjects.Container {
 
 		const frame = Phaser.Math.RND.pick([0, 1, 2, 3]);
 		this.heldSprite = this.scene.add
-			.sprite(0, -0.4 * SIZE, "treasure", frame)
+			.sprite(0, -0.35 * SIZE, "treasure", frame)
 			.setOrigin(0.5, 1.0)
-			.setVisible(false);
-		this.heldSprite.setScale((0.7 * SIZE) / this.heldSprite.width);
+			.setVisible(true);
+		this.heldSprite.setScale(SIZE / this.heldSprite.width);
 		this.add(this.heldSprite);
 	}
 
@@ -67,6 +67,7 @@ export class Player extends Phaser.GameObjects.Container {
 		const index = Math.floor(time / 250) % frames.length;
 		this.sprite.setFrame(frames[index]);
 		this.sprite.setFlipX(!this.facingRight);
+		this.heldSprite.setOrigin(0.5, 1 + Math.sin((time / 400 * Math.PI) % Math.PI) * 0.1)
 	}
 
 	setTileCoord(tileCoord: TileCoord) {
