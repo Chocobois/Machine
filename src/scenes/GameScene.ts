@@ -362,6 +362,7 @@ export class GameScene extends BaseScene {
 			this.buildStartTile = tile;
 			this.previewCoords = [tile];
 			this.updatePreview();
+			this.playLocationSound(this.getMouseTileCoord(), "button", 0.5);
 		}
 	}
 
@@ -375,6 +376,10 @@ export class GameScene extends BaseScene {
 			const { x: mx, y: my } = TileCoord.tileToCoord(mouseTile);
 			this.cursor.setPosition(mx, my);
 			this.cursor.setAllowed(this.canUseItem(mouseTile));
+
+			if (this.buildStartTile) {
+				this.playLocationSound(mouseTile, "button", 0.3);
+			}
 		}
 
 		if (this.buildStartTile) {
@@ -921,7 +926,8 @@ export class GameScene extends BaseScene {
 	onMusicBar(bar: number) {
 		if (bar % 2 == 0) {
 			const yippers = this.players.filter(
-				(player) => !player.hasLeft && !!player.holding,
+				(player) =>
+					!player.hasLeft && (!!player.holding || Math.random() < 0.1),
 			);
 			Phaser.Math.RND.shuffle(yippers);
 			yippers.length = 4;
