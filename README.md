@@ -1,6 +1,9 @@
-# Gamedev.js 2026 - Kobots
+# Kobots
 
-We make game, but faster
+Made in 2 weeks during [Gamedev.js Jam 2026](https://itch.io/jam/gamedevjs-2026). The theme for this jam is "machine".
+
+This project is made using our own [Phaser game jam template](https://github.com/Chocobois/choco-jam-template), which provides a robust build system via GitHub actions and some basic Phaser scenes to get the ball rolling.
+
 
 ## Quick start
 ### Prerequisites
