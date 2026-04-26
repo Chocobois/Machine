@@ -114,19 +114,23 @@ export class Player extends Phaser.GameObjects.Container {
 			) {
 				// Leave the rope
 			} else if (!check(north, (d) => d.isSolid)) {
-				return this.climb();
+				this.action = Action.Climbing;
+				this.fallSpeed = 0;
+				return this.move(0, -1, 800);
 			}
 		}
 
 		// Zipline
 		if (center.includes("Zipline") && front.includes("Zipline")) {
 			this.action = Action.Climbing;
+			this.fallSpeed = 0;
 			return this.move(dx, 0, 800);
 		}
 
 		// Updraft
 		if (center.includes("Updraft") && !check(north, (d) => d.isSolid)) {
 			this.action = Action.Flying;
+			this.fallSpeed = 0;
 			if (
 				!check(front, (d) => d.isSolid) &&
 				!check(frontUp, (d) => d.isSolid)
@@ -190,11 +194,6 @@ export class Player extends Phaser.GameObjects.Container {
 	private walk(deltaTileX: number) {
 		this.action = Action.Walking;
 		this.move(deltaTileX, 0, 600);
-	}
-
-	private climb() {
-		this.action = Action.Climbing;
-		this.move(0, -1, 800);
 	}
 
 	private pickUp() {
