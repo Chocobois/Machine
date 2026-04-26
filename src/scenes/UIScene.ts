@@ -25,17 +25,17 @@ export class UIScene extends BaseScene {
 	}
 
 	setupListeners() {
-		// GameScene
 		const gameScene = this.scene.get("GameScene");
+		const overworldScene = this.scene.get("OverworldScene");
+		const titleScene = this.scene.get("TitleScene");
+
+		// GameScene
 		gameScene.events.on("setInventory", (inventory: Inventory) => {
 			this.uiPanel.setInventory(inventory);
 		});
 		gameScene.events.on("updateInventory", (inventory: Inventory) => {
 			this.uiPanel.updateInventory(inventory);
 		});
-
-		// OverworldScene
-		const overworldScene = this.scene.get("OverworldScene");
 
 		// UI interactions
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
@@ -46,11 +46,14 @@ export class UIScene extends BaseScene {
 		});
 
 		// Toggle UI visibility based on scene
-		gameScene.events.on(Phaser.Scenes.Events.START, () =>
-			this.setVisible(true),
+		titleScene.events.on(Phaser.Scenes.Events.START, () =>
+			this.setVisible(false),
 		);
 		overworldScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(false),
+		);
+		gameScene.events.on(Phaser.Scenes.Events.START, () =>
+			this.setVisible(true),
 		);
 	}
 
