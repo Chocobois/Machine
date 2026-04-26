@@ -80,6 +80,18 @@ export class PreloadScene extends BaseScene {
 	}
 
 	create() {
+		// Set all textures to pixelated
+		for (let image of images) {
+			this.textures
+				.get(image.key)
+				.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		}
+		for (let image of spritesheets) {
+			this.textures
+				.get(image.key)
+				.setFilter(Phaser.Textures.FilterMode.NEAREST);
+		}
+
 		this.fade(true, 100, 0x000000);
 		this.addEvent(100, () => {
 			this.scene.launch("UIScene");

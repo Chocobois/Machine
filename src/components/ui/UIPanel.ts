@@ -34,10 +34,6 @@ export class UIPanel extends Phaser.GameObjects.Container {
 			.setOrigin(0.5, 0);
 
 		this.background.setScale(this.width / this.background.width);
-		this.scene.textures
-			.get("ui_bar")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-
 		this.add(this.background);
 	}
 
@@ -47,10 +43,6 @@ export class UIPanel extends Phaser.GameObjects.Container {
 		const livesX = -this.width / 2 + UI_SIZE;
 
 		const livesIcon = this.scene.add.image(livesX, 20, "ui_lives");
-		this.scene.textures
-			.get("ui_lives")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-
 		livesIcon.setScale((UI_SIZE / livesIcon.width) * 1.35);
 		this.add(livesIcon);
 

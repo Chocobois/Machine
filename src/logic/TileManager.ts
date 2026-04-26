@@ -11,22 +11,6 @@ export class TileManager extends Phaser.GameObjects.Container {
 	constructor(scene: BaseScene) {
 		super(scene);
 		this.scene = scene;
-
-		this.scene.textures
-			.get("texture_walls")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-		this.scene.textures
-			.get("texture_decoration")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-		this.scene.textures
-			.get("environment")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-		this.scene.textures
-			.get("entities")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
-		this.scene.textures
-			.get("decorations")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
 	}
 
 	loadTilemap(tilemapKey: LevelKey): Tile[][] {

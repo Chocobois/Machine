@@ -48,9 +48,6 @@ export class Player extends Phaser.GameObjects.Container {
 			// "kobots_blue",
 			// "kobots_violet"
 		]);
-		this.scene.textures
-			.get("kobots_red")
-			.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
 		this.sprite = this.scene.add.sprite(0, 0, sprite_id, 0);
 		this.sprite.setScale(SIZE / this.sprite.width);
