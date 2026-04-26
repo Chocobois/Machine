@@ -249,6 +249,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private dropOff() {
 		this.action = Action.Leaving;
 		this.emit("leave");
+		this.emit("sound", "sparkle", 0.4);
 
 		this.scene.tweens.add({
 			targets: this,
@@ -260,9 +261,16 @@ export class Player extends Phaser.GameObjects.Container {
 	/* Audio */
 
 	yip() {
-		const sounds = ["kobot_1", "kobot_2"];
+		const sounds = [
+			"kobot_1",
+			"kobot_2",
+			"kobl_1",
+			"kobl_2",
+			"kobl_3",
+			"kobl_4",
+		];
 		const key = Phaser.Math.RND.pick(sounds);
-		this.emit("sound", key, 0.8);
+		this.emit("sound", key, 0.2);
 	}
 
 	/* Helpers */
