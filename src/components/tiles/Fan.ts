@@ -22,4 +22,9 @@ export class Fan extends Entity {
 	}
 
 	updateSprite({}: NeighborTiles) {}
+
+	onClick() {
+		this.setEnabled(!this.isEnabled());
+		this.emit("toggle");
+	}
 }

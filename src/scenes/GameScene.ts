@@ -100,6 +100,7 @@ export class GameScene extends BaseScene {
 
 		ui.events.on("toggleItem", this.onToggleItem, this);
 		ui.events.on("setPlaySpeed", this.onSetPlaySpeed, this);
+		ui.events.on("restartLevel", this.onRestartLevel, this);
 
 		this.events.once("shutdown", () => {
 			ui.events.off("toggleItem", this.onToggleItem, this);
@@ -900,5 +901,9 @@ export class GameScene extends BaseScene {
 		if (this.noMorePlayers) {
 			this.scene.start("OverworldScene", { level: this.level });
 		}
+	}
+
+	onRestartLevel() {
+		this.scene.start("OverworldScene", { level: this.level, restart: true });
 	}
 }

@@ -73,8 +73,5 @@ export abstract class Entity extends Button {
 		return this.parent ? this.parent.isEnabled() : this.enabled;
 	}
 
-	onClick() {
-		this.setEnabled(!this.isEnabled());
-		this.emit("toggle");
-	}
+	onClick() {}
 }

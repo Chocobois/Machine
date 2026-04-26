@@ -58,6 +58,9 @@ export class UIScene extends BaseScene {
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
 			this.events.emit("toggleItem", item, item);
 		});
+		this.levelStatePanel.on("retry", () => {
+			this.events.emit("restartLevel");
+		});
 		this.speedPanel.on("setPlaySpeed", (playSpeed: number) => {
 			this.events.emit("setPlaySpeed", playSpeed);
 
