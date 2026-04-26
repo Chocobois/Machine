@@ -41,7 +41,6 @@ export class GameScene extends BaseScene {
 	// Input
 	private inputMode: InputMode;
 	private isHolding = false;
-	private isUsingItem = false;
 	private dragStartPosition = new Phaser.Math.Vector2();
 	private lastPointerPosition = new Phaser.Math.Vector2();
 	private lastPointerTileCoord: TileCoord = { x: 0, y: 0 };
@@ -51,7 +50,14 @@ export class GameScene extends BaseScene {
 	// private previousTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
 
 	private isDraggingCamera = false;
+	private cameraBounds: {
+		minX: number;
+		maxX: number;
+		minY: number;
+		maxY: number;
+	};
 	private cameraTarget = new Phaser.Math.Vector2();
+	private cameraZoom: number = 4;
 
 	private buildStartTile?: TileCoord;
 	private previewCoords: TileCoord[] = [];
@@ -85,27 +91,6 @@ export class GameScene extends BaseScene {
 		this.scene.get("UIScene").events.on("toggleItem", this.onToggleItem, this);
 	}
 
-	setupCamera() {
-		// Set camera bounds
-		const worldWidth = this.tileManager.widthInPixels;
-		const worldHeight = this.tileManager.heightInPixels;
-		const zoomLevel = 4;
-
-		this.cameras.main.setBounds(
-			8,
-			8,
-			worldWidth - 16,
-			worldHeight + UI_HEIGHT / zoomLevel - 16,
-		);
-
-		this.cameras.main.setZoom(zoomLevel);
-		this.cameras.main.setRoundPixels(true);
-
-		this.cameraTarget.set(-500, -300);
-		this.cameras.main.scrollX = this.cameraTarget.x;
-		this.cameras.main.scrollY = this.cameraTarget.y;
-	}
-
 	update(time: number, delta: number) {
 		this.players.forEach((player) => {
 			player.update(time, delta);
@@ -116,35 +101,78 @@ export class GameScene extends BaseScene {
 		});
 	}
 
+	/* Camera */
+
+	setupCamera() {
+		this.cameras.main.setZoom(this.cameraZoom);
+		this.cameras.main.setRoundPixels(true);
+
+		this.updateCameraBounds();
+
+		const homeCoords = this.getHomeCoords()[0];
+		const { x, y } = TileCoord.tileToCoord(homeCoords);
+		this.centerCameraOn(x, y);
+	}
+
+	centerCameraOn(x: number, y: number) {
+		const { minX, maxX, minY, maxY } = this.cameraBounds;
+		this.cameraTarget.x = Phaser.Math.Clamp(x, minX, maxX);
+		this.cameraTarget.y = Phaser.Math.Clamp(y, minY, maxY);
+		this.cameras.main.centerOn(this.cameraTarget.x, this.cameraTarget.y);
+	}
+
+	updateCameraBounds() {
+		const worldWidth = this.tileManager.widthInPixels;
+		const worldHeight = this.tileManager.heightInPixels;
+		const uiOffset = UI_HEIGHT / this.cameraZoom;
+
+		const pad = 8 + 1;
+		this.cameraBounds = {
+			minX: this.W / 2 + pad,
+			maxX: worldWidth - this.W / 2 - pad,
+			minY: this.H / 2 + pad,
+			maxY: worldHeight - this.H / 2 - pad + uiOffset,
+		};
+	}
+
+	setCameraZoom(zoom: number) {
+		this.cameraZoom = Phaser.Math.Clamp(zoom, 3, 6);
+		this.cameras.main.setZoom(this.cameraZoom);
+		this.updateCameraBounds();
+		this.centerCameraOn(this.cameraTarget.x, this.cameraTarget.y);
+	}
+
 	/* Tiles */
 
 	loadLevel(key: LevelKey) {
 		const entityTiles = this.tileManager.loadTilemap(key);
-		const homeCoords: TileCoord[] = [];
 
 		for (let y = 0; y < this.tileManager.height; y++) {
 			for (let x = 0; x < this.tileManager.width; x++) {
 				const tile = entityTiles[y][x];
-				if (tile) {
-					const tileCoord = { x, y };
-					const entity = this.createEntityFromTile(tile, tileCoord);
+				if (!tile) continue;
 
-					if (entity) {
-						this.entities.push(entity);
-						this.refreshEntitySprites(tileCoord);
-						entity.on("toggle", this.onEntityToggle, this);
-					}
+				const tileCoord = { x, y };
+				const entity = this.createEntityFromTile(tile, tileCoord);
 
-					if (tile == "Home") {
-						homeCoords.push(tileCoord);
-					}
+				if (entity) {
+					this.entities.push(entity);
+					this.refreshEntitySprites(tileCoord);
+					entity.on("toggle", this.onEntityToggle, this);
 				}
 			}
 		}
 
-		this.setInventory(levels[key].inventory);
+		const homeCoords = this.getHomeCoords();
 
+		this.setInventory(levels[key].inventory);
 		this.spawnPlayers(levels[key].playerCount, homeCoords);
+	}
+
+	getHomeCoords(): TileCoord[] {
+		return this.entities
+			.filter((entity) => entity.tile === "Home")
+			.map((entity) => entity.tileCoord);
 	}
 
 	getEntitiesAt(tileCoord: TileCoord, includePreview = false): Entity[] {
@@ -204,6 +232,14 @@ export class GameScene extends BaseScene {
 		this.input.on("pointerup", this.onPointerUp, this);
 		this.input.on("pointerupoutside", this.onPointerUp, this);
 		this.input.on("pointermove", this.onPointerMove, this);
+		this.input.on("wheel", this.onMouseWheel, this);
+
+		// Hack to deal with UIScene stealing pointerup events
+		document.addEventListener("pointerup", () => {
+			if (this.isHolding || this.isDraggingCamera) {
+				this.onPointerUp(this.input.activePointer);
+			}
+		});
 
 		this.cursor = new Cursor(this).setDepth(100);
 	}
@@ -222,7 +258,6 @@ export class GameScene extends BaseScene {
 
 		this.isHolding = true;
 		this.isDraggingCamera = false;
-		this.isUsingItem = false;
 
 		if (this.inputMode == InputMode.Build) {
 			const tile = this.getMouseTileCoord();
@@ -258,11 +293,10 @@ export class GameScene extends BaseScene {
 		else if (this.isDraggingCamera) {
 			const dx = pointer.x - this.lastPointerPosition.x;
 			const dy = pointer.y - this.lastPointerPosition.y;
-
-			this.cameraTarget.x -= dx / this.cameras.main.zoom;
-			this.cameraTarget.y -= dy / this.cameras.main.zoom;
-			this.cameras.main.scrollX = this.cameraTarget.x;
-			this.cameras.main.scrollY = this.cameraTarget.y;
+			this.centerCameraOn(
+				this.cameraTarget.x - dx / this.cameraZoom,
+				this.cameraTarget.y - dy / this.cameraZoom,
+			);
 		}
 		// Player is holding and dragging, wait to confirm click or drag
 		else if (this.isHolding) {
@@ -283,7 +317,6 @@ export class GameScene extends BaseScene {
 	onPointerUp(pointer: Phaser.Input.Pointer): void {
 		this.isHolding = false;
 		this.isDraggingCamera = false;
-		this.isUsingItem = false;
 		this.lastPointerTileCoord = { x: -1, y: -1 };
 
 		if (this.buildStartTile) {
@@ -296,6 +329,22 @@ export class GameScene extends BaseScene {
 			this.buildStartTile = undefined;
 			this.previewCoords = [];
 		}
+	}
+
+	onMouseWheel(
+		pointer: Phaser.Input.Pointer,
+		currentlyOver: Phaser.GameObjects.GameObject[],
+		deltaX: number,
+		deltaY: number,
+		deltaZ: number,
+	) {
+		if (this.inputMode === InputMode.Cutscene) return;
+
+		let newZoom = this.cameraZoom;
+		if (deltaY < 0) newZoom += 1;
+		else if (deltaY > 0) newZoom -= 1;
+
+		this.setCameraZoom(newZoom);
 	}
 
 	getMouseTileCoord(): TileCoord {
@@ -651,8 +700,6 @@ export class GameScene extends BaseScene {
 	}
 
 	useItem(item: InventoryItem) {
-		this.isUsingItem = true;
-
 		item.amount -= 1;
 		if (item.amount <= 0) {
 			item.selected = false;

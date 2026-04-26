@@ -2,7 +2,7 @@ import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
 
-export const UI_HEIGHT = 140;
+export const UI_HEIGHT = 150;
 export const UI_SIZE = 120;
 
 export class UIScene extends BaseScene {
@@ -24,16 +24,11 @@ export class UIScene extends BaseScene {
 		this.panel.width = this.W;
 		this.panel.height = UI_HEIGHT;
 
-		//this.background = this.add.rectangle(
-			//0,
-			//0,
-			//this.panel.width,
-			//this.panel.height,
-			//0xffffff,
-		//);
-		this.background = this.add.image(0, 0, "ui_bar")
-		this.background.setScale(this.W / this.background.width);
-		this.textures.get("ui_bar").setFilter(Phaser.Textures.FilterMode.NEAREST); 
+		this.background = this.add
+			.image(0, -this.panel.height / 2, "ui_bar")
+			.setOrigin(0.5, 0);
+		this.background.setScale(this.panel.width / this.background.width);
+		this.textures.get("ui_bar").setFilter(Phaser.Textures.FilterMode.NEAREST);
 		this.panel.add(this.background);
 
 		/* Lives */
@@ -41,8 +36,8 @@ export class UIScene extends BaseScene {
 		const livesX = -this.panel.width / 2 + UI_SIZE;
 
 		const livesIcon = this.add.image(livesX, 20, "ui_lives");
-		this.textures.get("ui_lives").setFilter(Phaser.Textures.FilterMode.NEAREST); 
-		livesIcon.setScale(UI_SIZE / livesIcon.width * 1.35);
+		this.textures.get("ui_lives").setFilter(Phaser.Textures.FilterMode.NEAREST);
+		livesIcon.setScale((UI_SIZE / livesIcon.width) * 1.35);
 		this.panel.add(livesIcon);
 
 		this.livesText = this.addText({
@@ -61,8 +56,8 @@ export class UIScene extends BaseScene {
 		const goldX = this.panel.width / 2 - UI_SIZE + 20;
 
 		const goldIcon = this.add.image(goldX, 5, "ui_gold");
-		this.textures.get("ui_gold").setFilter(Phaser.Textures.FilterMode.NEAREST); 
-		goldIcon.setScale(UI_SIZE / goldIcon.width * 0.9);
+		this.textures.get("ui_gold").setFilter(Phaser.Textures.FilterMode.NEAREST);
+		goldIcon.setScale((UI_SIZE / goldIcon.width) * 0.9);
 		this.panel.add(goldIcon);
 
 		this.goldText = this.addText({
@@ -92,13 +87,15 @@ export class UIScene extends BaseScene {
 	}
 
 	onSetInventory(inventory: Inventory) {
+		const spacing = UI_SIZE + 16;
+
 		this.itemButtons.forEach((itemButton) => itemButton.destroy());
 		this.itemButtons = [];
 
 		inventory.forEach((item: InventoryItem, index: number) => {
-			let itemX = (-(inventory.length - 1) / 2) * UI_SIZE + index * UI_SIZE;
+			let itemX = (-(inventory.length - 1) / 2) * spacing + index * spacing;
 
-			const itemButton = new ItemButton(this, itemX, 0, UI_SIZE, item);
+			const itemButton = new ItemButton(this, itemX, 6, UI_SIZE, item);
 			itemButton.on("click", () => {
 				this.events.emit("toggleItem", item, item);
 			});
