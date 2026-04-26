@@ -9,12 +9,20 @@ export class OverworldScene extends BaseScene {
 		super({ key: "OverworldScene" });
 	}
 
-	create({ level, seek }: { level?: LevelKey, seek?: number }) {
+	create({
+		level,
+		restart,
+		seek,
+	}: {
+		level?: LevelKey;
+		restart?: boolean;
+		seek?: number;
+	}) {
 		this.fade(false, 200, 0x000000);
 		this.cameras.main.setBackgroundColor(0x111111);
 
 		this.prevLevel = level;
-		this.nextLevel = getNextLevel(level);
+		this.nextLevel = !!restart ? level! : getNextLevel(level);
 
 		const text = this.addText({
 			x: this.CX,

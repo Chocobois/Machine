@@ -51,6 +51,11 @@ export class Zipline extends Entity {
 		}
 	}
 
+	onClick() {
+		this.setEnabled(!this.isEnabled());
+		this.emit("toggle");
+	}
+
 	destroy(): void {
 		this.sprite.destroy();
 	}
