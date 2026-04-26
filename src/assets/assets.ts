@@ -11,10 +11,6 @@ export const images: Image[] = [
 	image("texture_decoration", "castle/decoration.png"),
 	image("texture_colliders", "castle/colliders.png"),
 
-	// Entities
-	image("home_01", "castle/tilekit_castle_home_01.png"),
-	image("home_02", "castle/tilekit_castle_home_02.png"),
-
 	// UI
 	image("ui_bar", "ui/bar.png"),
 	image("ui_box", "ui/box.png"),
@@ -32,16 +28,21 @@ export const images: Image[] = [
 
 /* Spritesheets */
 export const spritesheets: SpriteSheet[] = [
+	// Tilesets
 	spritesheet("entities", "castle/entities.png", 16, 16),
 	spritesheet("environment", "castle/environment.png", 16, 16),
+	spritesheet("home", "castle/home.png", 32, 32),
+	spritesheet("chest", "castle/chest.png", 16, 32),
 	spritesheet("treasure", "castle/treasure.png", 32, 32),
 
+	// Characters
 	spritesheet("kobots_red", "characters/kobots_red.png", 32, 32),
 	spritesheet("kobots_yellow", "characters/kobots_yellow.png", 32, 32),
 	spritesheet("kobots_green", "characters/kobots_green.png", 32, 32),
 	spritesheet("kobots_blue", "characters/kobots_blue.png", 32, 32),
 	spritesheet("kobots_violet", "characters/kobots_violet.png", 32, 32),
 
+	// UI
 	spritesheet("cursor", "ui/cursor.png", 256, 256),
 	spritesheet("speedbuttons", "ui/speedbuttons.png", 16, 16),
 ];

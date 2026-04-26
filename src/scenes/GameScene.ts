@@ -16,7 +16,7 @@ import { Item, ItemKey, PlacementCondition, PropertyTest } from "@/logic/Item";
 
 import { Entity } from "@/components/tiles/Entity";
 import { Rope } from "@/components/tiles/Rope";
-import { Gold } from "@/components/tiles/Gold";
+import { Chest } from "@/components/tiles/Chest";
 import { Spikes } from "@/components/tiles/Spikes";
 import { Home } from "@/components/tiles/Home";
 import { Fan } from "@/components/tiles/Fan";
@@ -683,16 +683,13 @@ export class GameScene extends BaseScene {
 			player.updateAction(neighbors);
 		});
 		player.on("collect", () => {
-			// Fetch gold entity
-			const goldEntity = this.getEntitiesAt(player.tileCoord).find(
+			const chest = this.getEntitiesAt(player.tileCoord).find(
 				(entity) => entity.tile == "Gold",
 			);
 
-			if (goldEntity) {
-				player.setHeldItem(goldEntity.tile); // Add goldEntity sprite data
-
-				this.entities = this.entities.filter((entity) => entity != goldEntity);
-				goldEntity.destroy();
+			if (chest && chest instanceof Chest) {
+				chest.takeTreasure();
+				player.setHeldItem("Gold");
 			}
 		});
 		player.setTileCoord(tileCoord);
@@ -705,7 +702,7 @@ export class GameScene extends BaseScene {
 			case "Climb":
 				return new Ladder(this, tileCoord);
 			case "Gold":
-				return new Gold(this, tileCoord);
+				return new Chest(this, tileCoord);
 			case "Death":
 				return new Spikes(this, tileCoord);
 
