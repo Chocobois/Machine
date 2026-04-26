@@ -11,6 +11,7 @@ export abstract class Entity extends Button {
 	public parent?: Entity;
 	public children: Entity[] = [];
 	public enabled = true;
+	public preview = false;
 
 	protected hitarea: Phaser.GameObjects.Image;
 	protected sprite: Phaser.GameObjects.Sprite;
@@ -39,6 +40,14 @@ export abstract class Entity extends Button {
 	updateSprite(neighbors: NeighborTiles) {}
 
 	/* Toggle logic */
+
+	setPreview(state: boolean) {
+		this.preview = state;
+	}
+
+	isPreview() {
+		return this.preview;
+	}
 
 	setEnabled(state: boolean) {
 		if (this.parent) {

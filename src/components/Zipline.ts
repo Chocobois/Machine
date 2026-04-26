@@ -25,13 +25,30 @@ export class Zipline extends Entity {
 		const floor = has(south, "Wall", "Platform");
 		const wall = has(west, "Wall", "Platform") || has(east, "Wall", "Platform");
 
+		// Normal sprite
 		if (left && right) this.sprite.setFrame(15);
 		else if (wall && right) this.sprite.setFrame(13);
 		else if (wall && left) this.sprite.setFrame(14);
 		else if (right) this.sprite.setFrame(3);
 		else if (left) this.sprite.setFrame(4);
+		this.sprite.setAlpha(1);
+		this.sprite.setTint(0xffffff);
 
-		this.sprite.setAlpha(this.isEnabled() ? 1 : 0.3);
+		// Preview sprite
+		if (this.isPreview()) {
+			this.sprite.setAlpha(0.5);
+		}
+		// Inactive sprite
+		else if (!this.isEnabled()) {
+			if (!left) {
+				this.sprite.setFrame(wall ? 18 : 8);
+			} else if (!right) {
+				this.sprite.setFrame(wall ? 19 : 9);
+			} else {
+				this.sprite.setAlpha(0.1);
+				this.sprite.setTint(0x000000);
+			}
+		}
 	}
 
 	destroy(): void {

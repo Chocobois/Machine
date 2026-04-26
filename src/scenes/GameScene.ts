@@ -46,8 +46,6 @@ export class GameScene extends BaseScene {
 	private lastPointerTileCoord: TileCoord = { x: 0, y: 0 };
 	private cursor: Cursor;
 	private readonly DRAG_THRESHOLD = 16;
-	// private pressedTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
-	// private previousTile: { tileCoord: TileCoord; tileType: Tile } | null = null;
 
 	private isDraggingCamera = false;
 	private cameraBounds: {
@@ -175,35 +173,81 @@ export class GameScene extends BaseScene {
 			.map((entity) => entity.tileCoord);
 	}
 
-	getEntitiesAt(tileCoord: TileCoord, includePreview = false): Entity[] {
+	getEntitiesAt(
+		tileCoord: TileCoord,
+		includeDisabled = false,
+		includePreview = false,
+	): Entity[] {
 		return this.entities.filter(
 			(entity) =>
 				TileCoord.compare(entity.tileCoord, tileCoord) &&
-				(entity.isEnabled() || includePreview),
+				(entity.isEnabled() || includeDisabled) &&
+				(!entity.isPreview() || includePreview),
 		);
 	}
 
 	getNeighborEntities(
 		{ x, y }: TileCoord,
+		includeDisabled = false,
 		includePreview = false,
 	): NeighborEntities {
 		return {
-			center: this.getEntitiesAt({ x: x, y: y }, false),
-			north: this.getEntitiesAt({ x: x, y: y - 1 }, includePreview),
-			ne: this.getEntitiesAt({ x: x + 1, y: y - 1 }, includePreview),
-			east: this.getEntitiesAt({ x: x + 1, y: y }, includePreview),
-			se: this.getEntitiesAt({ x: x + 1, y: y + 1 }, includePreview),
-			south: this.getEntitiesAt({ x: x, y: y + 1 }, includePreview),
-			sw: this.getEntitiesAt({ x: x - 1, y: y + 1 }, includePreview),
-			west: this.getEntitiesAt({ x: x - 1, y: y }, includePreview),
-			nw: this.getEntitiesAt({ x: x - 1, y: y - 1 }, includePreview),
+			center: this.getEntitiesAt(
+				{ x: x, y: y },
+				includeDisabled,
+				includePreview,
+			),
+			north: this.getEntitiesAt(
+				{ x: x, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
+			ne: this.getEntitiesAt(
+				{ x: x + 1, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
+			east: this.getEntitiesAt(
+				{ x: x + 1, y: y },
+				includeDisabled,
+				includePreview,
+			),
+			se: this.getEntitiesAt(
+				{ x: x + 1, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			south: this.getEntitiesAt(
+				{ x: x, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			sw: this.getEntitiesAt(
+				{ x: x - 1, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			west: this.getEntitiesAt(
+				{ x: x - 1, y: y },
+				includeDisabled,
+				includePreview,
+			),
+			nw: this.getEntitiesAt(
+				{ x: x - 1, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
 		};
 	}
 
-	getTileAt(tileCoord: TileCoord, includePreview = false): Tile[] {
+	getTileAt(
+		tileCoord: TileCoord,
+		includeDisabled = false,
+		includePreview = false,
+	): Tile[] {
 		const tiles = [
 			this.tileManager.getTileAt(tileCoord),
-			...this.getEntitiesAt(tileCoord, includePreview).map(
+			...this.getEntitiesAt(tileCoord, includeDisabled, includePreview).map(
 				(entity) => entity.tile,
 			),
 		];
@@ -211,17 +255,45 @@ export class GameScene extends BaseScene {
 		return tiles;
 	}
 
-	getNeighborTiles({ x, y }: TileCoord, includePreview = false): NeighborTiles {
+	getNeighborTiles(
+		{ x, y }: TileCoord,
+		includeDisabled = false,
+		includePreview = false,
+	): NeighborTiles {
 		return {
-			center: this.getTileAt({ x: x, y: y }, false),
-			north: this.getTileAt({ x: x, y: y - 1 }, includePreview),
-			ne: this.getTileAt({ x: x + 1, y: y - 1 }, includePreview),
-			east: this.getTileAt({ x: x + 1, y: y }, includePreview),
-			se: this.getTileAt({ x: x + 1, y: y + 1 }, includePreview),
-			south: this.getTileAt({ x: x, y: y + 1 }, includePreview),
-			sw: this.getTileAt({ x: x - 1, y: y + 1 }, includePreview),
-			west: this.getTileAt({ x: x - 1, y: y }, includePreview),
-			nw: this.getTileAt({ x: x - 1, y: y - 1 }, includePreview),
+			center: this.getTileAt({ x: x, y: y }, includeDisabled, includePreview),
+			north: this.getTileAt(
+				{ x: x, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
+			ne: this.getTileAt(
+				{ x: x + 1, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
+			east: this.getTileAt({ x: x + 1, y: y }, includeDisabled, includePreview),
+			se: this.getTileAt(
+				{ x: x + 1, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			south: this.getTileAt(
+				{ x: x, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			sw: this.getTileAt(
+				{ x: x - 1, y: y + 1 },
+				includeDisabled,
+				includePreview,
+			),
+			west: this.getTileAt({ x: x - 1, y: y }, includeDisabled, includePreview),
+			nw: this.getTileAt(
+				{ x: x - 1, y: y - 1 },
+				includeDisabled,
+				includePreview,
+			),
 		};
 	}
 
@@ -402,9 +474,7 @@ export class GameScene extends BaseScene {
 		this.previewEntities = this.previewCoords.map((coord) => {
 			const entity = this.createEntityFromItem(item.itemKey, coord);
 
-			// Make it look like preview
-			// entity.setAlpha(0.5);
-			// entity.disableInteractive();
+			entity.setPreview(true);
 			entity.setEnabled(false);
 
 			this.entities.push(entity); // TEMPORARILY include for neighbor logic
@@ -413,7 +483,7 @@ export class GameScene extends BaseScene {
 
 		// Update sprites (important!)
 		this.previewCoords.forEach((coord) => {
-			this.refreshEntitySprites(coord, true);
+			this.refreshEntitySprites(coord, true, true);
 		});
 
 		// Validate entire build
@@ -458,7 +528,7 @@ export class GameScene extends BaseScene {
 	}
 
 	matchesAnyRule(coord: TileCoord, rules: PlacementRule[]): boolean {
-		const neighbors = this.getNeighborTiles(coord, false); // IMPORTANT: no preview
+		const neighbors = this.getNeighborTiles(coord, true, false);
 
 		return rules.some((rule) => {
 			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
@@ -502,7 +572,7 @@ export class GameScene extends BaseScene {
 
 		// Refresh visuals AFTER all are placed
 		coords.forEach((coord) => {
-			this.refreshEntitySprites(coord);
+			this.refreshEntitySprites(coord, true, false);
 		});
 
 		this.refreshUpdrafts();
@@ -588,12 +658,24 @@ export class GameScene extends BaseScene {
 		this.refreshUpdrafts();
 	}
 
-	refreshEntitySprites(tileCoord: TileCoord, includePreview = false) {
-		const neighbors = this.getNeighborEntities(tileCoord, includePreview);
+	refreshEntitySprites(
+		tileCoord: TileCoord,
+		includeDisabled = false,
+		includePreview = false,
+	) {
+		const neighbors = this.getNeighborEntities(
+			tileCoord,
+			includeDisabled,
+			includePreview,
+		);
 		Object.values(neighbors).forEach((entities) => {
 			entities.forEach((entity) => {
 				entity.updateSprite(
-					this.getNeighborTiles(entity.tileCoord, includePreview),
+					this.getNeighborTiles(
+						entity.tileCoord,
+						includeDisabled,
+						includePreview,
+					),
 				);
 			});
 		});
@@ -670,7 +752,6 @@ export class GameScene extends BaseScene {
 		} else {
 			this.inventory.forEach((item) => (item.selected = false));
 			item.selected = true;
-			// this.cursor.setIcon(Item[item.itemKey].image);
 			this.cursor.setAxis(Item[item.itemKey].rules.axis);
 			this.setInputMode(InputMode.Build);
 		}
@@ -688,6 +769,7 @@ export class GameScene extends BaseScene {
 		if (item.amount <= 0) return false;
 
 		const neighbors = this.getNeighborTiles(tileCoord, true);
+		if (neighbors.center.includes(Item[item.itemKey].tile)) return false;
 
 		return Item[item.itemKey].rules.start.some((rule) => {
 			return (Object.entries(rule) as [keyof typeof neighbors, Tile][]).every(
@@ -701,10 +783,13 @@ export class GameScene extends BaseScene {
 
 	useItem(item: InventoryItem) {
 		item.amount -= 1;
-		if (item.amount <= 0) {
-			item.selected = false;
-			this.setInputMode(InputMode.Camera);
-		}
+		// if (item.amount <= 0) {
+		// 	item.selected = false;
+		// 	this.setInputMode(InputMode.Camera);
+		// }
+
+		this.inventory.forEach((item) => (item.selected = false));
+		this.setInputMode(InputMode.Camera);
 
 		this.events.emit("updateInventory", this.inventory);
 	}

@@ -14,17 +14,26 @@ export class Rope extends Entity {
 		const has = (tiles: Tile[], ...wanted: Tile[]) =>
 			wanted.some((tile) => tiles.includes(tile));
 
+		// Normal sprite
 		const up = has(north, "Climb");
 		const down = has(south, "Climb");
 		const index = up && down ? 12 : up ? 17 : down ? 7 : 2;
 		this.sprite.setFrame(index);
+		this.sprite.setAlpha(1);
+		this.sprite.setTint(0xffffff);
 
-		if (this.children.length > 0) {
-			if (!this.isEnabled()) {
+		// Preview sprite
+		if (this.isPreview()) {
+			this.sprite.setAlpha(0.5);
+		}
+		// Inactive sprite
+		else if (!this.isEnabled()) {
+			if (!up) {
 				this.sprite.setFrame(2);
+			} else {
+				this.sprite.setAlpha(0.1);
+				this.sprite.setTint(0x000000);
 			}
-		} else {
-			this.sprite.setAlpha(this.isEnabled() ? 1 : 0.3);
 		}
 	}
 
