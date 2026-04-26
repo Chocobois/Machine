@@ -69,13 +69,13 @@ export class GameScene extends BaseScene {
 		super({ key: "GameScene" });
 	}
 
-	create(): void {
+	create({ level }: { level: LevelKey }): void {
 		this.fade(false, 200, 0x000000);
 		this.cameras.main.setBackgroundColor(0x63ad9d);
 
 		this.tileManager = new TileManager(this);
 		this.entities = [];
-		this.loadLevel("leveldev1");
+		this.loadLevel(level);
 
 		/* Input handling */
 
@@ -84,6 +84,10 @@ export class GameScene extends BaseScene {
 		this.setupCamera();
 
 		this.setInputMode(InputMode.Camera);
+
+		this.input.keyboard!.on("keydown-Q", () => {
+			this.scene.start("OverworldScene", { level });
+		});
 	}
 
 	setupListeners() {

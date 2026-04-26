@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { PreloadScene } from "@/scenes/PreloadScene";
 import { TitleScene } from "@/scenes/TitleScene";
+import { OverworldScene } from "@/scenes/OverworldScene";
 import { GameScene } from "@/scenes/GameScene";
 import { UIScene } from "@/scenes/UIScene";
 import OutlinePipelinePlugin from "phaser3-rex-plugins/plugins/outlinepipeline-plugin.js";
@@ -20,7 +21,7 @@ export async function Game() {
 		scale: {
 			mode: Phaser.Scale.FIT,
 		},
-		scene: [PreloadScene, TitleScene, GameScene, UIScene],
+		scene: [PreloadScene, TitleScene, OverworldScene, GameScene, UIScene],
 
 		plugins: {
 			global: [

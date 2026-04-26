@@ -12,14 +12,14 @@ export const levels = {
 		title: "Level 1",
 		playerCount: 8,
 		inventory: [
-			{ itemKey: "Rope", amount: 2 }
+			{ itemKey: "Rope", amount: 2 }, //
 		],
 	},
 	level2: {
 		title: "Level 2",
 		playerCount: 8,
 		inventory: [
-			{ itemKey: "Rope", amount: 3 }
+			{ itemKey: "Rope", amount: 3 }, //
 		],
 	},
 	level3: {
@@ -34,7 +34,7 @@ export const levels = {
 		title: "Level 4",
 		playerCount: 8,
 		inventory: [
-			{ itemKey: "Zipline", amount: 3 }
+			{ itemKey: "Zipline", amount: 3 }, //
 		],
 	},
 	level5: {
@@ -95,3 +95,12 @@ export const tilemaps: { [key in LevelKey]: string } = {
 	leveldev2: tilemap(`maps/leveldev2.json`),
 	level_vertical: tilemap(`maps/level_vertical.json`),
 };
+
+const levelKeys = Object.keys(levels) as LevelKey[];
+
+export function getNextLevel(current?: LevelKey): LevelKey {
+	if (!current) return levelKeys[0];
+
+	const index = levelKeys.indexOf(current);
+	return levelKeys[(index + 1) % levelKeys.length];
+}
