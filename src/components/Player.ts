@@ -140,11 +140,7 @@ export class Player extends Phaser.GameObjects.Container {
 		}
 
 		// Gravity
-		if (
-			check(center, (d) => !d.isSolid) ||
-			center.includes("Platform") ||
-			center.includes("Zipline")
-		) {
+		if (check(center, (d) => !d.isSolid) && !center.includes("Climb")) {
 			if (!check(south, (d) => d.isFloor)) {
 				return this.fall();
 			}
