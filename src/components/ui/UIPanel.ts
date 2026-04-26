@@ -2,6 +2,7 @@ import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
 import { Clickable } from "./Clickable";
+import { GameScene } from "@/scenes/GameScene";
 
 export const UI_HEIGHT = 150;
 export const UI_SIZE = 120;
@@ -104,7 +105,7 @@ export class UIPanel extends Phaser.GameObjects.Container {
 	}
 
 	setGold(value: number) {
-		this.goldText.setText(`$${value}`);
+		this.goldText.setText(`x${value}`);
 	}
 
 	/* Inventory */

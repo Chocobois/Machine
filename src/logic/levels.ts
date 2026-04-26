@@ -4,6 +4,7 @@ import { Inventory } from "./Inventory";
 type LevelDef = {
 	title: string;
 	playerCount: number;
+	treasureCount: number;
 	inventory: Inventory;
 };
 
@@ -11,6 +12,7 @@ export const levels = {
 	level1: {
 		title: "Level 1",
 		playerCount: 8,
+		treasureCount: 2,
 		inventory: [
 			{ itemKey: "Rope", amount: 2 }, //
 		],
@@ -18,6 +20,7 @@ export const levels = {
 	level2: {
 		title: "Level 2",
 		playerCount: 15,
+		treasureCount: 4,
 		inventory: [
 			{ itemKey: "Rope", amount: 3 }, //
 		],
@@ -25,6 +28,7 @@ export const levels = {
 	level3: {
 		title: "Level 3",
 		playerCount: 12,
+		treasureCount: 3,
 		inventory: [
 			{ itemKey: "Fan", amount: 3 },
 			{ itemKey: "Rope", amount: 1 },
@@ -33,6 +37,7 @@ export const levels = {
 	level4: {
 		title: "Level 4",
 		playerCount: 10,
+		treasureCount: 3,
 		inventory: [
 			{ itemKey: "Zipline", amount: 3 }, //
 		],
@@ -40,6 +45,7 @@ export const levels = {
 	level5: {
 		title: "Level 5",
 		playerCount: 20,
+		treasureCount: 6,
 		inventory: [
 			{ itemKey: "Fan", amount: 3 },
 			{ itemKey: "Rope", amount: 1 },
@@ -49,6 +55,7 @@ export const levels = {
 	level6: {
 		title: "Level 6",
 		playerCount: 12,
+		treasureCount: 3,
 		inventory: [
 			{ itemKey: "Rope", amount: 2 },
 			{ itemKey: "Zipline", amount: 2 },
@@ -56,7 +63,8 @@ export const levels = {
 	},
 	leveldev1: {
 		title: "Level Dev 1",
-		playerCount: 8,
+		playerCount: 30,
+		treasureCount: 9,
 		inventory: [
 			{ itemKey: "Rope", amount: 20 },
 			{ itemKey: "Fan", amount: 10 },
@@ -65,7 +73,8 @@ export const levels = {
 	},
 	level_vertical: {
 		title: "The Climb",
-		playerCount: 12,
+		playerCount: 64,
+		treasureCount: 21,
 		inventory: [
 			{ itemKey: "Rope", amount: 20 },
 			{ itemKey: "Fan", amount: 20 },
