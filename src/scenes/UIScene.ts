@@ -2,12 +2,15 @@ import { UILevelStatePanel } from "@/components/ui/UILevelStatePanel";
 import { UIPanel, UI_HEIGHT } from "@/components/ui/UIPanel";
 import { UISpeedPanel } from "@/components/ui/UISpeedPanel";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
+import { Music } from "@/logic/Music";
 import { BaseScene } from "@/scenes/BaseScene";
 
 export class UIScene extends BaseScene {
 	private uiPanel: UIPanel;
 	private speedPanel: UISpeedPanel;
 	private levelStatePanel: UILevelStatePanel;
+
+	private music: Phaser.Sound.WebAudioSound;
 
 	constructor() {
 		super({ key: "UIScene" });
@@ -21,6 +24,10 @@ export class UIScene extends BaseScene {
 		this.levelStatePanel = new UILevelStatePanel(this, this.W - 176, 32);
 
 		this.setupListeners();
+
+		if (!this.music) {
+			this.music = new Music(this, "flykten", { volume: 0.4 });
+		}
 	}
 
 	update(time: number, delta: number) {
@@ -30,9 +37,14 @@ export class UIScene extends BaseScene {
 	}
 
 	setupListeners() {
-		const gameScene = this.scene.get("GameScene");
-		const overworldScene = this.scene.get("OverworldScene");
 		const titleScene = this.scene.get("TitleScene");
+		const overworldScene = this.scene.get("OverworldScene");
+		const gameScene = this.scene.get("GameScene");
+
+		// GameScene
+		overworldScene.events.on("setSeek", (seek: number) => {
+			this.music.setSeek(seek);
+		});
 
 		// GameScene
 		gameScene.events.on("setInventory", (inventory: Inventory) => {
@@ -54,9 +66,12 @@ export class UIScene extends BaseScene {
 		titleScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(false),
 		);
-		overworldScene.events.on(Phaser.Scenes.Events.START, () =>
-			this.setVisible(false),
-		);
+		overworldScene.events.on(Phaser.Scenes.Events.START, () => {
+			this.setVisible(false);
+			if (!this.music.isPlaying) {
+				this.music.play();
+			}
+		});
 		gameScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(true),
 		);

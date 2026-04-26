@@ -9,7 +9,7 @@ export class OverworldScene extends BaseScene {
 		super({ key: "OverworldScene" });
 	}
 
-	create({ level }: { level?: LevelKey }) {
+	create({ level, seek }: { level?: LevelKey, seek?: number }) {
 		this.fade(false, 200, 0x000000);
 		this.cameras.main.setBackgroundColor(0x111111);
 
@@ -36,6 +36,11 @@ export class OverworldScene extends BaseScene {
 		this.addEvent(2000, () => {
 			this.startLevel();
 		});
+
+		// Specific trick from TitleScene -> UIScene
+		if (seek) {
+			this.events.emit("setSeek", seek);
+		}
 	}
 
 	startLevel() {
