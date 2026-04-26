@@ -60,7 +60,7 @@ export class UIPanel extends Phaser.GameObjects.Container {
 			.addText({
 				x: livesX + 0.6 * UI_SIZE,
 				y: 0.5 * UI_SIZE,
-				text: "x0",
+				text: "×0",
 				size: 40,
 				color: "black",
 			})
@@ -71,7 +71,7 @@ export class UIPanel extends Phaser.GameObjects.Container {
 	}
 
 	setLives(value: number) {
-		this.livesText.setText(`x${value}`);
+		this.livesText.setText(`×${value}`);
 	}
 
 	/* Gold */

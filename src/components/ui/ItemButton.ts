@@ -37,7 +37,7 @@ export class ItemButton extends Button {
 				x: 0.5 * size,
 				y: 0.5 * size,
 				size: 40,
-				text: `x${item.amount}`,
+				text: `×${item.amount}`,
 				color: "black",
 			})
 			.setOrigin(1)
@@ -59,7 +59,7 @@ export class ItemButton extends Button {
 	}
 
 	setAmount(amount: number) {
-		this.countText.setText(`x${amount}`);
+		this.countText.setText(`×${amount}`);
 	}
 
 	/* Input */

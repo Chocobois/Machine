@@ -74,4 +74,10 @@ export abstract class Entity extends Button {
 	}
 
 	onClick() {}
+
+	onBuild() {}
+
+	get isParent(): boolean {
+		return this.children.length > 0;
+	}
 }

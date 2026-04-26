@@ -21,5 +21,10 @@ export class Chest extends Entity {
 			this.sprite.setFrame(2); // Empty chest
 			this.setEnabled(false);
 		}
+
+		if (this.treasureCount == 2) {
+			this.emit("sound", "chest", 0.4);
+		}
+		this.emit("sound", "gold_pouch", 0.5);
 	}
 }
