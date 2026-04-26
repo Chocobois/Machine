@@ -1,3 +1,4 @@
+import { UILevelStatePanel } from "@/components/ui/UILevelStatePanel";
 import { UIPanel, UI_HEIGHT } from "@/components/ui/UIPanel";
 import { UISpeedPanel } from "@/components/ui/UISpeedPanel";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
@@ -7,6 +8,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 export class UIScene extends BaseScene {
 	private uiPanel: UIPanel;
 	private speedPanel: UISpeedPanel;
+	private levelStatePanel: UILevelStatePanel;
 
 	private music: Phaser.Sound.WebAudioSound;
 
@@ -19,6 +21,8 @@ export class UIScene extends BaseScene {
 
 		this.speedPanel = new UISpeedPanel(this, 128, 32);
 
+		this.levelStatePanel = new UILevelStatePanel(this, this.W - 176, 32);
+
 		this.setupListeners();
 
 		if (!this.music) {
@@ -29,6 +33,7 @@ export class UIScene extends BaseScene {
 	update(time: number, delta: number) {
 		this.uiPanel.update(time, delta);
 		this.speedPanel.update(time, delta);
+		this.levelStatePanel.update(time, delta);
 	}
 
 	setupListeners() {
@@ -70,5 +75,6 @@ export class UIScene extends BaseScene {
 	setVisible(state: boolean) {
 		this.uiPanel.setVisible(state);
 		this.speedPanel.setVisible(state);
+		this.levelStatePanel.setVisible(state);
 	}
 }
