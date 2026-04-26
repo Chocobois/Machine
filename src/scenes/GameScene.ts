@@ -101,6 +101,7 @@ export class GameScene extends BaseScene {
 		ui.events.on("toggleItem", this.onToggleItem, this);
 		ui.events.on("setPlaySpeed", this.onSetPlaySpeed, this);
 		ui.events.on("restartLevel", this.onRestartLevel, this);
+		ui.events.on("wrapup", this.onWrapup, this);
 		ui.events.on("onMusicBar", this.onMusicBar, this);
 
 		this.events.once("shutdown", () => {
@@ -960,5 +961,13 @@ export class GameScene extends BaseScene {
 
 	onRestartLevel() {
 		this.scene.start("OverworldScene", { level: this.level, restart: true });
+	}
+
+	onWrapup() {
+		this.players.forEach(player => {
+			if (!player.hasLeft){
+				player.die()
+			}
+		});
 	}
 }

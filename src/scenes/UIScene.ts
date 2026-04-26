@@ -70,6 +70,9 @@ export class UIScene extends BaseScene {
 		this.levelStatePanel.on("retry", () => {
 			this.events.emit("restartLevel");
 		});
+		this.levelStatePanel.on("wrapup", () => {
+			this.events.emit("wrapup");
+		});
 		this.speedPanel.on("setPlaySpeed", (playSpeed: number) => {
 			this.events.emit("setPlaySpeed", playSpeed);
 

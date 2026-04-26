@@ -37,7 +37,7 @@ export class UILevelStatePanel extends Phaser.GameObjects.Container {
 		let wrapupText = this.scene
 			.addText({
 				x: wrapupPanel.width,
-				y: wrapupPanel.height,
+				y: wrapupPanel.height - 3,
 				text: "WRAP UP",
 				size: 32,
 				color: "#eee",
