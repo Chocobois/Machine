@@ -120,7 +120,7 @@ export class TitleScene extends BaseScene {
 		this.credits.add(credits2);
 
 		// Music
-		if (!this.musicTitle) { this.musicTitle = new Music(this, "m_first", { volume: 0.4 }); }
+		if (!this.musicTitle) { this.musicTitle = new Music(this, "intro", { volume: 0.4 }); }
 		this.musicTitle.play();
 
 		// Input
@@ -184,8 +184,9 @@ export class TitleScene extends BaseScene {
 				this.addEvent(1000, () => {
 					this.fade(true, 1000, 0x000000);
 					this.addEvent(1050, () => {
+						const seek = this.musicTitle.seek;
 						this.musicTitle.stop();
-						this.scene.start("OverworldScene");
+						this.scene.start("OverworldScene", { seek });
 					});
 				});
 				break;

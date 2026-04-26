@@ -37,9 +37,14 @@ export class UIScene extends BaseScene {
 	}
 
 	setupListeners() {
-		const gameScene = this.scene.get("GameScene");
-		const overworldScene = this.scene.get("OverworldScene");
 		const titleScene = this.scene.get("TitleScene");
+		const overworldScene = this.scene.get("OverworldScene");
+		const gameScene = this.scene.get("GameScene");
+
+		// GameScene
+		overworldScene.events.on("setSeek", (seek: number) => {
+			this.music.setSeek(seek);
+		});
 
 		// GameScene
 		gameScene.events.on("setInventory", (inventory: Inventory) => {
