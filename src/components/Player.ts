@@ -138,6 +138,7 @@ export class Player extends Phaser.GameObjects.Container {
 			} else if (!check(north, (d) => d.isSolid)) {
 				this.action = Action.Climbing;
 				this.fallSpeed = 0;
+				this.emit("sound", "creak", 0.3);
 				return this.move(0, -1, 800);
 			}
 		}
@@ -146,6 +147,7 @@ export class Player extends Phaser.GameObjects.Container {
 		if (center.includes("Zipline") && front.includes("Zipline")) {
 			this.action = Action.Climbing;
 			this.fallSpeed = 0;
+			this.emit("sound", "rope", 0.3);
 			return this.move(dx, 0, 800);
 		}
 
@@ -153,6 +155,7 @@ export class Player extends Phaser.GameObjects.Container {
 		if (center.includes("Updraft") && !check(north, (d) => d.isSolid)) {
 			this.action = Action.Flying;
 			this.fallSpeed = 0;
+			this.emit("sound", "flail", 0.3);
 			if (
 				!check(front, (d) => d.isSolid) &&
 				!check(frontUp, (d) => d.isSolid)
