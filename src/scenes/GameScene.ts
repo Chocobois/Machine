@@ -176,6 +176,9 @@ export class GameScene extends BaseScene {
 					this.entities.push(entity);
 					this.refreshEntitySprites(tileCoord);
 					entity.on("toggle", this.onEntityToggle, this);
+					entity.on("sound", (key: string, volume: number = 0.5) => {
+						this.playLocationSound(entity.tileCoord, key, volume);
+					});
 				}
 			}
 		}

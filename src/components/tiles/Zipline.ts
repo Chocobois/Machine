@@ -55,12 +55,12 @@ export class Zipline extends Entity {
 		this.setEnabled(!this.isEnabled());
 		this.emit("toggle");
 
-		this.emit("sound", this.enabled ? "extend" : "vent", 0.5);
+		this.emit("sound", this.enabled ? "extend" : "vent", 0.4);
 	}
 
 	onBuild() {
-		this.emit("sound", "extend", 0.5);
-		this.emit("sound", "clank", 0.4);
+		this.emit("sound", "extend", 0.4);
+		this.emit("sound", "clank", 0.3);
 	}
 
 	destroy(): void {

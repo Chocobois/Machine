@@ -26,7 +26,7 @@ export class UIScene extends BaseScene {
 		this.setupListeners();
 
 		if (!this.music) {
-			this.music = new Music(this, "flykten", { volume: 0.4*0 });
+			this.music = new Music(this, "flykten", { volume: 0.4 });
 			this.music.on("bar", (bar: number) => {
 				this.events.emit("onMusicBar", bar);
 			});

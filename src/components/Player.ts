@@ -80,11 +80,14 @@ export class Player extends Phaser.GameObjects.Container {
 		const index = Math.floor(time / 250) % frames.length;
 		this.sprite.setFrame(frames[index]);
 		this.sprite.setFlipX(!this.facingRight);
-		this.heldSprite.setOrigin(0.5, 1 + Math.sin((time / 400 * Math.PI) % Math.PI) * 0.1)
+		this.heldSprite.setOrigin(
+			0.5,
+			1 + Math.sin(((time / 400) * Math.PI) % Math.PI) * 0.1,
+		);
 
-		if(this.action == Action.Dead && this.explodePhase < 990) {
+		if (this.action == Action.Dead && this.explodePhase < 990) {
 			this.explodePhase += delta;
-			this.explodeSprite.setFrame(Math.floor(this.explodePhase / 1000 * 18));
+			this.explodeSprite.setFrame(Math.floor((this.explodePhase / 1000) * 18));
 		}
 	}
 
@@ -201,17 +204,19 @@ export class Player extends Phaser.GameObjects.Container {
 		//this.sprite.setPostPipeline(GrayScalePostFilter);
 		this.heldSprite.setVisible(false);
 		this.explodeSprite.setVisible(true);
+		this.emit("sound", "explode", 0.2);
 
 		// TODO: Add animation and trigger on end
 		this.emit("leave");
 	}
 
 	private fall() {
-		if (this.action != Action.Falling && this.action != Action.Crashing) this.fallSpeed = 0;
+		if (this.action != Action.Falling && this.action != Action.Crashing)
+			this.fallSpeed = 0;
 		this.fallSpeed += 1;
 		const duration = 500 / (1 + 0.4 * this.fallSpeed);
 
-		if(this.fallSpeed < 6) this.action = Action.Falling;
+		if (this.fallSpeed < 6) this.action = Action.Falling;
 		else this.action = Action.Crashing;
 		this.move(0, 1, duration);
 	}
@@ -254,7 +259,7 @@ export class Player extends Phaser.GameObjects.Container {
 	yip() {
 		const sounds = ["kobot_1", "kobot_2"];
 		const key = Phaser.Math.RND.pick(sounds);
-		this.emit("sound", key, 1.0);
+		this.emit("sound", key, 0.8);
 	}
 
 	/* Helpers */

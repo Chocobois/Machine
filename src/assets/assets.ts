@@ -147,6 +147,7 @@ export const audios: Audio[] = [
 	sound("kobl_4", "voice/kobl_4.mp3"),
 	sound("kobot_1", "voice/kobot_1.mp3"),
 	sound("kobot_2", "voice/kobot_2.mp3"),
+	sound("explode", "voice/explode.mp3"),
 ];
 
 /* Fonts */
