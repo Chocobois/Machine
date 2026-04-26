@@ -51,6 +51,7 @@ export const spritesheets: SpriteSheet[] = [
 export const audios: Audio[] = [
 	music("m_main_menu", "title.mp3"),
 	music("m_first", "first.mp3"),
+	music("flykten", "flykten.mp3"),
 	sound("t_rustle", "tree/rustle.mp3", 0.5),
 ];
 

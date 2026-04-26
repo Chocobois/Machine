@@ -31,6 +31,13 @@ const Data = {
 		start: 41860 / 48000 + overlap,
 		end: 2854884 / 48000 + overlap,
 	},
+	flykten: {
+		offset: 574 / 44100,
+		bpm: 190,
+		loop: true,
+		start: 446222 / 44100 + overlap,
+		end: 4902639 / 44100 + overlap,
+	},
 };
 
 export type MusicKey = keyof typeof Data;
