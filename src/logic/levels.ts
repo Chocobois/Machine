@@ -22,7 +22,7 @@ export const levels = {
 		playerCount: 10,
 		treasureCount: 3,
 		inventory: [
-			{ itemKey: "Zipline", amount: 3 }, //
+			{ itemKey: "Zipline", amount: 4 }, //
 		],
 	},
 	level2: {
@@ -38,9 +38,9 @@ export const levels = {
 		playerCount: 20,
 		treasureCount: 6,
 		inventory: [
-			{ itemKey: "Fan", amount: 3 },
-			{ itemKey: "Rope", amount: 1 },
-			{ itemKey: "Zipline", amount: 1 },
+			{ itemKey: "Fan", amount: 5 },
+			{ itemKey: "Rope", amount: 3 },
+			{ itemKey: "Zipline", amount: 3 },
 		],
 	},
 	level3: {
