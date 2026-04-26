@@ -38,6 +38,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private action: Action = Action.Idle;
 	private facingRight: boolean = true;
 	private fallSpeed: number = 0;
+	private queuedDeath: boolean = false;
 
 	private explodePhase: number = 0;
 
@@ -87,7 +88,9 @@ export class Player extends Phaser.GameObjects.Container {
 
 		if (this.action == Action.Dead && this.explodePhase < 990) {
 			this.explodePhase += delta;
-			this.explodeSprite.setFrame(Math.floor((this.explodePhase / 1000) * 18));
+			this.explodeSprite.setFrame(
+				Math.min(17, Math.floor((this.explodePhase / 1000) * 18)),
+			);
 		}
 	}
 
@@ -119,7 +122,11 @@ export class Player extends Phaser.GameObjects.Container {
 		const back = this.facingRight ? west : east;
 
 		// Fatal tiles
-		if (center.includes("Death") || check(center, (d) => d.isSolid)) {
+		if (
+			center.includes("Death") ||
+			check(center, (d) => d.isSolid) ||
+			this.queuedDeath
+		) {
 			return this.die();
 		}
 
@@ -211,6 +218,10 @@ export class Player extends Phaser.GameObjects.Container {
 
 		// TODO: Add animation and trigger on end
 		this.emit("leave");
+	}
+
+	queueDeath() {
+		this.queuedDeath = true;
 	}
 
 	private fall() {

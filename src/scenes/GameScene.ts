@@ -959,21 +959,35 @@ export class GameScene extends BaseScene {
 		}
 
 		if (this.noMorePlayers) {
-			this.scene.start("OverworldScene", { level: this.level });
+			this.exitLevel(true);
 		}
 
 		this.events.emit("setInventory", this.inventory);
 	}
 
 	onRestartLevel() {
-		this.scene.start("OverworldScene", { level: this.level, restart: true });
+		this.exitLevel(false);
 	}
 
 	onWrapup() {
-		this.players.forEach(player => {
-			if (!player.hasLeft){
-				player.die()
+		this.players.forEach((player) => {
+			if (!player.hasLeft) {
+				player.queueDeath();
 			}
+		});
+	}
+
+	exitLevel(victory: boolean) {
+		this.setInputMode(InputMode.Cutscene);
+
+		this.addEvent(1000, () => {
+			this.fade(true, 500, 0x000000);
+			this.addEvent(500, () => {
+				this.scene.start("OverworldScene", {
+					level: this.level,
+					restart: true,
+				});
+			});
 		});
 	}
 }
