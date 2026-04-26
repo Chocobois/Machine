@@ -11,7 +11,6 @@ export const Tile = {
 	Home: "Home",
 	Gold: "Gold",
 	Climb: "Climb",
-	Stairs: "Stairs",
 	Fan: "Fan",
 	Updraft: "Updraft",
 	Zipline: "Zipline",

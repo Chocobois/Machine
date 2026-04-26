@@ -130,7 +130,7 @@ export class Player extends Phaser.GameObjects.Container {
 		}
 
 		if (has(center, "None", "Platform", "Zipline")) {
-			if (!has(south, "Wall", "Platform", "Stairs")) {
+			if (!has(south, "Wall", "Platform")) {
 				return this.fall();
 			}
 		}
@@ -138,18 +138,7 @@ export class Player extends Phaser.GameObjects.Container {
 			return this.die();
 		}
 
-		if (this.facingRight && has(front, "Stairs")) {
-			this.action = Action.Walking;
-			this.move(dx, -1, 600 * 1.4);
-			return;
-		}
-		if (!this.facingRight && has(south, "Stairs")) {
-			this.action = Action.Walking;
-			this.move(dx, 1, 600 * 1.4);
-			return;
-		}
-
-		if (!has(front, "Wall", "Stairs")) {
+		if (!has(front, "Wall")) {
 			return this.walk(dx);
 		} else if (!has(back, "Wall")) {
 			this.facingRight = !this.facingRight;
