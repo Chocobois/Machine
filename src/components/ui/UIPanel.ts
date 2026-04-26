@@ -1,6 +1,7 @@
 import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
+import { Clickable } from "./Clickable";
 
 export const UI_HEIGHT = 150;
 export const UI_SIZE = 120;
@@ -13,6 +14,7 @@ export class UIPanel extends Phaser.GameObjects.Container {
 	private goldText: Phaser.GameObjects.Text;
 
 	private itemButtons: ItemButton[] = [];
+	private clickables: Clickable[] = [];
 
 	constructor(scene: BaseScene, x: number, y: number) {
 		super(scene, x, y);
@@ -42,9 +44,16 @@ export class UIPanel extends Phaser.GameObjects.Container {
 	private createLives() {
 		const livesX = -this.width / 2 + UI_SIZE;
 
-		const livesIcon = this.scene.add.image(livesX, 20, "ui_lives");
-		livesIcon.setScale((UI_SIZE / livesIcon.width) * 1.35);
+		const livesIcon = new Clickable(
+			this.scene,
+			livesX,
+			20,
+			"ui_lives",
+			(UI_SIZE / 32) * 1.35,
+			0.1,
+		);
 		this.add(livesIcon);
+		this.clickables.push(livesIcon);
 
 		this.livesText = this.scene
 			.addText({
@@ -69,9 +78,16 @@ export class UIPanel extends Phaser.GameObjects.Container {
 	private createGold() {
 		const goldX = this.width / 2 - UI_SIZE + 20;
 
-		const goldIcon = this.scene.add.image(goldX, 5, "ui_gold");
-		goldIcon.setScale((UI_SIZE / goldIcon.width) * 0.9);
+		const goldIcon = new Clickable(
+			this.scene,
+			goldX,
+			5,
+			"ui_gold",
+			(UI_SIZE / 16) * 0.9,
+			0.1,
+		);
 		this.add(goldIcon);
+		this.clickables.push(goldIcon);
 
 		this.goldText = this.scene
 			.addText({
@@ -125,5 +141,6 @@ export class UIPanel extends Phaser.GameObjects.Container {
 
 	update(time: number, delta: number) {
 		this.itemButtons.forEach((b) => b.update(time, delta));
+		this.clickables.forEach((c) => c.update(time, delta));
 	}
 }
