@@ -10,40 +10,31 @@ type LevelDef = {
 
 export const levels = {
 	level1: {
-		title: "Level 1",
+		title: "Learning the ropes",
 		playerCount: 8,
 		treasureCount: 2,
 		inventory: [
-			{ itemKey: "Rope", amount: 2 }, //
-		],
-	},
-	level2: {
-		title: "Level 2",
-		playerCount: 15,
-		treasureCount: 4,
-		inventory: [
-			{ itemKey: "Rope", amount: 3 }, //
-		],
-	},
-	level3: {
-		title: "Level 3",
-		playerCount: 12,
-		treasureCount: 3,
-		inventory: [
-			{ itemKey: "Fan", amount: 3 },
-			{ itemKey: "Rope", amount: 1 },
+			{ itemKey: "Rope", amount: 4 }, //
 		],
 	},
 	level4: {
-		title: "Level 4",
+		title: "Zipping across",
 		playerCount: 10,
 		treasureCount: 3,
 		inventory: [
 			{ itemKey: "Zipline", amount: 3 }, //
 		],
 	},
+	level2: {
+		title: "Beware of direction",
+		playerCount: 9,
+		treasureCount: 4,
+		inventory: [
+			{ itemKey: "Rope", amount: 6 }, //
+		],
+	},
 	level5: {
-		title: "Level 5",
+		title: "Crazy corridors",
 		playerCount: 20,
 		treasureCount: 6,
 		inventory: [
@@ -52,27 +43,26 @@ export const levels = {
 			{ itemKey: "Zipline", amount: 1 },
 		],
 	},
-	level6: {
-		title: "Level 6",
+	level3: {
+		title: "Spiky waters",
 		playerCount: 12,
 		treasureCount: 3,
 		inventory: [
-			{ itemKey: "Rope", amount: 2 },
-			{ itemKey: "Zipline", amount: 2 },
+			{ itemKey: "Fan", amount: 4 },
+			{ itemKey: "Rope", amount: 3 },
 		],
 	},
-	leveldev1: {
-		title: "Level Dev 1",
-		playerCount: 30,
-		treasureCount: 9,
-		inventory: [
-			{ itemKey: "Rope", amount: 20 },
-			{ itemKey: "Fan", amount: 10 },
-			{ itemKey: "Zipline", amount: 10 },
-		],
-	},
+	// level6: {
+	// 	title: "Level 6",
+	// 	playerCount: 12,
+	// 	treasureCount: 3,
+	// 	inventory: [
+	// 		{ itemKey: "Rope", amount: 2 },
+	// 		{ itemKey: "Zipline", amount: 2 },
+	// 	],
+	// },
 	level_vertical: {
-		title: "The Climb",
+		title: "The ultimate climb",
 		playerCount: 64,
 		treasureCount: 21,
 		inventory: [
@@ -81,6 +71,16 @@ export const levels = {
 			{ itemKey: "Zipline", amount: 20 },
 		],
 	},
+	// leveldev1: {
+	// 	title: "Beware of heights",
+	// 	playerCount: 15,
+	// 	treasureCount: 9,
+	// 	inventory: [
+	// 		{ itemKey: "Rope", amount: 6 },
+	// 		{ itemKey: "Fan", amount: 6 },
+	// 		{ itemKey: "Zipline", amount: 4 },
+	// 	],
+	// },
 } as const satisfies { [key: string]: LevelDef };
 
 export type LevelKey = keyof typeof levels;
@@ -91,12 +91,12 @@ export const tilemaps: { [key in LevelKey]: string } = {
 	level3: tilemap(`maps/level3.json`),
 	level4: tilemap(`maps/level4.json`),
 	level5: tilemap(`maps/level5.json`),
-	level6: tilemap(`maps/level6.json`),
-	leveldev1: tilemap(`maps/leveldev1.json`),
+	// level6: tilemap(`maps/level6.json`),
+	// leveldev1: tilemap(`maps/leveldev1.json`),
 	level_vertical: tilemap(`maps/level_vertical.json`),
 };
 
-const levelKeys = Object.keys(levels) as LevelKey[];
+export const levelKeys = Object.keys(levels) as LevelKey[];
 
 export function getNextLevel(current?: LevelKey): LevelKey {
 	if (!current) return levelKeys[0];

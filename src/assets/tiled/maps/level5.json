@@ -51,7 +51,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0,
             0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 26, 26, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -142,13 +142,13 @@
  "nextobjectid":11,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.12.1",
+ "tiledversion":"1.10.2",
  "tileheight":16,
  "tilesets":[
         {
          "columns":6,
          "firstgid":1,
-         "image":"..\/..\/images\/castle\/decor_16.png",
+         "image":"..\/..\/images\/castle\/decoration.png",
          "imageheight":64,
          "imagewidth":96,
          "margin":0,
@@ -266,7 +266,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"ButtonPink"
                         }]
                 }, 
                 {
@@ -275,7 +275,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"BlockPink"
                         }]
                 }, 
                 {
@@ -284,7 +284,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"ButtonGreen"
                         }]
                 }, 
                 {
@@ -293,7 +293,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"BlockGreen"
                         }]
                 }, 
                 {
@@ -302,7 +302,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"ButtonBlue"
                         }]
                 }, 
                 {
@@ -311,7 +311,7 @@
                         {
                          "name":"tile",
                          "type":"string",
-                         "value":""
+                         "value":"BlockBlue"
                         }]
                 }, 
                 {
@@ -463,7 +463,7 @@
         {
          "columns":8,
          "firstgid":57,
-         "image":"..\/..\/images\/castle\/walls_16.png",
+         "image":"..\/..\/images\/castle\/walls.png",
          "imageheight":64,
          "imagewidth":128,
          "margin":0,
