@@ -48,6 +48,9 @@ export const spritesheets: SpriteSheet[] = [
 	// UI
 	spritesheet("cursor", "ui/cursor.png", 256, 256),
 	spritesheet("speedbuttons", "ui/speedbuttons.png", 16, 16),
+
+	// VFX
+	spritesheet("explosion", "vfx/explosion.png", 200, 256),
 ];
 
 /* Audios */

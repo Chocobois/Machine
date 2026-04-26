@@ -7,6 +7,7 @@ enum Action {
 	Walking,
 	Climbing,
 	Falling,
+	Crashing,
 	Flying,
 	Collecting,
 	Leaving,
@@ -18,7 +19,8 @@ const animations: { [key in Action]: number[] } = {
 	[Action.Walking]: [0, 2, 1, 3],
 	[Action.Climbing]: [4, 5],
 	[Action.Falling]: [6, 7],
-	[Action.Dead]: [0],
+	[Action.Crashing]: [10, 11],
+	[Action.Dead]: [9],
 	[Action.Flying]: [6, 7],
 	[Action.Collecting]: [0],
 	[Action.Leaving]: [0],
@@ -31,10 +33,13 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private sprite: Phaser.GameObjects.Sprite;
 	private heldSprite: Phaser.GameObjects.Sprite;
+	private explodeSprite: Phaser.GameObjects.Sprite;
 
 	private action: Action = Action.Idle;
 	private facingRight: boolean = true;
 	private fallSpeed: number = 0;
+
+	private explodePhase: number = 0;
 
 	constructor(scene: GameScene) {
 		super(scene, 0, 0);
@@ -61,6 +66,13 @@ export class Player extends Phaser.GameObjects.Container {
 			.setVisible(false);
 		this.heldSprite.setScale(SIZE / this.heldSprite.width);
 		this.add(this.heldSprite);
+
+		this.explodeSprite = this.scene.add
+			.sprite(0, 0, "explosion", 0)
+			.setOrigin(0.5, 0.5)
+			.setVisible(false);
+		this.explodeSprite.setScale(SIZE / this.heldSprite.width / 4);
+		this.add(this.explodeSprite);
 	}
 
 	update(time: number, delta: number) {
@@ -69,6 +81,11 @@ export class Player extends Phaser.GameObjects.Container {
 		this.sprite.setFrame(frames[index]);
 		this.sprite.setFlipX(!this.facingRight);
 		this.heldSprite.setOrigin(0.5, 1 + Math.sin((time / 400 * Math.PI) % Math.PI) * 0.1)
+
+		if(this.action == Action.Dead && this.explodePhase < 990) {
+			this.explodePhase += delta;
+			this.explodeSprite.setFrame(Math.floor(this.explodePhase / 1000 * 18));
+		}
 	}
 
 	setTileCoord(tileCoord: TileCoord) {
@@ -181,19 +198,21 @@ export class Player extends Phaser.GameObjects.Container {
 
 	private die() {
 		this.action = Action.Dead;
-		this.sprite.setPostPipeline(GrayScalePostFilter);
+		//this.sprite.setPostPipeline(GrayScalePostFilter);
 		this.heldSprite.setVisible(false);
+		this.explodeSprite.setVisible(true);
 
 		// TODO: Add animation and trigger on end
 		this.emit("leave");
 	}
 
 	private fall() {
-		if (this.action != Action.Falling) this.fallSpeed = 0;
+		if (this.action != Action.Falling && this.action != Action.Crashing) this.fallSpeed = 0;
 		this.fallSpeed += 1;
 		const duration = 500 / (1 + 0.4 * this.fallSpeed);
 
-		this.action = Action.Falling;
+		if(this.fallSpeed < 6) this.action = Action.Falling;
+		else this.action = Action.Crashing;
 		this.move(0, 1, duration);
 	}
 
