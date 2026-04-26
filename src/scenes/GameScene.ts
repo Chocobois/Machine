@@ -1,5 +1,6 @@
-import { Player } from "@/components/Player";
+import { BaseScene } from "@/scenes/BaseScene";
 import { TileManager } from "@/logic/TileManager";
+import { Player } from "@/components/Player";
 import {
 	SIZE,
 	Tile,
@@ -8,22 +9,21 @@ import {
 	NeighborEntities,
 	TileDef,
 } from "@/logic/Tile";
-import { BaseScene } from "@/scenes/BaseScene";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { LevelKey, levels } from "@/logic/levels";
-import { UI_HEIGHT } from "./UIScene";
 import { Cursor } from "@/components/Cursor";
 import { Item, ItemKey, PlacementCondition, PropertyTest } from "@/logic/Item";
 
 import { Entity } from "@/components/tiles/Entity";
-import { Rope } from "@/components/Rope";
+import { Rope } from "@/components/tiles/Rope";
 import { Gold } from "@/components/tiles/Gold";
 import { Spikes } from "@/components/tiles/Spikes";
 import { Home } from "@/components/tiles/Home";
 import { Fan } from "@/components/tiles/Fan";
-import { Zipline } from "@/components/Zipline";
+import { Zipline } from "@/components/tiles/Zipline";
 import { Updraft } from "@/components/tiles/Updraft";
-import { Ladder } from "@/components/Ladder";
+import { Ladder } from "@/components/tiles/Ladder";
+import { UI_HEIGHT } from "@/components/ui/Panel";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -87,7 +87,13 @@ export class GameScene extends BaseScene {
 	}
 
 	setupListeners() {
-		this.scene.get("UIScene").events.on("toggleItem", this.onToggleItem, this);
+		const ui = this.scene.get("UIScene");
+
+		ui.events.on("toggleItem", this.onToggleItem, this);
+
+		this.events.once("shutdown", () => {
+			ui.events.off("toggleItem", this.onToggleItem, this);
+		});
 	}
 
 	update(time: number, delta: number) {

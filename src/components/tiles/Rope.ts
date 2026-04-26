@@ -1,6 +1,6 @@
 import { BaseScene } from "@/scenes/BaseScene";
 import { NeighborTiles, SIZE, Tile, TileCoord } from "@/logic/Tile";
-import { Entity } from "./tiles/Entity";
+import { Entity } from "./Entity";
 
 export class Rope extends Entity {
 	constructor(scene: BaseScene, tileCoord: TileCoord) {
