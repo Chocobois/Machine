@@ -5,8 +5,8 @@ const Data = {
 		offset: 580 / 44100 - 0.05,
 		bpm: 190,
 		loop: true,
-		start: 446222 / 44100 + overlap,
-		end: 4902639 / 44100 + overlap,
+		start: 446220 / 44100 + overlap,
+		end: 5348280 / 44100 + overlap,
 	},
 	intro: {
 		offset: 574 / 44100,
