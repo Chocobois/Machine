@@ -36,22 +36,25 @@ export class GameScene extends BaseScene {
 	private level: LevelKey;
 	private tileManager: TileManager;
 	private entities: Entity[];
+	private inventory: Inventory;
 
 	// Kobots
-	private players: Player[] = [];
+	private players: Player[];
 	public timeToLeave: boolean;
-	public playSpeed = 1;
+	public playSpeed: number;
 
 	// Input
 	private inputMode: InputMode;
-	private isHolding = false;
+	private isHolding: boolean;
 	private dragStartPosition = new Phaser.Math.Vector2();
 	private lastPointerPosition = new Phaser.Math.Vector2();
 	private lastPointerTileCoord: TileCoord = { x: 0, y: 0 };
 	private cursor: Cursor;
 	private readonly DRAG_THRESHOLD = 16;
+	private globalPointerUpHandler: (event: PointerEvent) => void;
 
-	private isDraggingCamera = false;
+	// Camera
+	private isDraggingCamera: boolean;
 	private cameraBounds: {
 		minX: number;
 		maxX: number;
@@ -59,17 +62,36 @@ export class GameScene extends BaseScene {
 		maxY: number;
 	};
 	private cameraTarget = new Phaser.Math.Vector2();
-	private cameraZoom: number = 4;
+	private cameraZoom: number;
 
+	// Building
 	private buildStartTile?: TileCoord;
-	private previewCoords: TileCoord[] = [];
-	private previewEntities: Entity[] = [];
-	private previewValid = false;
-
-	private inventory: Inventory = [];
+	private previewCoords: TileCoord[];
+	private previewEntities: Entity[];
+	private previewValid: boolean;
 
 	constructor() {
 		super({ key: "GameScene" });
+	}
+
+	init() {
+		this.inventory = [];
+		this.entities = [];
+		this.players = [];
+		this.playSpeed = 1;
+
+		this.isHolding = false;
+		this.dragStartPosition.set(0, 0);
+		this.lastPointerPosition.set(0, 0);
+		this.lastPointerTileCoord = { x: 0, y: 0 };
+
+		this.isDraggingCamera = false;
+		this.cameraTarget.set(0, 0);
+		this.cameraZoom = 4;
+
+		this.previewCoords = [];
+		this.previewEntities = [];
+		this.previewValid = false;
 	}
 
 	create({ level }: { level: LevelKey }): void {
@@ -79,7 +101,6 @@ export class GameScene extends BaseScene {
 		this.timeToLeave = false;
 
 		this.tileManager = new TileManager(this);
-		this.entities = [];
 		this.loadLevel(level);
 
 		/* Input handling */
@@ -96,17 +117,45 @@ export class GameScene extends BaseScene {
 	}
 
 	setupListeners() {
-		const ui = this.scene.get("UIScene");
+		this.events.once("shutdown", this.shutdown, this);
+		this.events.once("destroy", this.shutdown, this);
 
+		// UIScene events
+		const ui = this.scene.get("UIScene");
 		ui.events.on("toggleItem", this.onToggleItem, this);
 		ui.events.on("setPlaySpeed", this.onSetPlaySpeed, this);
 		ui.events.on("restartLevel", this.onRestartLevel, this);
-		ui.events.on("wrapup", this.onWrapup, this);
+		ui.events.on("wrapUp", this.onWrapUp, this);
 		ui.events.on("onMusicBar", this.onMusicBar, this);
+		ui.events.on("findGold", this.findGold, this);
 
-		this.events.once("shutdown", () => {
-			ui.events.off("toggleItem", this.onToggleItem, this);
-		});
+		// Special listener for global pointerup. This is to prevent UIScene from consuming pointerup events.
+		if (!this.globalPointerUpHandler) {
+			this.globalPointerUpHandler = () => {
+				this.onPointerUp(this.input.activePointer);
+			};
+			document.addEventListener("pointerup", this.globalPointerUpHandler);
+		}
+	}
+
+	shutdown() {
+		this.players.forEach((player) => player.destroy());
+		this.players = [];
+
+		this.entities.forEach((entity) => entity.destroy());
+		this.entities = [];
+
+		this.clearPreview();
+		this.time.removeAllEvents();
+
+		// Disable persistent listeners
+		const ui = this.scene.get("UIScene");
+		ui.events.off("toggleItem", this.onToggleItem, this);
+		ui.events.off("setPlaySpeed", this.onSetPlaySpeed, this);
+		ui.events.off("restartLevel", this.onRestartLevel, this);
+		ui.events.off("wrapUp", this.onWrapUp, this);
+		ui.events.off("onMusicBar", this.onMusicBar, this);
+		ui.events.off("findGold", this.findGold, this);
 	}
 
 	update(time: number, delta: number) {
@@ -325,18 +374,12 @@ export class GameScene extends BaseScene {
 	/* Input handling */
 
 	setupInput() {
+		// Input events (automatically cleared on scene restart)
 		this.input.on("pointerdown", this.onPointerDown, this);
 		this.input.on("pointerup", this.onPointerUp, this);
 		this.input.on("pointerupoutside", this.onPointerUp, this);
 		this.input.on("pointermove", this.onPointerMove, this);
 		this.input.on("wheel", this.onMouseWheel, this);
-
-		// Hack to deal with UIScene stealing pointerup events
-		document.addEventListener("pointerup", () => {
-			if (this.isHolding || this.isDraggingCamera) {
-				this.onPointerUp(this.input.activePointer);
-			}
-		});
 
 		this.cursor = new Cursor(this).setDepth(100);
 	}
@@ -448,6 +491,8 @@ export class GameScene extends BaseScene {
 
 		this.setCameraZoom(newZoom);
 	}
+
+	/* Building */
 
 	getMouseTileCoord(): TileCoord {
 		const worldPoint = this.cameras.main.getWorldPoint(
@@ -898,8 +943,12 @@ export class GameScene extends BaseScene {
 
 	/* Audio */
 
-	public playLocationSound(tileCoord: TileCoord, key: string, volume: number) {
-		if (!this.game.hasFocus) return;
+	playLocationSound(
+		tileCoord: TileCoord,
+		key: string | string[],
+		volume: number,
+	) {
+		if (!this.game.registry.get("allowAudio")) return;
 
 		const position = TileCoord.tileToCoord(tileCoord);
 
@@ -914,10 +963,11 @@ export class GameScene extends BaseScene {
 		// Stereo pan
 		const pan = Phaser.Math.Clamp(offset.x / 100, -1, 1);
 
-		// Optional: skip if inaudible
+		// Skip if inaudible
 		if (finalVolume <= 0) return;
 
-		this.sound.play(key, {
+		let soundKey = typeof key == "string" ? key : Phaser.Math.RND.pick(key);
+		this.sound.play(soundKey, {
 			volume: finalVolume,
 			pan: pan,
 		});

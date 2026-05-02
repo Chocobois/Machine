@@ -44,12 +44,12 @@ export class UIScene extends BaseScene {
 		const overworldScene = this.scene.get("OverworldScene");
 		const gameScene = this.scene.get("GameScene");
 
-		// GameScene
+		// Overworld events
 		overworldScene.events.on("setSeek", (seek: number) => {
 			this.music.setSeek(seek);
 		});
 
-		// GameScene
+		// Game events
 		gameScene.events.on("setInventory", (inventory: Inventory) => {
 			this.uiPanel.setInventory(inventory);
 		});
@@ -98,6 +98,15 @@ export class UIScene extends BaseScene {
 		gameScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(true),
 		);
+
+		// Global
+		this.game.registry.set("allowAudio", true);
+		this.game.events.on("blur", () => {
+			this.game.registry.set("allowAudio", false);
+		});
+		this.game.events.on("focus", () => {
+			this.game.registry.set("allowAudio", true);
+		});
 	}
 
 	setVisible(state: boolean) {
