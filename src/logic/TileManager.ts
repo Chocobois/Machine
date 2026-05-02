@@ -11,6 +11,7 @@ export class TileManager extends Phaser.GameObjects.Container {
 	constructor(scene: BaseScene) {
 		super(scene);
 		this.scene = scene;
+		scene.add.existing(this);
 	}
 
 	loadTilemap(tilemapKey: LevelKey): Tile[][] {
@@ -40,7 +41,10 @@ export class TileManager extends Phaser.GameObjects.Container {
 
 		/* Graphics */
 
-		const layerPhysics = this.map.createLayer("layer_walls_physics", tilesetColliders);
+		const layerPhysics = this.map.createLayer(
+			"layer_walls_physics",
+			tilesetColliders,
+		);
 		const layerDecor = this.map.createLayer("layer_decoration", tilesetDecor);
 		const layerWalls = this.map.createLayer("layer_walls_visual", tilesetWalls);
 		const layerLogic = this.map.createLayer("layer_logic", tilesetColliders);
@@ -49,6 +53,10 @@ export class TileManager extends Phaser.GameObjects.Container {
 		if (!layerWalls) throw Error("Layer 'layer_walls_visual' not found");
 		if (!layerLogic) throw Error("Layer 'layer_logic' not found");
 
+		this.add(layerPhysics);
+		this.add(layerDecor);
+		this.add(layerWalls);
+		this.add(layerLogic);
 		layerPhysics.setAlpha(0);
 		layerLogic.setAlpha(0);
 		layerWalls.setPosition(16);
@@ -79,6 +87,29 @@ export class TileManager extends Phaser.GameObjects.Container {
 				}
 			}
 		}
+
+		/* Out of bounds texture */
+
+		const innerLeft = 8;
+		const innerTop = 8;
+		const innerWidth = 16 * (this.width - 1);
+		const innerHeight = 16 * (this.height - 1);
+		const inner = this.scene.add
+			.rectangle(innerLeft, innerTop, innerWidth, innerHeight, 0x63ad9d)
+			.setOrigin(0);
+		this.add(inner);
+		this.sendToBack(inner);
+
+		const outerLeft = innerLeft - 40 * 16;
+		const outerTop = innerTop - 40 * 16;
+		const outerWidth = innerWidth + 80 * 16;
+		const outerHeight = innerHeight + 80 * 16;
+		const outer = this.scene.add
+			.tileSprite(outerLeft, outerTop, outerWidth, outerHeight, "out_of_bounds")
+			.setOrigin(0)
+			.setDepth(-2);
+		this.add(outer);
+		this.sendToBack(outer);
 
 		return entityTiles;
 	}
@@ -118,9 +149,27 @@ export class TileManager extends Phaser.GameObjects.Container {
 		return this.tiles[tileCoord.y]?.[tileCoord.x] ?? "None";
 	}
 
-	// public getEntityAt(tileCoord: TileCoord): Entity | undefined {
-	// 	return this.entities.find((entity) => entity.tileCoord == tileCoord);
-	// }
+	public getLevelBounds(): Phaser.Geom.Rectangle {
+		let minX = this.width;
+		let minY = this.height;
+		let maxX = -1;
+		let maxY = -1;
+
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const tile = this.tiles[y]?.[x];
+
+				if (tile !== Tile.Wall) {
+					if (x < minX) minX = x;
+					if (y < minY) minY = y;
+					if (x > maxX) maxX = x;
+					if (y > maxY) maxY = y;
+				}
+			}
+		}
+
+		return new Phaser.Geom.Rectangle(minX, minY, maxX - minX, maxY - minY);
+	}
 
 	get widthInPixels(): number {
 		return this.map.widthInPixels;

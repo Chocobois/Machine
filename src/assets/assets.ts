@@ -10,6 +10,7 @@ export const images: Image[] = [
 	image("texture_walls", "castle/walls.png"),
 	image("texture_decoration", "castle/decoration.png"),
 	image("texture_colliders", "castle/colliders.png"),
+	image("out_of_bounds", "castle/out_of_bounds.png"),
 
 	// UI
 	image("ui_bar", "ui/bar.png"),

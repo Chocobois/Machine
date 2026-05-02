@@ -96,7 +96,7 @@ export class GameScene extends BaseScene {
 
 	create({ level }: { level: LevelKey }): void {
 		this.fade(false, 200, 0x000000);
-		this.cameras.main.setBackgroundColor(0x63ad9d);
+		this.cameras.main.setBackgroundColor(0x000000);
 		this.level = level;
 		this.timeToLeave = false;
 
@@ -189,21 +189,26 @@ export class GameScene extends BaseScene {
 	}
 
 	updateCameraBounds() {
-		const worldWidth = this.tileManager.widthInPixels;
-		const worldHeight = this.tileManager.heightInPixels;
-		const uiOffset = UI_HEIGHT / this.cameraZoom;
+		const bounds = this.tileManager.getLevelBounds();
+		const { x: left, y: top } = TileCoord.tileToCoord({
+			x: bounds.left,
+			y: bounds.top,
+		});
+		const { x: right, y: bottom } = TileCoord.tileToCoord({
+			x: bounds.right,
+			y: bounds.bottom,
+		});
 
-		const pad = 8 + 1;
 		this.cameraBounds = {
-			minX: this.W / 2 + pad,
-			maxX: worldWidth - this.W / 2 - pad,
-			minY: this.H / 2 + pad,
-			maxY: worldHeight - this.H / 2 - pad + uiOffset,
+			minX: left,
+			minY: top,
+			maxX: right,
+			maxY: bottom,
 		};
 	}
 
 	setCameraZoom(zoom: number) {
-		this.cameraZoom = Phaser.Math.Clamp(zoom, 3, 6);
+		this.cameraZoom = Phaser.Math.Clamp(zoom, 2, 6);
 		this.cameras.main.setZoom(this.cameraZoom);
 		this.updateCameraBounds();
 		this.centerCameraOn(this.cameraTarget.x, this.cameraTarget.y);
@@ -1012,7 +1017,8 @@ export class GameScene extends BaseScene {
 			this.exitLevel(true);
 		}
 
-		this.events.emit("setInventory", this.inventory);
+		// this.events.emit("setPlayerCount", levels[key].playerCount);
+		// this.events.emit("setTreasureCount", levels[key].treasureCount);
 	}
 
 	onRestartLevel() {
