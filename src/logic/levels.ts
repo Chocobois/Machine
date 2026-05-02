@@ -11,7 +11,7 @@ type LevelDef = {
 export const levels = {
 	level1: {
 		title: "Learning the ropes",
-		playerCount: 8,
+		playerCount: 6,
 		treasureCount: 2,
 		inventory: [
 			{ itemKey: "Rope", amount: 4 }, //
@@ -27,7 +27,7 @@ export const levels = {
 	},
 	level2: {
 		title: "Beware of direction",
-		playerCount: 9,
+		playerCount: 12,
 		treasureCount: 4,
 		inventory: [
 			{ itemKey: "Rope", amount: 6 }, //
@@ -66,9 +66,9 @@ export const levels = {
 		playerCount: 64,
 		treasureCount: 21,
 		inventory: [
-			{ itemKey: "Rope", amount: 20 },
-			{ itemKey: "Fan", amount: 20 },
-			{ itemKey: "Zipline", amount: 20 },
+			{ itemKey: "Rope", amount: 10 },
+			{ itemKey: "Fan", amount: 10 },
+			{ itemKey: "Zipline", amount: 10 },
 		],
 	},
 	// leveldev1: {
