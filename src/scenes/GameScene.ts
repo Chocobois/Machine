@@ -458,6 +458,7 @@ export class GameScene extends BaseScene {
 			);
 			if (dragDistance >= this.DRAG_THRESHOLD) {
 				this.isDraggingCamera = true;
+				this.entities.forEach(entity => entity.block());
 			}
 		}
 
