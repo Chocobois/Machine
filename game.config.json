@@ -3,7 +3,7 @@
   "title": "Kobots",
   "description": "Pillage treasure with your cutting-edge Kobot machines.",
   "itch": {
-    "upload": false,
+    "upload": true,
     "username": "golen",
     "game": "kobots"
   },
