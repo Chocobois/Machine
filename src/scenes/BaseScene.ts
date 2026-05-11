@@ -1,3 +1,6 @@
+import { UI_SIZE } from "@/components/ui/UIPanel";
+import { SIZE } from "@/logic/Tile";
+
 export interface TextStyle {
 	fontFamily?: string;
 	x?: number;
@@ -61,7 +64,7 @@ export class BaseScene extends Phaser.Scene {
 	addEvent(
 		delay: number,
 		callback: () => void,
-		callbackScope: any = this
+		callbackScope: any = this,
 	): Phaser.Time.TimerEvent {
 		return this.time.addEvent({ delay, callback, callbackScope });
 	}
@@ -96,6 +99,26 @@ export class BaseScene extends Phaser.Scene {
 	// The image keeps its aspect ratio and fills the given dimension. The image will be clipped to fit
 	containToScreen(image: Phaser.GameObjects.Image): void {
 		image.setScale(Math.min(this.W / image.width, this.H / image.height));
+	}
+
+	// Converts world coordinates (affected by camera) to screen coordinates
+	worldToScreen(x: number, y: number) {
+		const camera = this.cameras.main;
+		return {
+			x: (x - camera.worldView.x) * camera.zoom,
+			y: (y - camera.worldView.y) * camera.zoom,
+			size: SIZE * camera.zoom,
+		};
+	}
+
+	// Checks is coordinates are visible on screen
+	isOnScreen(x: number, y: number, padding = 0) {
+		return (
+			x >= padding &&
+			x <= 2 * this.CX - padding &&
+			y >= padding &&
+			y <= 2 * this.CY - padding - UI_SIZE
+		);
 	}
 
 	// Returns width of screen

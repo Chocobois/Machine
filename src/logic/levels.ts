@@ -6,6 +6,7 @@ type LevelDef = {
 	playerCount: number;
 	treasureCount: number;
 	inventory: Inventory;
+	cameraOffset: { x: number; y: number };
 };
 
 export const levels = {
@@ -16,6 +17,7 @@ export const levels = {
 		inventory: [
 			{ itemKey: "Rope", amount: 4 }, //
 		],
+		cameraOffset: { x: 6, y: -2 },
 	},
 	level4: {
 		title: "Zipping across",
@@ -24,6 +26,7 @@ export const levels = {
 		inventory: [
 			{ itemKey: "Zipline", amount: 4 }, //
 		],
+		cameraOffset: { x: 5, y: 0 },
 	},
 	level2: {
 		title: "Beware of direction",
@@ -32,6 +35,7 @@ export const levels = {
 		inventory: [
 			{ itemKey: "Rope", amount: 6 }, //
 		],
+		cameraOffset: { x: 4, y: 0 },
 	},
 	level5: {
 		title: "Crazy corridors",
@@ -42,6 +46,7 @@ export const levels = {
 			{ itemKey: "Rope", amount: 3 },
 			{ itemKey: "Zipline", amount: 3 },
 		],
+		cameraOffset: { x: 5, y: 0 },
 	},
 	level3: {
 		title: "Spiky waters",
@@ -51,6 +56,7 @@ export const levels = {
 			{ itemKey: "Fan", amount: 4 },
 			{ itemKey: "Rope", amount: 3 },
 		],
+		cameraOffset: { x: 6, y: -2 },
 	},
 	// level6: {
 	// 	title: "Level 6",
@@ -70,6 +76,7 @@ export const levels = {
 			{ itemKey: "Fan", amount: 10 },
 			{ itemKey: "Zipline", amount: 10 },
 		],
+		cameraOffset: { x: 6, y: -2 },
 	},
 	// leveldev1: {
 	// 	title: "Beware of heights",

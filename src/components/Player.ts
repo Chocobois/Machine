@@ -1,6 +1,6 @@
 import { GameScene } from "@/scenes/GameScene";
 import { NeighborTiles, SIZE, Tile, TileCoord, TileDef } from "@/logic/Tile";
-import { GrayScalePostFilter } from "@/pipelines/GrayScalePostFilter";
+import { interpolateColor } from "@/util/functions";
 
 enum Action {
 	Idle,
@@ -23,7 +23,7 @@ const animations: { [key in Action]: number[] } = {
 	[Action.Dead]: [9],
 	[Action.Flying]: [6, 7],
 	[Action.Collecting]: [0],
-	[Action.Leaving]: [0],
+	[Action.Leaving]: [0, 2, 1, 3],
 };
 
 export class Player extends Phaser.GameObjects.Container {
@@ -36,11 +36,10 @@ export class Player extends Phaser.GameObjects.Container {
 	private explodeSprite: Phaser.GameObjects.Sprite;
 
 	private action: Action = Action.Idle;
+	private tween: Phaser.Tweens.Tween;
 	private facingRight: boolean = true;
 	private fallSpeed: number = 0;
 	private queuedDeath: boolean = false;
-
-	private explodePhase: number = 0;
 
 	constructor(scene: GameScene) {
 		super(scene, 0, 0);
@@ -85,20 +84,45 @@ export class Player extends Phaser.GameObjects.Container {
 			0.5,
 			1 + Math.sin(((time / 400) * Math.PI) % Math.PI) * 0.1,
 		);
-
-		if (this.action == Action.Dead && this.explodePhase < 990) {
-			this.explodePhase += delta;
-			this.explodeSprite.setFrame(
-				Math.min(17, Math.floor((this.explodePhase / 1000) * 18)),
-			);
-		}
 	}
 
 	setTileCoord(tileCoord: TileCoord) {
+		this.tileCoord = tileCoord;
 		const { x, y } = TileCoord.tileToCoord(tileCoord);
 		this.setPosition(x, y);
-		this.tileCoord = tileCoord;
 		this.emit("neighbors");
+	}
+
+	enterLevel(tileCoord: TileCoord) {
+		this.action = Action.Walking;
+		this.tileCoord = tileCoord;
+		const { x, y } = TileCoord.tileToCoord(tileCoord);
+		this.setPosition(x - SIZE, y - SIZE);
+
+		const maskY = y - 1.5 * SIZE;
+		const mask = new Phaser.Display.Masks.BitmapMask(
+			this.scene,
+			undefined,
+			x,
+			maskY,
+			"home_mask",
+		);
+		mask.invertAlpha = true;
+		this.setMask(mask);
+
+		this.tween = this.scene.tweens.addCounter({
+			duration: 1000,
+			onUpdate: (tween, target, key, current) => {
+				this.x = x - SIZE * (1 - current);
+				this.y = y - SIZE * (1 - current);
+				this.sprite.setTint(interpolateColor(0x2b8573, 0xffffff, current));
+			},
+			onComplete: () => {
+				this.setTileCoord(tileCoord);
+				this.clearMask();
+				this.sprite.setTint(0xffffff);
+			},
+		});
 	}
 
 	updateAction({
@@ -132,7 +156,7 @@ export class Player extends Phaser.GameObjects.Container {
 
 		// Interactions
 		if (center.includes("Gold") && !this.holding) return this.pickUp();
-		if (center.includes("Home") && this.readyToLeave) return this.dropOff();
+		if (center.includes("Home") && this.readyToLeave) return this.exitLevel();
 
 		// Climbing
 		if (center.includes("Climb")) {
@@ -209,15 +233,28 @@ export class Player extends Phaser.GameObjects.Container {
 		this.action = Action.Idle;
 	}
 
-	die() {
+	private die() {
 		this.action = Action.Dead;
-		//this.sprite.setPostPipeline(GrayScalePostFilter);
 		this.heldSprite.setVisible(false);
 		this.explodeSprite.setVisible(true);
 		this.emit("sound", "explode", 0.2);
 
-		// TODO: Add animation and trigger on end
 		this.emit("leave");
+
+		console.assert(!this.tween || !this.tween.isPlaying());
+		this.tween = this.scene.tweens.addCounter({
+			from: 0,
+			to: 17,
+			onStart: () => {
+				this.explodeSprite.setVisible(true);
+			},
+			onUpdate: (tween, target, key, current) => {
+				this.explodeSprite.setFrame(Math.floor(current));
+			},
+			onComplete: () => {
+				this.explodeSprite.setVisible(false);
+			},
+		});
 	}
 
 	queueDeath() {
@@ -257,15 +294,37 @@ export class Player extends Phaser.GameObjects.Container {
 		});
 	}
 
-	private dropOff() {
+	private exitLevel() {
 		this.action = Action.Leaving;
+		this.facingRight = false;
 		this.emit("leave");
-		this.emit("sound", "sparkle", 0.4);
+		this.emit("sound", "staircase");
 
-		this.scene.tweens.add({
-			targets: this,
-			alpha: 0,
+		const { x, y } = TileCoord.tileToCoord(this.tileCoord);
+
+		const maskY = y - 1.5 * SIZE;
+		const mask = new Phaser.Display.Masks.BitmapMask(
+			this.scene,
+			undefined,
+			x,
+			maskY,
+			"home_mask",
+		);
+		mask.invertAlpha = true;
+		this.setMask(mask);
+
+		console.assert(!this.tween || !this.tween.isPlaying());
+		this.tween = this.scene.tweens.addCounter({
 			duration: 1000,
+			onUpdate: (tween, target, key, current) => {
+				this.x = x - SIZE * current;
+				this.y = y - SIZE * current;
+				this.sprite.setTint(interpolateColor(0xffffff, 0x2b8573, current));
+			},
+			onComplete: () => {
+				// this.action = Action.Leaving;
+				this.setVisible(false);
+			},
 		});
 	}
 
@@ -287,7 +346,8 @@ export class Player extends Phaser.GameObjects.Container {
 	/* Helpers */
 
 	private move(dtx: number, dty: number, duration: number) {
-		this.scene.tweens.add({
+		console.assert(!this.tween || !this.tween.isPlaying());
+		this.tween = this.scene.tweens.add({
 			targets: this,
 			duration: duration / this.scene.playSpeed,
 			x: { from: this.x, to: this.x + dtx * SIZE },

@@ -3,6 +3,7 @@ import { Music } from "@/logic/Music";
 
 import { title, version } from "@/version.json";
 import { MainMenuKobot } from "@/components/MainMenuKobot";
+import { FadeConfig } from "@/components/Intermission";
 
 const creditsLeft = `Golen
 Naika`;
@@ -10,14 +11,14 @@ Naika`;
 const creditsRight = `code
 art`;
 
-const slideinduration = 2000;
+const slideinduration = 1500;
 const botspawninterval = 800;
 
 enum MainMenuState {
-  NotStarted,
-  SlideIn,
-  Idle,
-  Starting
+	NotStarted,
+	SlideIn,
+	Idle,
+	Starting,
 }
 
 export class TitleScene extends BaseScene {
@@ -28,7 +29,6 @@ export class TitleScene extends BaseScene {
 	public taptoplay: Phaser.GameObjects.Image;
 
 	public credits: Phaser.GameObjects.Container;
-	public tap: Phaser.GameObjects.Text;
 	public version: Phaser.GameObjects.Text;
 
 	public musicTitle: Phaser.Sound.WebAudioSound;
@@ -51,7 +51,10 @@ export class TitleScene extends BaseScene {
 
 		this.sky = this.add.image(this.CX, this.CY, "title_sky");
 		this.background = this.add.image(0, 0, "title_background").setOrigin(0);
-		this.foreground = this.add.image(0, 0, "title_foreground").setOrigin(0).setDepth(10);
+		this.foreground = this.add
+			.image(0, 0, "title_foreground")
+			.setOrigin(0)
+			.setDepth(10);
 		this.logo = this.add.image(70, 100, "title_logo").setOrigin(0, 0.5);
 		this.taptoplay = this.add.image(110, 350, "title_taptoplay").setOrigin(0);
 
@@ -64,18 +67,6 @@ export class TitleScene extends BaseScene {
 		this.taptoplay.y += 9000;
 
 		this.bots = [];
-
-		this.tap = this.addText({
-			x: this.CX,
-			y: this.CY,
-			size: 120,
-			color: "#FFF",
-			text: "Tap to focus",
-		});
-		this.tap.setOrigin(0.5);
-		this.tap.setAlpha(1);
-		this.tap.setStroke("#000", 16);
-		this.tap.setPadding(2);
 
 		this.version = this.addText({
 			x: this.W,
@@ -120,7 +111,9 @@ export class TitleScene extends BaseScene {
 		this.credits.add(credits2);
 
 		// Music
-		if (!this.musicTitle) { this.musicTitle = new Music(this, "intro", { volume: 0.4 }); }
+		if (!this.musicTitle) {
+			this.musicTitle = new Music(this, "intro", { volume: 0.4 });
+		}
 		this.musicTitle.play();
 
 		// Input
@@ -134,7 +127,7 @@ export class TitleScene extends BaseScene {
 					this.on_input();
 				}
 			},
-			this
+			this,
 		);
 
 		this.isStarting = false;
@@ -142,48 +135,53 @@ export class TitleScene extends BaseScene {
 
 	set_state(_newstate: MainMenuState) {
 		this.state = _newstate;
-		switch(this.state) {
+		switch (this.state) {
 			case MainMenuState.SlideIn:
-				//this.musicTitle.play();
-				this.tap.setVisible(false);
 				// Slide in Tweens
 				this.tweens.add({
 					targets: [this.background, this.foreground],
-					y: {from: 1000, to: 0},
+					y: { from: 1000, to: 0 },
 					duration: slideinduration,
-					ease: Phaser.Math.Easing.Cubic.Out
-				})
+					ease: Phaser.Math.Easing.Cubic.Out,
+				});
 				this.tweens.add({
 					targets: [this.logo],
-					y: {from: 1170, to: 170},
+					y: { from: 1170, to: 170 },
 					duration: slideinduration,
 					delay: 400,
-					ease: Phaser.Math.Easing.Cubic.Out
-				})
+					ease: Phaser.Math.Easing.Cubic.Out,
+				});
 				this.tweens.add({
 					targets: [this.taptoplay],
-					y: {from: 1350, to: 350},
+					y: { from: 1350, to: 350 },
 					duration: slideinduration,
 					delay: 400,
-					ease: Phaser.Math.Easing.Cubic.Out
-				})
+					ease: Phaser.Math.Easing.Cubic.Out,
+				});
 
 				this.addEvent(slideinduration, () => {
-						this.set_state(MainMenuState.Idle)
-				})
+					this.set_state(MainMenuState.Idle);
+				});
 
 				break;
 			case MainMenuState.Idle:
-				this.credits.setVisible(true);
+				// this.credits.setVisible(true);
 				break;
 			case MainMenuState.Starting:
 				this.sound.play("kobl_1", { volume: 0.5 });
 				this.isStarting = true;
 				this.flash(3000, 0xffffff, 0.6);
 
-				this.addEvent(1000, () => {
-					this.fade(true, 1000, 0x000000);
-					this.addEvent(1050, () => {
+				this.addEvent(500, () => {
+					const fadeConfig: FadeConfig = {
+						x: 992,
+						y: 770,
+						black: true,
+						duration: 2000,
+					};
+					this.events.emit("fade", fadeConfig);
+
+					this.addEvent(2000, () => {
 						const seek = this.musicTitle.seek;
 						this.musicTitle.stop();
 						this.scene.start("OverworldScene", { seek });
@@ -197,50 +195,53 @@ export class TitleScene extends BaseScene {
 		//bot.duration *= 1 + (Math.random() - 0.5 / 2);
 		bot.move();
 		this.addEvent(bot.duration * 2, () => {
-			bot.destroy()
+			bot.destroy();
 		});
 		this.bots.push(bot);
 	}
 	update(time: number, delta: number) {
 		if (this.state > 0) {
-			this.logo.setOrigin(0, 0.5 + Math.sin((time / 2000) * Math.PI) * 0.05)
-			this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1 && this.state > 1
+			this.logo.setOrigin(0, 0.5 + Math.sin((time / 2000) * Math.PI) * 0.05);
+			this.taptoplay.visible = ((time - 1700) / 600) % 2 > 1 && this.state > 1;
 
 			this.background.alpha += 0.03 * (1 - this.background.alpha);
 
 			this.version.alpha +=
 				0.02 * ((this.version.visible ? 1 : 0) - this.version.alpha);
 
-			if (this.credits.visible) {
-				this.credits.alpha += 0.02 * (1 - this.credits.alpha);
-			}
-			
-			if (this.state > 1){
-				this.taptoplay.visible = ((time - 2200) / 600) % 2 > 1;
+			// if (this.credits.visible) {
+			// this.credits.alpha += 0.02 * (1 - this.credits.alpha);
+			// }
 
-				if (this.botspawntimer > 0) { this.botspawntimer -= delta }
-				else { 
+			if (this.state > 1) {
+				this.taptoplay.visible = ((time - 1700) / 600) % 2 > 1;
+
+				if (this.botspawntimer > 0) {
+					this.botspawntimer -= delta;
+				} else {
 					this.spawn_bot();
 					this.botspawntimer = botspawninterval;
 				}
 			}
-			
+			if (this.state == MainMenuState.Starting) {
+				this.taptoplay.visible = ((10 * time) / 600) % 2 > 1;
+				this.taptoplay.alpha -= delta / 1000;
+			}
 		} else {
 			if (this.musicTitle.seek > 0) {
-				this.set_state(MainMenuState.SlideIn)
-				this.tap.setVisible(false);
+				this.set_state(MainMenuState.SlideIn);
 			}
 		}
-		this.bots.forEach(bot => bot.update(time, delta));
+		this.bots.forEach((bot) => bot.update(time, delta));
 	}
 
-	on_input(){
-		switch(this.state) {
+	on_input() {
+		switch (this.state) {
 			case MainMenuState.NotStarted:
 				//this.set_state(MainMenuState.SlideIn)
 				break;
 			case MainMenuState.Idle:
-				this.set_state(MainMenuState.Starting)
+				this.set_state(MainMenuState.Starting);
 				break;
 		}
 	}

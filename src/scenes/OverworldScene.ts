@@ -1,8 +1,8 @@
-import { getNextLevel, LevelKey, levels } from "@/logic/levels";
+import { getNextLevel, LevelKey, levelKeys, levels } from "@/logic/levels";
 import { BaseScene } from "@/scenes/BaseScene";
+import { Color } from "@/util/colors";
 
 export class OverworldScene extends BaseScene {
-	private prevLevel: LevelKey | undefined;
 	private nextLevel: LevelKey;
 
 	constructor() {
@@ -18,16 +18,15 @@ export class OverworldScene extends BaseScene {
 		restart?: boolean;
 		seek?: number;
 	}) {
-		this.fade(false, 200, 0x000000);
-		this.cameras.main.setBackgroundColor(0x111111);
+		this.fade(false, 200, Color.Zinc950);
+		this.cameras.main.setBackgroundColor(Color.Zinc950);
 
-		this.prevLevel = level;
-		this.nextLevel = !!restart ? level! : getNextLevel(level);
+		this.nextLevel = !restart ? getNextLevel(level) : level!;
 
 		const text = this.addText({
 			x: this.CX,
 			y: this.CY - 50,
-			text: "next",
+			text: `Level ${levelKeys.indexOf(this.nextLevel) + 1}`,
 			size: 32,
 		});
 		text.setOrigin(0.5);
@@ -52,8 +51,8 @@ export class OverworldScene extends BaseScene {
 	}
 
 	startLevel() {
-		this.fade(true, 100, 0x000000);
-		this.addEvent(100, () => {
+		this.fade(true, 200, Color.Zinc950);
+		this.addEvent(200, () => {
 			this.scene.start("GameScene", { level: this.nextLevel });
 		});
 	}

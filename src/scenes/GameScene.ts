@@ -23,7 +23,7 @@ import { Fan } from "@/components/tiles/Fan";
 import { Zipline } from "@/components/tiles/Zipline";
 import { Updraft } from "@/components/tiles/Updraft";
 import { Ladder } from "@/components/tiles/Ladder";
-import { UI_HEIGHT } from "@/components/ui/UIPanel";
+import { FadeConfig } from "@/components/Intermission";
 
 enum InputMode {
 	Cutscene, // No input allowed
@@ -109,11 +109,13 @@ export class GameScene extends BaseScene {
 		this.setupInput();
 		this.setupCamera();
 
-		this.setInputMode(InputMode.Camera);
-
 		this.input.keyboard!.on("keydown-Q", () => {
 			this.scene.start("OverworldScene", { level });
 		});
+
+		/* Introduction */
+
+		this.playIntroCutscene();
 	}
 
 	setupListeners() {
@@ -175,10 +177,6 @@ export class GameScene extends BaseScene {
 		this.cameras.main.setRoundPixels(true);
 
 		this.updateCameraBounds();
-
-		const homeCoords = this.getHomeCoords()[0];
-		const { x, y } = TileCoord.tileToCoord(homeCoords);
-		this.centerCameraOn(x, y);
 	}
 
 	centerCameraOn(x: number, y: number) {
@@ -186,6 +184,7 @@ export class GameScene extends BaseScene {
 		this.cameraTarget.x = Phaser.Math.Clamp(x, minX, maxX);
 		this.cameraTarget.y = Phaser.Math.Clamp(y, minY, maxY);
 		this.cameras.main.centerOn(this.cameraTarget.x, this.cameraTarget.y);
+		this.cameras.main.preRender();
 	}
 
 	updateCameraBounds() {
@@ -250,6 +249,14 @@ export class GameScene extends BaseScene {
 		return this.entities
 			.filter((entity) => entity.tile === "Home")
 			.map((entity) => entity.tileCoord);
+	}
+
+	findGold() {
+		const chest = this.entities.find((entity) => entity.tile === "Gold");
+		if (chest) {
+			const { x, y } = TileCoord.tileToCoord(chest.tileCoord);
+			this.centerCameraOn(x, y);
+		}
 	}
 
 	getEntitiesAt(
@@ -458,7 +465,7 @@ export class GameScene extends BaseScene {
 			);
 			if (dragDistance >= this.DRAG_THRESHOLD) {
 				this.isDraggingCamera = true;
-				this.entities.forEach(entity => entity.block());
+				this.entities.forEach((entity) => entity.block());
 			}
 		}
 
@@ -738,7 +745,7 @@ export class GameScene extends BaseScene {
 		}
 
 		for (let i = 0; i < playerCount; i++) {
-			this.addEvent(1000 + 1000 * i, () => {
+			this.addEvent(2000 + 1500 * i, () => {
 				// Cycle between homes in case there are multiple
 				const homeCoord = homeCoords[i % homeCoords.length];
 				this.addPlayer(homeCoord);
@@ -768,12 +775,14 @@ export class GameScene extends BaseScene {
 			}
 		});
 		player.on("leave", () => {
+			player.setDepth(10 - 0.01 * this.players.length);
 			this.checkLevelCriteria();
 		});
 		player.on("sound", (key: string, volume: number = 0.5) => {
 			this.playLocationSound(player.tileCoord, key, volume);
 		});
-		player.setTileCoord(tileCoord);
+		// player.setTileCoord(tileCoord);
+		player.enterLevel(tileCoord);
 	}
 
 	createEntityFromTile(tile: Tile, tileCoord: TileCoord): Entity | undefined {
@@ -1009,6 +1018,8 @@ export class GameScene extends BaseScene {
 		return this.players.every((player) => player.hasLeft);
 	}
 
+	/* Level progression */
+
 	checkLevelCriteria() {
 		if (this.noMoreGold) {
 			this.timeToLeave = true;
@@ -1026,7 +1037,7 @@ export class GameScene extends BaseScene {
 		this.exitLevel(false);
 	}
 
-	onWrapup() {
+	onWrapUp() {
 		this.players.forEach((player) => {
 			if (!player.hasLeft) {
 				player.queueDeath();
@@ -1037,14 +1048,54 @@ export class GameScene extends BaseScene {
 	exitLevel(victory: boolean) {
 		this.setInputMode(InputMode.Cutscene);
 
-		this.addEvent(1000, () => {
-			this.fade(true, 500, 0x000000);
-			this.addEvent(500, () => {
-				this.scene.start("OverworldScene", {
-					level: this.level,
-					restart: !victory,
-				});
+		const home = this.entities.find((entity) => entity.tile === "Home")!;
+		const screen = this.worldToScreen(home.x, home.y);
+		const useCenter = !this.isOnScreen(screen.x, screen.y, screen.size);
+
+		const fadeConfig: FadeConfig = {
+			x: useCenter ? this.CX : screen.x,
+			y: useCenter ? this.CY : screen.y - 0.25 * screen.size,
+			black: true,
+			duration: 2000,
+		};
+		this.events.emit("fade", fadeConfig);
+
+		this.addEvent(fadeConfig.duration!, () => {
+			this.scene.start("OverworldScene", {
+				level: this.level,
+				restart: !victory,
 			});
+		});
+	}
+
+	playIntroCutscene() {
+		const home = this.entities.find((entity) => entity.tile === "Home") as Home;
+		const offset = levels[this.level].cameraOffset;
+
+		const { x: offsetX, y: offsetY } = TileCoord.tileToCoord(offset);
+		this.centerCameraOn(home.x + offsetX, home.y + offsetY);
+
+		const screenPos = this.worldToScreen(home.x, home.y);
+
+		const fadeConfig: FadeConfig = {
+			x: screenPos.x,
+			y: screenPos.y - 0.25 * screenPos.size,
+			black: false,
+			radius: 2.5 * screenPos.size,
+			duration: 2000,
+			delay: 2000,
+		};
+		this.events.emit("fade", fadeConfig);
+
+		// Animate home sprite
+		home.isLit = false;
+		this.addEvent(1500, () => (home.isLit = true));
+
+		// Cutscene to Camera input mode
+		const blockDelay = fadeConfig.duration! + fadeConfig.delay! - 500;
+		this.setInputMode(InputMode.Cutscene);
+		this.addEvent(blockDelay, () => {
+			this.setInputMode(InputMode.Camera);
 		});
 	}
 }

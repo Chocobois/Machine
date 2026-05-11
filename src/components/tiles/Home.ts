@@ -3,6 +3,8 @@ import { SIZE, TileCoord } from "@/logic/Tile";
 import { Entity } from "./Entity";
 
 export class Home extends Entity {
+	public isLit: boolean;
+
 	constructor(scene: GameScene, tileCoord: TileCoord) {
 		super(scene, tileCoord);
 		this.tile = "Home";
@@ -12,7 +14,7 @@ export class Home extends Entity {
 	}
 
 	update(time: number, delta: number): void {
-		const frames = [0, 1];
+		const frames = this.isLit ? [0, 1] : [2];
 		this.sprite.setFrame(frames[Math.floor(time / 100) % frames.length]);
 	}
 }

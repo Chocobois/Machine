@@ -27,6 +27,9 @@ export const images: Image[] = [
 	image("title_character", "titlescreen/character.png"),
 	image("title_logo", "titlescreen/logo.png"),
 	image("title_taptoplay", "titlescreen/taptoplay.png"),
+
+	// Special
+	image("home_mask", "castle/home_mask.png"),
 ];
 
 /* Spritesheets */

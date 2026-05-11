@@ -1,3 +1,4 @@
+import { FadeConfig, Intermission } from "@/components/Intermission";
 import { UILevelStatePanel } from "@/components/ui/UILevelStatePanel";
 import { UIPanel, UI_HEIGHT } from "@/components/ui/UIPanel";
 import { PLAY_SPEEDS, UISpeedPanel } from "@/components/ui/UISpeedPanel";
@@ -9,6 +10,8 @@ export class UIScene extends BaseScene {
 	private uiPanel: UIPanel;
 	private speedPanel: UISpeedPanel;
 	private levelStatePanel: UILevelStatePanel;
+
+	private intermission: Intermission;
 
 	private music: Phaser.Sound.WebAudioSound;
 
@@ -22,6 +25,9 @@ export class UIScene extends BaseScene {
 		this.speedPanel = new UISpeedPanel(this, 128, 32);
 
 		this.levelStatePanel = new UILevelStatePanel(this, this.W - 176, 32);
+
+		this.intermission = new Intermission(this);
+		this.intermission.setDepth(10000);
 
 		this.setupListeners();
 
@@ -37,12 +43,18 @@ export class UIScene extends BaseScene {
 		this.uiPanel.update(time, delta);
 		this.speedPanel.update(time, delta);
 		this.levelStatePanel.update(time, delta);
+		this.intermission.update(time, delta);
 	}
 
 	setupListeners() {
 		const titleScene = this.scene.get("TitleScene");
 		const overworldScene = this.scene.get("OverworldScene");
 		const gameScene = this.scene.get("GameScene");
+
+		// Title events
+		titleScene.events.on("fade", (config: FadeConfig) => {
+			this.intermission.fade(config);
+		});
 
 		// Overworld events
 		overworldScene.events.on("setSeek", (seek: number) => {
@@ -62,16 +74,22 @@ export class UIScene extends BaseScene {
 		gameScene.events.on("setTreasureCount", (count: number) => {
 			this.uiPanel.setGold(count);
 		});
+		gameScene.events.on("fade", (config: FadeConfig) => {
+			this.intermission.fade(config);
+		});
 
 		// UI interactions
 		this.uiPanel.on("itemClicked", (item: InventoryItem) => {
 			this.events.emit("toggleItem", item, item);
 		});
+		this.uiPanel.on("findGold", () => {
+			this.events.emit("findGold");
+		});
 		this.levelStatePanel.on("retry", () => {
 			this.events.emit("restartLevel");
 		});
-		this.levelStatePanel.on("wrapup", () => {
-			this.events.emit("wrapup");
+		this.levelStatePanel.on("wrapUp", () => {
+			this.events.emit("wrapUp");
 		});
 		this.speedPanel.on("setPlaySpeed", (playSpeed: number) => {
 			this.events.emit("setPlaySpeed", playSpeed);
