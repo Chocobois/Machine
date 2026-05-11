@@ -4,6 +4,7 @@ import { TitleScene } from "@/scenes/TitleScene";
 import { OverworldScene } from "@/scenes/OverworldScene";
 import { GameScene } from "@/scenes/GameScene";
 import { UIScene } from "@/scenes/UIScene";
+import { SoundTestScene } from "./scenes/SoundTestScene";
 import OutlinePipelinePlugin from "phaser3-rex-plugins/plugins/outlinepipeline-plugin.js";
 import { configure } from "mobx";
 
@@ -21,7 +22,14 @@ export async function Game() {
 		scale: {
 			mode: Phaser.Scale.FIT,
 		},
-		scene: [PreloadScene, TitleScene, OverworldScene, GameScene, UIScene],
+		scene: [
+			PreloadScene,
+			TitleScene,
+			GameScene,
+			SoundTestScene,
+			UIScene,
+			OverworldScene,
+		],
 
 		plugins: {
 			global: [

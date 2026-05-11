@@ -125,8 +125,7 @@ export class Button extends Phaser.GameObjects.Container {
 	) {
 		this.hold = true;
 		this.blocked = false;
-
-		this.scene.sound.play("toggle2", { volume: 0.1 });
+		this.emit("pointerdown");
 
 		if (this.clickOnHold) {
 			this.emit("click");
@@ -141,7 +140,7 @@ export class Button extends Phaser.GameObjects.Container {
 	) {
 		if (this.hold && !this.blocked) {
 			this.hold = false;
-			this.scene.sound.play("toggle1", { volume: 0.1 });
+			this.emit("pointerup");
 
 			if (!this.clickOnHold) {
 				this.emit("click");

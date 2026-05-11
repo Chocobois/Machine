@@ -7,6 +7,7 @@ export class ItemButton extends Button {
 	public scene: BaseScene;
 	public item: InventoryItem;
 	public selected = false;
+	public enabled = true;
 
 	private background: Phaser.GameObjects.Image;
 	private itemIcon: Phaser.GameObjects.Image;
@@ -28,7 +29,12 @@ export class ItemButton extends Button {
 		this.background.setScale(size / this.background.width);
 		this.add(this.background);
 
-		this.itemIcon = this.scene.add.image(0, 0, Item[item.itemKey].image, Item[item.itemKey].frame);
+		this.itemIcon = this.scene.add.image(
+			0,
+			0,
+			Item[item.itemKey].image,
+			Item[item.itemKey].frame,
+		);
 		this.itemIcon.setScale((0.8 * size) / this.itemIcon.width);
 		this.add(this.itemIcon);
 
@@ -47,11 +53,19 @@ export class ItemButton extends Button {
 		// Input
 
 		this.bindInteractive(this.background);
+
+		this.setEnabled(item.amount > 0);
 	}
 
 	update(time: number, delta: number) {
 		this.setScale(1.0 - 0.1 * this.holdSmooth);
-		this.background.setTint(this.hold || this.selected ? 0xffcc00 : 0xffffff);
+		this.background.setTint(
+			this.hold || this.selected
+				? 0xffcc00
+				: this.enabled
+					? 0xffffff
+					: 0x777777,
+		);
 	}
 
 	setHighlight() {
@@ -60,21 +74,18 @@ export class ItemButton extends Button {
 
 	setAmount(amount: number) {
 		this.countText.setText(`×${amount}`);
+		this.setEnabled(amount > 0);
+	}
+
+	setEnabled(enabled: boolean) {
+		this.enabled = enabled;
+		this.background.input!.enabled = enabled;
 	}
 
 	/* Input */
 
 	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {
 		super.onOut(pointer, event);
-	}
-
-	onOver(
-		pointer: Phaser.Input.Pointer,
-		localX: number,
-		localY: number,
-		event: Phaser.Types.Input.EventData,
-	) {
-		super.onOver(pointer, localX, localY, event);
 	}
 
 	onDown(
@@ -84,6 +95,7 @@ export class ItemButton extends Button {
 		event: Phaser.Types.Input.EventData,
 	) {
 		super.onDown(pointer, localX, localY, event);
+		this.scene.playSound("toggle1");
 	}
 
 	onUp(
@@ -93,5 +105,6 @@ export class ItemButton extends Button {
 		event: Phaser.Types.Input.EventData,
 	) {
 		super.onUp(pointer, localX, localY, event);
+		this.scene.playSound("toggle2");
 	}
 }

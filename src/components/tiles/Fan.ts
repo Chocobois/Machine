@@ -27,12 +27,12 @@ export class Fan extends Entity {
 		this.setEnabled(!this.isEnabled());
 		this.emit("toggle");
 
-		this.emit("sound", this.enabled ? "toggle1" : "toggle2", 0.4);
-		this.emit("sound", this.enabled ? "fan_on" : "fan_off", 0.4);
+		this.emit("sound", this.enabled ? "toggle1" : "toggle2");
+		this.emit("sound", this.enabled ? "fan_on" : "fan_off");
 	}
 
 	onBuild() {
-		this.emit("sound", "clank", 0.3);
-		this.emit("sound", "fan_on", 0.4);
+		this.emit("sound", "clank");
+		this.emit("sound", "fan_on");
 	}
 }

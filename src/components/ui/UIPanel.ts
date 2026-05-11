@@ -2,7 +2,6 @@ import { ItemButton } from "@/components/ui/ItemButton";
 import { Inventory, InventoryItem } from "@/logic/Inventory";
 import { BaseScene } from "@/scenes/BaseScene";
 import { Clickable } from "./Clickable";
-import { GameScene } from "@/scenes/GameScene";
 
 export const UI_HEIGHT = 150;
 export const UI_SIZE = 120;
@@ -52,9 +51,17 @@ export class UIPanel extends Phaser.GameObjects.Container {
 			"ui_lives",
 			(UI_SIZE / 32) * 1.35,
 			0.1,
+			true,
 		);
 		this.add(livesIcon);
 		this.clickables.push(livesIcon);
+
+		livesIcon.on("pointerdown", () => {
+			this.scene.playSound("squish1");
+		});
+		livesIcon.on("pointerup", () => {
+			this.scene.playSound("squish2");
+		});
 
 		this.livesText = this.scene
 			.addText({
@@ -90,6 +97,10 @@ export class UIPanel extends Phaser.GameObjects.Container {
 		this.add(goldIcon);
 		this.clickables.push(goldIcon);
 
+		goldIcon.on("click", () => {
+			this.emit("findGold");
+		});
+
 		this.goldText = this.scene
 			.addText({
 				x: goldX + 0.5 * UI_SIZE,
@@ -119,14 +130,14 @@ export class UIPanel extends Phaser.GameObjects.Container {
 		inventory.forEach((item: InventoryItem, index: number) => {
 			const itemX = (-(inventory.length - 1) / 2) * spacing + index * spacing;
 
-			const btn = new ItemButton(this.scene, itemX, 6, UI_SIZE, item);
+			const button = new ItemButton(this.scene, itemX, 6, UI_SIZE, item);
 
-			btn.on("click", () => {
+			button.on("click", () => {
 				this.emit("itemClicked", item);
 			});
 
-			this.itemButtons.push(btn);
-			this.add(btn);
+			this.itemButtons.push(button);
+			this.add(button);
 		});
 	}
 

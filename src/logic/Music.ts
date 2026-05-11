@@ -1,4 +1,4 @@
-import MusicData, { MusicKey } from "@/logic/MusicData";
+import { music, MusicKey } from "@/assets/music";
 
 export class Music extends Phaser.Sound.WebAudioSound {
 	public _prevBarTime: number;
@@ -12,15 +12,19 @@ export class Music extends Phaser.Sound.WebAudioSound {
 	public start: number;
 	public loopSum: number;
 
-	constructor(scene: any, myKey: MusicKey, config = {}) {
+	constructor(
+		scene: any,
+		myKey: MusicKey,
+		config?: Phaser.Types.Sound.SoundConfig,
+	) {
 		super(scene.sound, myKey, config);
 		scene.sound.sounds.push(this);
 		this.myKey = myKey;
 
-		if (!MusicData[myKey]) {
+		if (!music[myKey]) {
 			throw "Music data missing for: " + myKey;
 		}
-		let custom = MusicData[myKey] || {};
+		let custom = music[myKey] || {};
 
 		this.offset = custom.offset;
 		this.bpm = custom.bpm;

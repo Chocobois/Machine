@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/Button";
 
 export class Clickable extends Button {
 	public image: Phaser.GameObjects.Image;
-	private clickScaling: number;
-	private updateCallback?: (time: number, delta: number) => void;
-	private clickCallback?: () => void;
+	protected clickScaling: number;
+	protected oppositeAxis: boolean;
+	protected updateCallback?: (time: number, delta: number) => void;
+	protected clickCallback?: () => void;
 
 	constructor(
 		scene: BaseScene,
@@ -14,9 +15,12 @@ export class Clickable extends Button {
 		texture: string,
 		scale: number,
 		clickScaling: number = 0.1,
+		oppositeAxis: boolean = false,
+		clickOnHold: boolean = false,
 	) {
-		super(scene, x, y);
+		super(scene, x, y, clickOnHold);
 		this.clickScaling = clickScaling;
+		this.oppositeAxis = oppositeAxis;
 
 		this.image = scene.add.image(0, 0, texture).setScale(scale);
 		this.add(this.image);
@@ -30,7 +34,7 @@ export class Clickable extends Button {
 
 	update(time: number, delta: number) {
 		this.setScale(
-			1.0 + this.clickScaling * this.holdSmooth,
+			1.0 - this.clickScaling * this.holdSmooth * (this.oppositeAxis ? -1 : 1),
 			1.0 - this.clickScaling * this.holdSmooth,
 		);
 

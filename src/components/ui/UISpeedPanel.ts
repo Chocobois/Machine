@@ -1,4 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
+import { Button } from "./Button";
 
 const PANEL_WIDTH = 256;
 const PANEL_HEIGHT = 64;
@@ -64,8 +65,6 @@ export class UISpeedPanel extends Phaser.GameObjects.Container {
 	}
 }
 
-import { Button } from "./Button";
-
 class SpeedButton extends Button {
 	public scene: BaseScene;
 	public selected = false;
@@ -94,6 +93,12 @@ class SpeedButton extends Button {
 		this.refreshFrame();
 
 		this.bindInteractive(this.sprite);
+		this.sprite.on("pointerdown", () => {
+			this.scene.playSound("toggle3");
+		});
+		this.sprite.on("pointerup", () => {
+			this.scene.playSound("toggle4");
+		});
 		this.on("click", () => {
 			this.emit("setPlaySpeed", playSpeed);
 		});

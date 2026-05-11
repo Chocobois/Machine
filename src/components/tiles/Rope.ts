@@ -41,12 +41,12 @@ export class Rope extends Entity {
 		this.setEnabled(!this.isEnabled());
 		this.emit("toggle");
 
-		this.emit("sound", this.enabled ? "retract" : "reel", 0.4);
+		this.emit("sound", this.enabled ? "retract" : "reel");
 	}
 
 	onBuild() {
-		this.emit("sound", "reel", 0.4);
-		this.emit("sound", "clank", 0.3);
+		this.emit("sound", "reel");
+		this.emit("sound", "clank");
 	}
 
 	destroy(): void {

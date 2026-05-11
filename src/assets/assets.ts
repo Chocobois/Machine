@@ -1,5 +1,5 @@
-import { Image, SpriteSheet, Audio } from "./util";
-import { image, sound, music, loadFont, spritesheet } from "./util";
+import { Audio, Image, music, sound, SpriteSheet } from "./util";
+import { image, loadFont, spritesheet } from "./util";
 
 /* Images */
 export const images: Image[] = [
@@ -112,7 +112,6 @@ export const audios: Audio[] = [
 	sound("scream", "placeholder/scream.mp3"),
 	sound("squeak", "placeholder/squeak.mp3"),
 
-	sound("cash", "treasure/cash.mp3"),
 	sound("chest", "treasure/chest.mp3"),
 	sound("collect_generic", "treasure/collect_generic.mp3"),
 	sound("gold_pouch", "treasure/gold_pouch.mp3"),
@@ -131,7 +130,7 @@ export const audios: Audio[] = [
 	sound("hover", "ui/hover.mp3"),
 	sound("max_length", "ui/max_length.mp3"),
 	sound("paper", "ui/paper.mp3"),
-	sound("sparkle", "ui/sparkle.mp3"),
+	sound("ui_sparkle", "ui/sparkle.mp3"),
 	sound("tick", "ui/tick.mp3"),
 	sound("title_begin", "ui/title_begin.mp3"),
 	sound("tooltip", "ui/tooltip.mp3"),

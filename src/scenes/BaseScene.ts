@@ -1,3 +1,4 @@
+import { Sound, SoundKey, sounds } from "@/assets/sounds";
 import { UI_SIZE } from "@/components/ui/UIPanel";
 import { SIZE } from "@/logic/Tile";
 
@@ -90,6 +91,60 @@ export class BaseScene extends Phaser.Scene {
 			.setAlpha(alpha)
 			.setPadding(2);
 	}
+
+	/* Audio */
+
+	playSoundLocation(
+		soundKey: SoundKey,
+		volumeFactor: number,
+		pan: number,
+		config?: Phaser.Types.Sound.SoundConfig,
+	): Phaser.Sound.BaseSound | void {
+		const sound = sounds[soundKey] as Sound;
+		if (!sound) return console.warn(`Sound not found "${soundKey}"`);
+
+		const volume = volumeFactor * this.getSoundVolume(sound.volume);
+
+		return this.playSound(soundKey, { volume, pan, ...config });
+	}
+
+	playSound(
+		soundKey: SoundKey,
+		config?: Phaser.Types.Sound.SoundConfig,
+	): Phaser.Sound.BaseSound | void {
+		const sound = sounds[soundKey] as Sound;
+		if (!sound) return console.warn(`Sound not found "${soundKey}"`);
+
+		const key = this.getSoundKey(sound.key);
+		const volume = config?.volume ?? this.getSoundVolume(sound.volume);
+		const rate = config?.rate ?? this.getSoundRate(sound.rate);
+
+		const instance = this.sound.add(key, { volume, rate, ...config });
+		instance.play();
+		instance.once("complete", () => instance.destroy());
+		return instance;
+	}
+
+	private getSoundKey(key: Sound["key"]): string {
+		if (Array.isArray(key)) {
+			return Phaser.Math.RND.pick(key);
+		}
+		return key;
+	}
+
+	private getSoundVolume(volume: Sound["volume"]): number {
+		return volume ?? 1;
+	}
+
+	private getSoundRate(rate: Sound["rate"]): number {
+		if (Array.isArray(rate)) {
+			const [min, max] = rate;
+			return Math.random() * (max - min) + min;
+		}
+		return rate ?? 1;
+	}
+
+	/* Screen size */
 
 	// The image keeps its aspect ratio, but is resized to fit within the given dimension
 	fitToScreen(image: Phaser.GameObjects.Image): void {

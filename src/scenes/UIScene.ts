@@ -32,11 +32,13 @@ export class UIScene extends BaseScene {
 		this.setupListeners();
 
 		if (!this.music) {
-			this.music = new Music(this, "flykten", { volume: 0.4 });
+			this.music = new Music(this, "flykten", { volume: 0.5 });
 			this.music.on("bar", (bar: number) => {
 				this.events.emit("onMusicBar", bar);
 			});
 		}
+
+		this.sound.setVolume(0.75);
 	}
 
 	update(time: number, delta: number) {
@@ -50,6 +52,7 @@ export class UIScene extends BaseScene {
 		const titleScene = this.scene.get("TitleScene");
 		const overworldScene = this.scene.get("OverworldScene");
 		const gameScene = this.scene.get("GameScene");
+		const soundTestScene = this.scene.get("SoundTestScene");
 
 		// Title events
 		titleScene.events.on("fade", (config: FadeConfig) => {
@@ -115,6 +118,9 @@ export class UIScene extends BaseScene {
 		});
 		gameScene.events.on(Phaser.Scenes.Events.START, () =>
 			this.setVisible(true),
+		);
+		soundTestScene.events.on(Phaser.Scenes.Events.START, () =>
+			this.setVisible(false),
 		);
 
 		// Global

@@ -167,10 +167,7 @@ export class Player extends Phaser.GameObjects.Container {
 			) {
 				// Leave the rope
 			} else if (!check(north, (d) => d.isSolid)) {
-				this.action = Action.Climbing;
-				this.fallSpeed = 0;
-				this.emit("sound", "creak", 0.3);
-				return this.move(0, -1, 800);
+				return this.climb();
 			}
 		}
 
@@ -178,7 +175,7 @@ export class Player extends Phaser.GameObjects.Container {
 		if (center.includes("Zipline") && front.includes("Zipline")) {
 			this.action = Action.Climbing;
 			this.fallSpeed = 0;
-			this.emit("sound", "rope", 0.3);
+			this.emit("sound", "rope");
 			return this.move(dx, 0, 800);
 		}
 
@@ -186,7 +183,7 @@ export class Player extends Phaser.GameObjects.Container {
 		if (center.includes("Updraft") && !check(north, (d) => d.isSolid)) {
 			this.action = Action.Flying;
 			this.fallSpeed = 0;
-			this.emit("sound", "flail", 0.3);
+			this.emit("sound", "flail");
 			if (
 				!check(front, (d) => d.isSolid) &&
 				!check(frontUp, (d) => d.isSolid)
@@ -236,8 +233,7 @@ export class Player extends Phaser.GameObjects.Container {
 	private die() {
 		this.action = Action.Dead;
 		this.heldSprite.setVisible(false);
-		this.explodeSprite.setVisible(true);
-		this.emit("sound", "explode", 0.2);
+		this.emit("sound", "explode");
 
 		this.emit("leave");
 
@@ -275,21 +271,37 @@ export class Player extends Phaser.GameObjects.Container {
 	private walk(deltaTileX: number) {
 		this.action = Action.Walking;
 		this.move(deltaTileX, 0, 600);
+
+		this.emit("sound", "metal_step");
+	}
+
+	private climb() {
+		this.action = Action.Climbing;
+		this.move(0, -1, 800);
+		this.fallSpeed = 0;
+
+		this.emit("sound", "creak");
 	}
 
 	private pickUp() {
 		this.action = Action.Collecting;
 		this.emit("collect");
 
-		this.scene.tweens.add({
+		console.assert(!this.tween || !this.tween.isPlaying());
+		this.tween = this.scene.tweens.add({
 			targets: this,
 			y: { from: this.y, to: this.y - 0.5 * SIZE },
-			duration: 150,
-			easing: Phaser.Math.Easing.Circular.Out,
+			duration: 300,
+			ease: Phaser.Math.Easing.Cubic.Out,
 			yoyo: true,
 			repeat: 1,
+			onRepeat: () => {
+				// this.facingRight = !this.facingRight;
+				this.emit("sound", "land_soft");
+			},
 			onComplete: () => {
 				this.setTileCoord(this.tileCoord);
+				this.emit("sound", "land_soft");
 			},
 		});
 	}
@@ -331,16 +343,7 @@ export class Player extends Phaser.GameObjects.Container {
 	/* Audio */
 
 	yip() {
-		const sounds = [
-			"kobot_1",
-			"kobot_2",
-			"kobl_1",
-			"kobl_2",
-			"kobl_3",
-			"kobl_4",
-		];
-		const key = Phaser.Math.RND.pick(sounds);
-		this.emit("sound", key, 0.2);
+		this.emit("sound", "yip");
 	}
 
 	/* Helpers */

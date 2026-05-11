@@ -1,6 +1,13 @@
-const overlap = 2;
+const overlap = 0.0;
 
-const Data = {
+export interface MusicData {
+	offset: number;
+	bpm: number;
+	loop: boolean;
+	start: number;
+	end: number;
+}
+export const music = {
 	flykten: {
 		offset: 580 / 44100 - 0.05,
 		bpm: 190,
@@ -15,17 +22,5 @@ const Data = {
 		start: 580 / 44100 + overlap,
 		end: 223400 / 44100 + overlap,
 	},
-};
-
-export type MusicKey = keyof typeof Data;
-export type MusicDataType = {
-	[K in MusicKey]: {
-		offset: number;
-		bpm: number;
-		loop: boolean;
-		start: number;
-		end: number;
-	};
-};
-
-export default Data as MusicDataType;
+} satisfies Record<string, MusicData>;
+export type MusicKey = keyof typeof music;

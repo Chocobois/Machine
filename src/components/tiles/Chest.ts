@@ -23,8 +23,12 @@ export class Chest extends Entity {
 		}
 
 		if (this.treasureCount == 2) {
-			this.emit("sound", "chest", 0.4);
+			this.emit("sound", "chest");
 		}
-		this.emit("sound", "gold_pouch", 0.5);
+		this.emit("sound", "sparkle");
+	}
+
+	get hasTreasure(): boolean {
+		return this.treasureCount > 0;
 	}
 }

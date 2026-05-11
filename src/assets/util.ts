@@ -40,13 +40,8 @@ const musicGlob = import.meta.glob<string>("./music/**/*.mp3", {
 	import: "default",
 	eager: true,
 });
-export const music = (
-	key: string,
-	path: string,
-	volume?: number,
-	rate?: number,
-): Audio => {
-	return { key, volume, rate, path: musicGlob[`./music/${path}`] };
+export const music = (key: string, path: string): Audio => {
+	return { key, path: musicGlob[`./music/${path}`] };
 };
 
 const audioGlob = import.meta.glob<string>("./sounds/**/*.mp3", {
@@ -54,13 +49,8 @@ const audioGlob = import.meta.glob<string>("./sounds/**/*.mp3", {
 	import: "default",
 	eager: true,
 });
-export const sound = (
-	key: string,
-	path: string,
-	volume?: number,
-	rate?: number,
-): Audio => {
-	return { key, volume, rate, path: audioGlob[`./sounds/${path}`] };
+export const sound = (key: string, path: string): Audio => {
+	return { key, path: audioGlob[`./sounds/${path}`] };
 };
 
 const fontGlob = import.meta.glob<string>("./fonts/**/*.ttf", {

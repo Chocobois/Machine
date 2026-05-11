@@ -23,6 +23,7 @@ import { Fan } from "@/components/tiles/Fan";
 import { Zipline } from "@/components/tiles/Zipline";
 import { Updraft } from "@/components/tiles/Updraft";
 import { Ladder } from "@/components/tiles/Ladder";
+import { SoundKey } from "@/assets/sounds";
 import { FadeConfig } from "@/components/Intermission";
 
 enum InputMode {
@@ -230,8 +231,8 @@ export class GameScene extends BaseScene {
 					this.entities.push(entity);
 					this.refreshEntitySprites(tileCoord);
 					entity.on("toggle", this.onEntityToggle, this);
-					entity.on("sound", (key: string, volume: number = 0.5) => {
-						this.playLocationSound(entity.tileCoord, key, volume);
+					entity.on("sound", (key: SoundKey) => {
+						this.playLocationSound(entity.tileCoord, key);
 					});
 				}
 			}
@@ -252,8 +253,8 @@ export class GameScene extends BaseScene {
 	}
 
 	findGold() {
-		const chest = this.entities.find((entity) => entity.tile === "Gold");
-		if (chest) {
+		const chest = this.entities.find((entity) => entity instanceof Chest);
+		if (chest && chest.hasTreasure) {
 			const { x, y } = TileCoord.tileToCoord(chest.tileCoord);
 			this.centerCameraOn(x, y);
 		}
@@ -417,7 +418,7 @@ export class GameScene extends BaseScene {
 			this.buildStartTile = tile;
 			this.previewCoords = [tile];
 			this.updatePreview();
-			this.playLocationSound(this.getMouseTileCoord(), "button", 0.5);
+			this.playLocationSound(this.getMouseTileCoord(), "button");
 		}
 	}
 
@@ -433,7 +434,7 @@ export class GameScene extends BaseScene {
 			this.cursor.setAllowed(this.canUseItem(mouseTile));
 
 			if (this.buildStartTile) {
-				this.playLocationSound(mouseTile, "button", 0.3);
+				this.playLocationSound(mouseTile, "button");
 			}
 		}
 
@@ -708,8 +709,8 @@ export class GameScene extends BaseScene {
 			created.push(entity);
 
 			entity.on("toggle", this.onEntityToggle, this);
-			entity.on("sound", (key: string, volume: number = 0.5) => {
-				this.playLocationSound(entity.tileCoord, key, volume);
+			entity.on("sound", (key: SoundKey) => {
+				this.playLocationSound(entity.tileCoord, key);
 			});
 		});
 
@@ -778,8 +779,8 @@ export class GameScene extends BaseScene {
 			player.setDepth(10 - 0.01 * this.players.length);
 			this.checkLevelCriteria();
 		});
-		player.on("sound", (key: string, volume: number = 0.5) => {
-			this.playLocationSound(player.tileCoord, key, volume);
+		player.on("sound", (key: SoundKey) => {
+			this.playLocationSound(player.tileCoord, key);
 		});
 		// player.setTileCoord(tileCoord);
 		player.enterLevel(tileCoord);
@@ -958,11 +959,7 @@ export class GameScene extends BaseScene {
 
 	/* Audio */
 
-	playLocationSound(
-		tileCoord: TileCoord,
-		key: string | string[],
-		volume: number,
-	) {
+	playLocationSound(tileCoord: TileCoord, key: SoundKey) {
 		if (!this.game.registry.get("allowAudio")) return;
 
 		const position = TileCoord.tileToCoord(tileCoord);
@@ -973,19 +970,14 @@ export class GameScene extends BaseScene {
 		// Volume falloff
 		const maxDistance = 200;
 		const volumeFactor = Phaser.Math.Clamp(1 - distance / maxDistance, 0, 1);
-		const finalVolume = volume * volumeFactor;
 
 		// Stereo pan
 		const pan = Phaser.Math.Clamp(offset.x / 100, -1, 1);
 
 		// Skip if inaudible
-		if (finalVolume <= 0) return;
+		if (volumeFactor <= 0) return;
 
-		let soundKey = typeof key == "string" ? key : Phaser.Math.RND.pick(key);
-		this.sound.play(soundKey, {
-			volume: finalVolume,
-			pan: pan,
-		});
+		this.playSoundLocation(key, volumeFactor, pan);
 	}
 
 	onMusicBar(bar: number) {
@@ -1046,6 +1038,7 @@ export class GameScene extends BaseScene {
 	}
 
 	exitLevel(victory: boolean) {
+		if (this.inputMode == InputMode.Cutscene) return;
 		this.setInputMode(InputMode.Cutscene);
 
 		const home = this.entities.find((entity) => entity.tile === "Home")!;
@@ -1056,7 +1049,7 @@ export class GameScene extends BaseScene {
 			x: useCenter ? this.CX : screen.x,
 			y: useCenter ? this.CY : screen.y - 0.25 * screen.size,
 			black: true,
-			duration: 2000,
+			duration: victory ? 2000 : 1000,
 		};
 		this.events.emit("fade", fadeConfig);
 

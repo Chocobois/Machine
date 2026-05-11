@@ -28,11 +28,17 @@ export class UILevelStatePanel extends Phaser.GameObjects.Container {
 			0,
 			5,
 			"ui_wrapup",
-			(PANEL_HEIGHT / 16),
+			PANEL_HEIGHT / 16,
 			0.1,
 		);
 		this.add(wrapupPanel);
-		this.buttons.push(wrapupPanel)
+		this.buttons.push(wrapupPanel);
+		wrapupPanel.on("pointerdown", () => {
+			this.scene.playSound("toggle3");
+		});
+		wrapupPanel.on("pointerup", () => {
+			this.scene.playSound("toggle4");
+		});
 
 		let wrapupText = this.scene
 			.addText({
@@ -52,20 +58,24 @@ export class UILevelStatePanel extends Phaser.GameObjects.Container {
 			PANEL_WIDTH / 2 + 10,
 			5,
 			"ui_retry",
-			(PANEL_HEIGHT / 16),
+			PANEL_HEIGHT / 16,
 			0.1,
 		);
 		this.add(retryButton);
 		this.buttons.push(retryButton);
+		retryButton.on("pointerdown", () => {
+			this.scene.playSound("toggle3");
+		});
+		retryButton.on("pointerup", () => {
+			this.scene.playSound("toggle4");
+		});
 
 		wrapupPanel.on("click", () => {
-			this.emit("wrapup");
-		})
+			this.emit("wrapUp");
+		});
 
 		retryButton.on("click", () => {
 			this.emit("retry");
-		})
+		});
 	}
 }
-
-import { Button } from "./Button";
