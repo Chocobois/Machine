@@ -7,7 +7,6 @@ enum Action {
 	Walking,
 	Climbing,
 	Falling,
-	Crashing,
 	Flying,
 	Collecting,
 	Leaving,
@@ -19,10 +18,9 @@ const animations: { [key in Action]: number[] } = {
 	[Action.Walking]: [0, 2, 1, 3],
 	[Action.Climbing]: [4, 5],
 	[Action.Falling]: [6, 7],
-	[Action.Crashing]: [10, 11],
 	[Action.Dead]: [9],
-	[Action.Flying]: [6, 7],
-	[Action.Collecting]: [0],
+	[Action.Flying]: [10, 11],
+	[Action.Collecting]: [8],
 	[Action.Leaving]: [0, 2, 1, 3],
 };
 
@@ -180,16 +178,34 @@ export class Player extends Phaser.GameObjects.Container {
 		}
 
 		// Updraft
-		if (center.includes("Updraft") && !check(north, (d) => d.isSolid)) {
+		if (center.includes("Updraft")) {
 			this.action = Action.Flying;
 			this.fallSpeed = 0;
 			this.emit("sound", "flail");
+
+			// Move diagonally forward, fall out of the wind
 			if (
 				!check(front, (d) => d.isSolid) &&
 				!check(frontUp, (d) => d.isSolid)
 			) {
 				return this.move(dx, -1, 400 * 1.4);
 			}
+
+			if (check(north, (d) => d.isSolid)) {
+				if (check(front, (d) => d.isSolid)) {
+					return this.turnAround();
+				}
+				return this.move(dx, 0, 400);
+			}
+
+			// Special case where they get stuck in a corner
+			if (
+				!north.includes("Updraft") &&
+				(check(front, (d) => d.isSolid) || check(frontUp, (d) => d.isSolid))
+			) {
+				return this.turnAround();
+			}
+
 			return this.move(0, -1, 400);
 		}
 
@@ -200,16 +216,30 @@ export class Player extends Phaser.GameObjects.Container {
 			}
 		}
 
-		if (this.fallSpeed > 6) {
-			return this.die();
-		}
+		// Land
+		const fatal = this.checkLanding();
+		this.fallSpeed = 0;
+		if (fatal) return this.die();
 
 		// Walking
 		if (!check(front, (d) => d.isSolid)) {
+			// If updraft is in front, fly up into it
+			if (frontUp.includes("Updraft")) {
+				this.action = Action.Flying;
+				this.emit("sound", "flail");
+				return this.move(dx, -1, 400 * 1.4);
+			}
+
+			if (center.includes("Climb") && front.includes("Climb")) {
+				this.action = Action.Climbing;
+				this.emit("sound", "rope");
+				return this.move(dx, 0, 800);
+			}
+
+			// Normal walk
 			return this.walk(dx);
 		} else if (!check(back, (d) => d.isSolid)) {
-			this.facingRight = !this.facingRight;
-			return this.walk(-dx);
+			return this.turnAround();
 		}
 
 		return this.idle();
@@ -225,6 +255,13 @@ export class Player extends Phaser.GameObjects.Container {
 	}
 
 	/* Actions */
+
+	private turnAround() {
+		this.facingRight = !this.facingRight;
+		this.scene.addEvent(10, () => {
+			this.setTileCoord(this.tileCoord);
+		});
+	}
 
 	private idle() {
 		this.action = Action.Idle;
@@ -258,14 +295,40 @@ export class Player extends Phaser.GameObjects.Container {
 	}
 
 	private fall() {
-		if (this.action != Action.Falling && this.action != Action.Crashing)
+		if (this.action != Action.Falling && this.action != Action.Flying)
 			this.fallSpeed = 0;
 		this.fallSpeed += 1;
 		const duration = 500 / (1 + 0.4 * this.fallSpeed);
 
-		if (this.fallSpeed < 6) this.action = Action.Falling;
-		else this.action = Action.Crashing;
+		if (this.fallSpeed > 4 || this.action == Action.Flying) {
+			this.action = Action.Flying;
+		} else {
+			this.action = Action.Falling;
+		}
+
 		this.move(0, 1, duration);
+	}
+
+	private checkLanding(): boolean {
+		switch (this.fallSpeed) {
+			case 0:
+				break;
+			case 1:
+			case 2:
+				this.emit("sound", "land_soft");
+				break;
+			case 3:
+			case 4:
+				this.emit("sound", "land_med");
+				break;
+			case 5:
+			case 6:
+				this.emit("sound", "land_hard");
+				break;
+			default:
+				return true;
+		}
+		return false;
 	}
 
 	private walk(deltaTileX: number) {
